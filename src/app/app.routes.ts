@@ -8,7 +8,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: () => import('./components/layout/main/main').then(m => m.Main)
+    loadComponent: () => import('./components/layout/main/main').then(m => m.Main)
   },
   {
     path:'login',
