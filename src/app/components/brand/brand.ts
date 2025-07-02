@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-brand',
   imports: [],
   templateUrl: './brand.html',
-  styleUrl: './brand.css'
+  styleUrl: './brand.scss'
 })
 export class Brand {
 

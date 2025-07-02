@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-inventroy',
   imports: [],
   templateUrl: './inventroy.html',
-  styleUrl: './inventroy.css'
+  styleUrl: './inventroy.scss'
 })
 export class Inventroy {
 

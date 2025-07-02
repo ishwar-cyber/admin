@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-sub-category',
   imports: [],
   templateUrl: './sub-category.html',
-  styleUrl: './sub-category.css'
+  styleUrl: './sub-category.scss'
 })
 export class SubCategory {
 

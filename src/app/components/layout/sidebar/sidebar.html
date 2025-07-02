@@ -1,1 +1,74 @@
-<p>sidebar works!</p>
+<div class="sidebar" [ngClass]="{'collapsed': collapsed()}">
+  <div class="sidebar-header">
+    <div class="logo-container">
+        <i class="bi bi-boxes app-logo"></i>
+    </div>
+    @if(!collapsed()) {
+         <h2 class="app-name">Inventory</h2>
+    }
+    @if(!collapsed()) {
+     <div class="toggle-button" (click)="toggleSidebar.emit()">
+        <i class="bi bi-chevron-left"></i>
+    </div>
+  } @else {
+    <div class="toggle-button" (click)="toggleSidebar.emit()">
+      <i class="bi bi-chevron-right"></i>
+    </div>
+  }
+  </div> 
+  <div class="sidebar-content">
+    <ul class="nav-list">
+        @for (item of menuItems(); track $index) {
+              <li class="nav-item">
+                <a [routerLink]="item.children ? null : item.route" 
+                    (click)="item.children && toggleExpanded(item)"  routerLinkActive="'active'" 
+                    [ngClass]="{'active': isActive(item?.route), 'has-children': item.children}">
+                      <i class="bi {{item.icon}}"></i>
+                      @if(!collapsed()){
+                      <span>{{item.title}}</span>
+
+                      }
+                        @if(item.children && !collapsed()) {
+                            <i class="bi bi-chevron-right" [ngClass]="item.expanded ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                        }
+                </a>
+                @if(item.children && item.expanded && !collapsed()) {
+                    <ul class="child-nav">
+                        @for (child of item.children; track $index) {
+                            <li [routerLinkActive]="'active'" class="sub-item">
+                                <a [routerLink]="child.route" [ngClass]="{'active': isActive(child.route)}">
+                                    <i class="bi {{child.icon}}"></i>
+                                    <span>{{child.title}}</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>  
+  </div>
+  <div class="sidebar-footer">
+      <div class="user-info" *ngIf="!collapsed()">
+        <div class="avatar">
+          <i class="bi bi-person-circle user-icon"></i>
+        </div>
+        <div class="details">
+            <span class="username">John Doe</span>
+            <p class="role">Administator</p>
+        </div>
+        <div class="logout-button" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i> 
+        </div>
+      </div>
+      <div class="user-info-collapsed" *ngIf="collapsed()">
+      <div class="avatar">
+          <i class="bi bi-person-circle user-icon"></i>
+        </div>
+        <div class="logout-button" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i> 
+        </div>
+      </div>
+
+  </div>
+</div>
