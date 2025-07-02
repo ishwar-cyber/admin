@@ -1,0 +1,192 @@
+  
+    <!-- Main Content -->
+    <div class="main-content" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
+      <div class="content-wrapper">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Total Sales</h5>
+              <h2 class="card-text text-primary">₹{{stats.totalSales | number}}</h2>
+              <small class="text-success">
+                <i class="bi bi-arrow-up"></i> 12% increase
+              </small>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Total Orders</h5>
+              <h2 class="card-text text-success">{{stats.totalOrders | number}}</h2>
+              <small class="text-success">
+                <i class="bi bi-arrow-up"></i> 8% increase
+              </small>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">New Customers</h5>
+              <h2 class="card-text text-info">{{stats.newCustomers | number}}</h2>
+              <small class="text-danger">
+                <i class="bi bi-arrow-down"></i> 3% decrease
+              </small>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Revenue</h5>
+              <h2 class="card-text text-warning">₹{{stats.revenue | number}}</h2>
+              <small class="text-success">
+                <i class="bi bi-arrow-up"></i> 5% increase
+              </small>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Avg. Order Value</h5>
+              <h2 class="card-text text-info">₹{{stats.averageOrderValue | number:'1.2-2'}}</h2>
+              <small class="text-success">
+                <i class="bi bi-arrow-up"></i> 4% increase
+              </small>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Conversion Rate</h5>
+              <h2 class="card-text text-primary">{{stats.conversionRate}}%</h2>
+              <small class="text-success">
+                <i class="bi bi-arrow-up"></i> 1.2% increase
+              </small>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Low Stock Items</h5>
+              <h2 class="card-text text-danger">{{stats.lowStockItems}}</h2>
+              <small class="text-warning">
+                <i class="bi bi-exclamation-triangle"></i> Needs attention
+              </small>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Pending Orders</h5>
+              <h2 class="card-text text-warning">{{stats.pendingOrders}}</h2>
+              <small class="text-info">
+                <i class="bi bi-clock"></i> Awaiting processing
+              </small>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Sales Analytics</h5>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-calendar"></i> Last 6 Months
+                </button>
+                <button class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-download"></i> Export
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas id="salesChart"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Revenue by Category</h5>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-calendar"></i> This Month
+                </button>
+                <button class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-download"></i> Export
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Tables Grid -->
+        <div class="tables-grid">
+          <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Recent Orders</h5>
+              <button class="btn btn-sm btn-primary" routerLink="/admin/orders">
+                View All Orders
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Product</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (order of recentOrders(); track $index) {
+                      <tr>
+                        <td>{{order.id}}</td>
+                        <td>{{order.customer}}</td>
+                        <td>{{order.product}}</td>
+                        <td>₹{{order.amount | number:'1.2-2'}}</td>
+                        <td>
+                          <span class="badge" [ngClass]="{
+                            'bg-success': order.status === 'Completed',
+                            'bg-warning': order.status === 'Pending',
+                            'bg-info': order.status === 'Processing'
+                          }">{{order.status}}</span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+  
+          <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Top Performing Products</h5>
+              <button class="btn btn-sm btn-primary" routerLink="/admin/products">
+                View All Products
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Sales</th>
+                      <th>Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (product of topProducts(); track $index) {
+                      <tr>
+                        <td>{{product.name}}</td>
+                        <td>{{product.sales}}</td>
+                        <td>₹{{product.revenue | number}}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

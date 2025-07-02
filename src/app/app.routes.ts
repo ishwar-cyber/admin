@@ -16,7 +16,7 @@ export const routes: Routes = [
     children: [
       {
         path:'',
-        loadComponent:()=>import('./components/layout/main/main').then(m => m.Main)
+        loadComponent:()=>import('./components/layout/dashboard/dashboard').then(m => m.Dashboard)
       },
     ]
   },
