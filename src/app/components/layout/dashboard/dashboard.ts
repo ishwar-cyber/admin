@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Sidebar } from '../../../services/sidebar';
-
+import { Chart } from 'chart.js/auto';
 
 interface DashboardStats {
   totalSales: number;
