@@ -1,1 +1,96 @@
-<p>brand works!</p>
+
+
+
+<div class="">
+    <button class="btn btn-primary" (click)="openBrandForm()">Create Brand</button>
+</div>
+@if(openForm()){
+    <app-modal #modal>
+        <ng-template #modalContent (closed)="onModalClosed()">
+          <form [formGroup]="brandFrom">
+                <div class="modal-body">
+                    <!-- Name Field -->
+                    <div class="mb-3">
+                    <label for="name" class="form-label">Brand Name</label>
+                    <input type="text" 
+                        class="form-control" 
+                        id="name" 
+                        formControlName="name"
+                        [class.is-invalid]="brandFrom.get('name')?.invalid && brandFrom.get('name')?.touched"
+                        placeholder="Enter category name" />
+                    <div class="invalid-feedback">
+                        @if (brandFrom.get('name')?.errors?.['required']) {
+                        Brand name is required
+                        } @else if (brandFrom.get('name')?.errors?.['minlength']) {
+                            Brand name must be at least 3 characters
+                        }
+                    </div>
+                    </div>
+        
+                    <!-- Description Field -->
+                    <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" 
+                                id="description" 
+                                formControlName="description"
+                                [class.is-invalid]="brandFrom.get('description')?.invalid && brandFrom.get('description')?.touched"
+                                rows="3"
+                                placeholder="Enter category description"></textarea>
+                    <div class="invalid-feedback">
+                        @if (brandFrom.get('description')?.errors?.['required']) {
+                        Description is required
+                        } @else if (brandFrom.get('description')?.errors?.['minlength']) {
+                        Description must be at least 10 characters
+                        }
+                    </div>
+                    </div>
+                    <div class="mb-3">
+                    <!-- <app-upload-image (fileSelected)="selectedBrandImage($event)"
+                        [maxSizeMB]="5">
+                    </app-upload-image> -->
+                    </div>
+                    <!-- Status Field -->
+                    <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <div class="btn-group w-100">
+                        <input type="radio" 
+                            class="btn-check" 
+                            name="status" 
+                            id="active" 
+                            value="active"
+                            formControlName="status">
+                        <label class="btn btn-outline-success" for="active">Active</label>
+        
+                        <input type="radio" 
+                            class="btn-check" 
+                            name="status" 
+                            id="inactive" 
+                            value="inactive"
+                            formControlName="status">
+                        <label class="btn btn-outline-danger" for="inactive">Inactive</label>
+                    </div>
+                    </div>
+                </div>
+                    
+                
+                <div class="modal-footer">
+                    <button type="button" 
+                            class="btn btn-secondary" 
+                            (click)="modal.close()">
+                    Cancel
+                    </button>
+                    <button (click)="procced()" 
+                            class="btn btn-primary" 
+                            [disabled]="brandFrom.invalid || isLoading()">
+                    @if (isLoading()) {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        {{ editMode() ? 'Updating...' : 'Creating...' }}
+                    } @else {
+                        {{ editMode() ? 'Update Brand' : 'Create Brand' }}
+                    }
+                    </button>
+                </div>
+                </form>
+        </ng-template>
+    </app-modal>
+}

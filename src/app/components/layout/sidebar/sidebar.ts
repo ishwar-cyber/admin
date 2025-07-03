@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, input, output, PLATFORM_ID, signal } from '@angular/core';
+import { Component, inject, Inject, input, output, PLATFORM_ID, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Auth } from '../../../services/auth';
 interface NavItem {
   title: string;
   icon?: string;
@@ -19,7 +20,7 @@ export class Sidebar {
  collapsed = input<boolean>(false);
   toggleSidebar = output();
   isBrowser = signal(false);
-
+ public loginService = inject(Auth)
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     // Check if the platform is browser
     this.isBrowser.set(typeof window !== 'undefined');
@@ -126,10 +127,5 @@ export class Sidebar {
     if(!this.isBrowser()) return false;
     return window.location.pathname.startsWith(route);  
     // return route ? this.isBrowser ? window.location.pathname === route : false;
-  }
-
-  logout(){
-    // Implement logout logic here
-    console.log('User logged out');
   }
 }
