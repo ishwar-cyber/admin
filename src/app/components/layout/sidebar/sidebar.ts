@@ -35,31 +35,31 @@ export class Sidebar {
     {
       title: 'Brand',
       route: '/admin/brand',
-      icon: 'fas fa-tag'
+      icon: 'bi bi-amd'
     },
     {
       title: 'Coupons',
       route: '/admin/coupons',
-      icon: 'fas fa-ticket-alt'
+      icon: 'bi bi-amd'
     },
       {
       title: 'Inventory',
-      route: '/admin/inventory',
-      icon: 'fas fa-ticket-alt'
+      route: '/admin/inventroy',
+      icon: 'bi bi-receipt'
     },
     {
       title: 'Category',
-      icon: 'fas fa-sitemap',
+      icon: 'bi bi-box',
       children: [
         {
           title: 'Category',
           route: '/admin/category',
-          icon: 'fas fa-list'
+          icon: 'bi bi-amd'
         },
         {
           title: 'Sub Category',
           route: '/admin/sub-category',
-          icon: 'fas fa-stream'
+          icon: 'bi bi-amd'
         },
       ]
     },
@@ -75,44 +75,44 @@ export class Sidebar {
         {
           title: 'Add Product',
           route: '/admin/add-product',
-          icon: 'fas fa-plus-circle'
+          icon: 'bi bi-amd'
         },
         {
           title: 'Service Pincode',
           route: '/admin/service-pincode',
-          icon: 'fas fa-map-marker-alt'
+          icon: 'bi bi-amd'
         },
       ]
     },
     {
       title: 'Orders',
-      icon: 'fas fa-shopping-cart',
+      icon: 'bi bi-amd',
       children: [
         {
           title: 'All Orders',
           route: '/admin/sell',
-          icon: 'fas fa-list-alt'
+          icon: 'bi bi-amd'
         },
         {
           title: 'Create Order',
           route: '/admin/create-order',
-          icon: 'fas fa-plus-square'
+          icon: 'bi bi-amd'
         }
       ]
     },
     {
       title: 'Purchase Orders',
-      icon: 'fas fa-truck',
+      icon: 'bi bi-amd',
       children: [
         {
           title: 'All Purchase Orders',
           route: '/admin/purchase-orders',
-          icon: 'fas fa-clipboard-list'
+          icon: 'bi bi-amd'
         },
         {
           title: 'Create Purchase Order',
           route: '/admin/create-purchase-order',
-          icon: 'fas fa-file-invoice'
+          icon: 'bi bi-amd'
         }
       ]
     }

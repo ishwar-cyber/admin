@@ -1,96 +1,76 @@
-
-
-
-<div class="">
-    <button class="btn btn-primary" (click)="openBrandForm()">Create Brand</button>
-</div>
-@if(openForm()){
-    <app-modal #modal>
-        <ng-template #modalContent (closed)="onModalClosed()">
-          <form [formGroup]="brandFrom">
-                <div class="modal-body">
-                    <!-- Name Field -->
-                    <div class="mb-3">
-                    <label for="name" class="form-label">Brand Name</label>
-                    <input type="text" 
-                        class="form-control" 
-                        id="name" 
-                        formControlName="name"
-                        [class.is-invalid]="brandFrom.get('name')?.invalid && brandFrom.get('name')?.touched"
-                        placeholder="Enter category name" />
-                    <div class="invalid-feedback">
-                        @if (brandFrom.get('name')?.errors?.['required']) {
-                        Brand name is required
-                        } @else if (brandFrom.get('name')?.errors?.['minlength']) {
-                            Brand name must be at least 3 characters
-                        }
-                    </div>
-                    </div>
-        
-                    <!-- Description Field -->
-                    <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" 
-                                id="description" 
-                                formControlName="description"
-                                [class.is-invalid]="brandFrom.get('description')?.invalid && brandFrom.get('description')?.touched"
-                                rows="3"
-                                placeholder="Enter category description"></textarea>
-                    <div class="invalid-feedback">
-                        @if (brandFrom.get('description')?.errors?.['required']) {
-                        Description is required
-                        } @else if (brandFrom.get('description')?.errors?.['minlength']) {
-                        Description must be at least 10 characters
-                        }
-                    </div>
-                    </div>
-                    <div class="mb-3">
-                    <!-- <app-upload-image (fileSelected)="selectedBrandImage($event)"
-                        [maxSizeMB]="5">
-                    </app-upload-image> -->
-                    </div>
-                    <!-- Status Field -->
-                    <div class="mb-3">
-                    <label class="form-label">Status</label>
-                    <div class="btn-group w-100">
-                        <input type="radio" 
-                            class="btn-check" 
-                            name="status" 
-                            id="active" 
-                            value="active"
-                            formControlName="status">
-                        <label class="btn btn-outline-success" for="active">Active</label>
-        
-                        <input type="radio" 
-                            class="btn-check" 
-                            name="status" 
-                            id="inactive" 
-                            value="inactive"
-                            formControlName="status">
-                        <label class="btn btn-outline-danger" for="inactive">Inactive</label>
-                    </div>
-                    </div>
-                </div>
-                    
-                
-                <div class="modal-footer">
-                    <button type="button" 
-                            class="btn btn-secondary" 
-                            (click)="modal.close()">
-                    Cancel
-                    </button>
-                    <button (click)="procced()" 
-                            class="btn btn-primary" 
-                            [disabled]="brandFrom.invalid || isLoading()">
-                    @if (isLoading()) {
-                        <span class="spinner-border spinner-border-sm me-2"></span>
-                        {{ editMode() ? 'Updating...' : 'Creating...' }}
-                    } @else {
-                        {{ editMode() ? 'Update Brand' : 'Create Brand' }}
-                    }
-                    </button>
-                </div>
-                </form>
-        </ng-template>
-    </app-modal>
-}
+<!-- Main Container -->
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="mb-1">Brands</h2>
+        <p class="text-muted mb-0">Manage your product brands</p>
+      </div>
+      <button class="btn btn-primary" (click)="openModal()">
+        <i class="bi bi-plus-lg me-2"></i>Add Brand
+      </button>
+    </div>
+  
+    <!-- Categories Table -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Image</th>
+                <!-- <th>Description</th> -->
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (brands().length === 0) {
+                <tr>
+                  <td colspan="7" class="text-center py-4">
+                    No categories found
+                  </td>
+                </tr>
+              } @else {
+                @for (brand of brands(); track brand.name) {
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{brand.name}}</td>
+                    <td>
+                      <img [src]="brand.image" 
+                           alt="{{brand.name}}" 
+                           class="img-thumbnail" 
+                           style="width: 50px; height: 50px;">
+                    </td>
+                    <!-- <td>{{brand.description}}</td> -->
+                    <td>
+                      <span class="badge" 
+                            [class.bg-success]="brand.status === 'active'"
+                            [class.bg-danger]="brand.status === 'inactive'">
+                        {{brand.status}}
+                      </span>
+                    </td>
+                    <!-- <td>{{category.createdAt | date:'mediumDate'}}</td> -->
+                    <td>
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-primary" 
+                                (click)="editBrand(brand)">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" 
+                                (click)="deleteBrand(brand?._id!)">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>

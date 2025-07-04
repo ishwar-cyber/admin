@@ -1,1 +1,96 @@
-<p>inventroy works!</p>
+<div class="container-fluid mt-4">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3>Inventory Management</h3>
+      </div>
+    </div>
+    
+    <div class="card-body">
+      <!-- Search and Filter -->
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="Search inventory..." 
+                   [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="alert alert-warning" *ngIf="lowStockItems().length > 0">
+            <i class="bi bi-exclamation-triangle-fill"></i> 
+            {{ lowStockItems().length }} item(s) below reorder level
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Table -->
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th (click)="updateSort('name')">
+                Name 
+                <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'name' && sortDirection() === 'asc', 
+                                         'bi-arrow-down': sortField() === 'name' && sortDirection() === 'desc'}"></i>
+              </th>
+              <th (click)="updateSort('category')">
+                Category 
+                <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'category' && sortDirection() === 'asc', 
+                                         'bi-arrow-down': sortField() === 'category' && sortDirection() === 'desc'}"></i>
+              </th>
+              <th class="text-end" (click)="updateSort('price')">
+                Price 
+                <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'price' && sortDirection() === 'asc', 
+                                         'bi-arrow-down': sortField() === 'price' && sortDirection() === 'desc'}"></i>
+              </th>
+              <th class="text-end" (click)="updateSort('quantity')">
+                Qty 
+                <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'quantity' && sortDirection() === 'asc', 
+                                         'bi-arrow-down': sortField() === 'quantity' && sortDirection() === 'desc'}"></i>
+              </th>
+              <th class="text-end" (click)="updateSort('reorderLevel')">
+                Reorder 
+                <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'reorderLevel' && sortDirection() === 'asc', 
+                                         'bi-arrow-down': sortField() === 'reorderLevel' && sortDirection() === 'desc'}"></i>
+              </th>
+              <th>SKU</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of filteredItems(); track item.id) {
+              <tr [class.table-warning]="item.quantity <= item.reorderLevel">
+                <td>
+                  <strong>{{ item.name }}</strong>
+                  <div class="text-muted small">{{ item.description }}</div>
+                </td>
+                <td>{{ item.category }}</td>
+                <td class="text-end">{{ item.price | currency }}</td>
+                <td class="text-end">{{ item.quantity }}</td>
+                <td class="text-end">{{ item.reorderLevel }}</td>
+                <td>{{ item.sku }}</td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                  
+                    <button class="btn btn-outline-danger" (click)="deleteItem(item.id)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="text-center">No inventory items found</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="card-footer text-muted">
+      Total items: {{ filteredItems().length }} | Last updated: {{ inventoryItems()[0].lastUpdated | date:'medium' }}
+    </div>
+  </div>
+</div>
