@@ -13,19 +13,13 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './brand.scss'
 })
 export class Brand implements OnInit{
- 
-  brandFrom! : FormGroup;
-  public openForm =signal<boolean>(false);
   isLoading = signal(false);
   editMode = signal(false);
   brands = signal<Brands[]>([]);
-   private modalService = inject(NgbModal);
-  @ViewChild('modalContent', { static: true }) modalContent!: TemplateRef<any>;
-  private formBuilder = inject(FormBuilder);
+  private modalService = inject(NgbModal);
   private brandService = inject(BrandService)
 
   ngOnInit(): void {
-    this.buildForm();
     this.loadBrands();
   }
   loadBrands(){
@@ -37,7 +31,6 @@ export class Brand implements OnInit{
     })
   }
   openModal(item?: Brands): void {
-    alert('workign')
     const modalRef = this.modalService.open(BrandForm, { size: 'lg' });
     if (modalRef && modalRef.componentInstance) {
       modalRef.componentInstance.item = item ? { ...item } : null;
@@ -50,15 +43,6 @@ export class Brand implements OnInit{
       }
     }
   }
-  public buildForm() {
-    this.brandFrom = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      image:[null, Validators.required],
-      description: ['', [Validators.required, Validators.minLength(10)]],
-      status: ['active', Validators.required]
-    });
-  }
-
   public deleteBrand(brand: string) {
     // if (confirm(`Are you sure you want to delete ${brand?.name}?`)) {
      this.brandService.deleteBrandById(brand).subscribe({
@@ -67,8 +51,5 @@ export class Brand implements OnInit{
       },
      })
     // }
-  }
-  public editBrand(brand: Brands){
-
   }
 }

@@ -1,0 +1,82 @@
+<!-- image-upload.component.html -->
+<div class="image-upload-container">
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+      <h5 class="card-title mb-4">Upload Images</h5>
+      
+      <!-- Drop Zone -->
+      <div class="drop-zone rounded-3 p-5 text-center mb-3"
+           [class.drag-over]="isDragging()"
+           (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)">
+        <i class="bi bi-cloud-arrow-up fs-1 text-muted mb-3"></i>
+        <h6 class="mb-2">Drag & Drop your images here</h6>
+        <p class="text-muted small mb-3">or</p>
+        <label class="btn btn-outline-primary rounded-pill px-4">
+          Select Files
+          <input type="file" 
+                 class="d-none" 
+                 [accept]="allowedTypesText()"
+                 multiple
+                 (change)="onFileSelected($event)">
+        </label>
+        <p class="small text-muted mt-2 mb-0">
+          Supported formats: {{allowedTypesText()}}. Max size: {{maxFileSizeMB()}}MB
+        </p>
+      </div>
+      
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="alert alert-danger mb-3">
+          {{errorMessage()}}
+        </div>
+      }
+      
+      <!-- Upload Progress -->
+      @if (isUploading()) {
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span>Uploading...</span>
+            <span>{{uploadProgress()}}%</span>
+          </div>
+          <div class="progress" style="height: 6px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                 [style.width.%]="uploadProgress()">
+            </div>
+          </div>
+        </div>
+      }
+      
+      <!-- Image Previews -->
+      @if (hasFiles()) {
+        <div class="preview-grid">
+          <div class="row g-2">
+            @for (url of previewUrls(); track url; let i = $index) {
+              <div class="col-6 col-md-4 col-lg-3">
+                <div class="preview-item position-relative">
+                  <img [src]="url" class="img-fluid rounded-2 border" alt="Preview">
+                  <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle" 
+                          (click)="removeImage(i)">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+          
+          <div class="d-grid mt-3">
+            <button class="btn btn-primary" 
+                    (click)="uploadFiles()"
+                    [disabled]="isUploading()">
+              @if (isUploading()) {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+              }
+              {{uploadButtonText()}}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

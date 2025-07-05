@@ -1,0 +1,54 @@
+// image-upload.component.scss
+.image-upload-container {
+  max-width: 800px;
+  margin: 0 auto;
+  
+  .drop-zone {
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    
+    &.file-over {
+      border-color: #0d6efd;
+      background-color: rgba(13, 110, 253, 0.05);
+    }
+    
+    .drop-content {
+      i {
+        opacity: 0.7;
+        transition: all 0.3s ease;
+      }
+    }
+    
+    &:hover {
+      border-color: #0d6efd;
+      
+      .drop-content i {
+        opacity: 1;
+        transform: translateY(-3px);
+      }
+    }
+  }
+  
+  .preview-grid {
+    .preview-item {
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: scale(1.02);
+      }
+      
+      img {
+        aspect-ratio: 1/1;
+        object-fit: cover;
+      }
+    }
+  }
+  
+  .upload-progress {
+    .progress {
+      border-radius: 100px;
+    }
+  }
+}

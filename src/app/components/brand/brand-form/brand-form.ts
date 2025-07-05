@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Brands } from '../../../models/brand';
 import { BrandService } from '../../../services/brand';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { UploadImage } from '../../../shareds/upload-image/upload-image';
 
 @Component({
   selector: 'app-brand-form',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, UploadImage],
   templateUrl: './brand-form.html',
   styleUrl: './brand-form.scss'
 })
@@ -59,17 +60,40 @@ export class BrandForm implements OnInit {
 
    saveItem(): void {
     // if (this.item) {
-      
-      const operation = this.isNewItem 
-        ? this.BrandService.createBrand(this.item, this.selectedFile)
-        : this.BrandService.updateItem(this.item, this.selectedFile);
-
-      // if (operation && typeof (operation as any).subscribe === 'function') {
-        operation.subscribe(() => {
+    const payload ={
+      name: this.brandFrom.controls['name'].value,
+      description: this.brandFrom.controls['description'].value,
+      status: this.brandFrom.controls['status'].value
+    }
+    this.BrandService.createBrand(payload, this.selectedFile).subscribe(() => {
           this.activeModal.close(true);
-        });
+    });
       // }
     // }
+  }
+
+  // Configuration signals
+  maxFileSize = signal(3);
+  allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
+  
+  // State signals
+  uploadedImages = signal<string[]>([]);
+  selectedFiles = signal<File[]>([]);
+  
+  // Computed values
+  galleryEmpty = computed(() => this.uploadedImages().length === 0);
+  totalFileSize = computed(() => 
+    this.selectedFiles().reduce((sum, file) => sum + file.size, 0)
+  );
+
+  onFilesSelected(files: File[]): void {
+    this.selectedFiles.set(files);
+    console.log('Files selected:', files);
+  }
+
+  onUploadComplete(imageUrls: string[]): void {
+    this.uploadedImages.update(current => [...current, ...imageUrls]);
+    console.log('Upload complete. Total images:', this.uploadedImages().length);
   }
   
 }
