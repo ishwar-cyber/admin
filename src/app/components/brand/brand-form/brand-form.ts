@@ -78,8 +78,13 @@ export class BrandForm implements OnInit {
       description: this.brandFrom.controls['description'].value,
       status: this.brandFrom.controls['status'].value
     }
-    this.BrandService.createBrand(payload, this.selectedFiles()).subscribe(() => {
-          this.activeModal.close(true);
+    this.BrandService.createBrand(payload, this.selectedFiles()).subscribe({
+      next: (res) => {
+        this.activeModal.close(true);
+      },
+      error:(err)=>{
+        this.activeModal.close(true);
+      }
     });
       // }
     // }

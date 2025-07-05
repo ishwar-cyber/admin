@@ -45,21 +45,21 @@ export class CategoryForm implements OnInit{
     console.log('Upload complete. Total images:', this.uploadedImages().length);
   }
   public updateCategory(){}
+  
   public procced(){
-    if (this.categoryForm.invalid) {
+       if (this.categoryForm.invalid) {
         this.markFormGroupTouched(this.categoryForm);
         return;
       }
       this.isLoading.set(true);
       const payload = this.createPayload();
-       this.categoryService.createCategory(payload, this.selectedFiles()).subscribe({
-        next: (response) => {
-
-          this.activeModal.close(true);
-        },
-        error: (error) => this.handleError(error),
-        complete: () => this.isLoading.set(false)
-      }); 
+      this.categoryService.createCategory(payload, this.selectedFiles()).subscribe({
+      next: (response) => {
+        this.activeModal.close(true);
+      },
+      error: (error) => this.activeModal.close(true),
+      complete: () => this.isLoading.set(false)
+    }); 
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
@@ -76,10 +76,5 @@ export class CategoryForm implements OnInit{
         status: this.categoryForm.value.status,
       }
       return payload;
-  }
-  private handleError(error: any): void {
-    console.error('API Error:', error);
-    this.errorMessage.set(error.message || 'An error occurred');
-  }
-  
+  }  
 }

@@ -1,0 +1,81 @@
+.card {
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  
+  .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 1rem;
+  }
+  
+  .table {
+    th {
+      font-weight: 600;
+    }
+    
+    td, th {
+      vertical-align: middle;
+    }
+  }
+}
+
+.modal {
+  --bs-modal-width: 806px !important;
+  .modal-header {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .modal-footer {
+    border-top: 1px solid rgba(0,0,0,0.1);
+  }
+}
+
+.discount-box {
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #eee;
+  height: 100%;
+  
+  &:hover {
+    transform: translateY(-3px);
+  }
+
+  i {
+    font-size: 24px;
+    display: block;
+  }
+
+  h6 {
+    margin-bottom: 0;
+    font-size: 14px;
+  }
+
+  &.active {
+    border-color: #5e72e4;
+    background-color: rgba(94, 114, 228, 0.1);
+  }
+}
+
+/* Discount type specific colors */
+.discount-box:nth-child(1) {
+  background-color: #fff3e6;
+  i { color: #ff9f43; }
+}
+
+.discount-box:nth-child(2) {
+  background-color: #e3f9e5;
+  i { color: #28c76f; }
+}
+
+.discount-box:nth-child(3) {
+  background-color: #eae6ff;
+  i { color: #7367f0; }
+}
+
+.discount-box:nth-child(4) {
+  background-color: #ffeef1;
+  i { color: #ea5455; }
+}

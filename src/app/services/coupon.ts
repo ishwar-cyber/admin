@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/response';
+import { CouponseM } from '../models/couponse';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +12,20 @@ export class Coupon {
 
   private httpClient = inject(HttpClient);
   private apiUrl = `${environment.BASE_URL}/coupons`;
+  public applyToOptions = signal([
+    { id: 'all', name: 'All Products' },
+    { id: 'specific', name: 'Specific Product' },
+    { id: 'cartegory', name: 'Specific Category'}
+  ]);
 
+  public dicountTypeOptions = signal([
+    { id: 'percentage', name: 'Percentage', icon: 'currency-rupee' },
+    { id: 'rupees', name: 'Rupees', icon: 'percent' },
+    { id: 'freeShipping', name: 'Free Shipping', icon:'gift' },
+    { id: 'buyOneGetOne', name: 'Buy One Get One', icon:'truck' }
+  ]);
   // Create a new coupon
-  createCoupon(coupon: Coupon): Observable<ApiResponse> {
+  createCoupon(coupon: CouponseM): Observable<ApiResponse> {
     return this.httpClient.post<ApiResponse>(this.apiUrl, coupon)
   }
 

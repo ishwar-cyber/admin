@@ -1,0 +1,120 @@
+
+<form [formGroup]="couponForm">
+    <div class="modal-body">
+        <div class="row g-3">
+        <div class="mb-3">
+            <label for="couponCode" class="form-label">Coupon Code</label>
+            <input type="text" class="form-control" id="couponCode" formControlName="couponCode" >
+            @if (couponForm.get('couponCode')?.errors?.['required'] && couponForm.get('couponCode')?.touched) {
+                <div class="text-danger">
+                Coupon code is required
+                </div>
+            }
+        </div>
+        <div class="col-6">
+            <label for="applyTo" class="form-label">Apply To</label>
+            <select id="applyTo" class="form-select" formControlName="applyTo" >
+                <option value="">Select</option>
+                @for (item of couponseService.applyToOptions(); track $index) {
+                <option [value]="item.id">{{ item.name }}</option>
+                } @empty {
+                <option value="">No options available</option>
+                }
+            </select>
+        </div>
+        @if (couponForm.value.applyTo === 'specific') {
+            <div class="col-6">
+            <label for="product" class="form-label">Search Product</label>
+            <app-multiple-select
+                formControlName="product"
+                [options]="products()"
+                placeholder="Select product"
+            />
+            </div>
+        }
+        <div class="mb-3">
+            <label class="form-label">Select Discount Type</label>
+            <div class="row g-3">
+            @for (item of couponseService.dicountTypeOptions(); track $index) {
+                <div class="col-md-3">  
+                    <div class="discount-box" [class.active]="couponForm.get('discountType')?.value === item.name"
+                    (click)="selectDiscountType(item.id)">
+                    <i class="bi bi-{{ item.icon }} mb-2"></i>
+                    <h6> Discount in {{ item.name }}</h6>
+                    </div> 
+                </div>
+            }
+            </div>
+        </div>
+        @if(couponForm.get('discountType')?.value  === 'percentage' || couponForm.get('discountType')?.value  === 'rupees') {
+            <div class="mb-3">
+            <label for="discount" class="form-label">Discount </label>
+            <div class="input-group">
+                <span class="input-group-text">{{couponForm.get('discountType')?.value  === 'percentage' ? '%' : '₹'}}</span>
+                <input type="number" class="form-control" id="discount" formControlName="discount" >
+            </div>
+
+            @if(couponForm.get('discount')?.errors?.['min'] && couponForm.get('discount')?.touched){
+                <div class="text-danger">
+                Discount must be at least {{ couponForm.get('discount')?.errors?.['min'].min }} {{ couponForm.get('discountType')?.value === 'percentage' ? '%' : 'Rs' }}
+                </div>
+            }
+            </div>
+        } 
+        @if(couponForm.get('discountType')?.value  === 'buyOneGetOne'){
+            <div class="mb-3 col-6">
+            <label for="buyX" class="form-label">Buy X</label>
+            <input type="number" class="form-control" id="buyX" formControlName="buyX" >
+            @if(couponForm.get('buyX')?.errors?.['min'] && couponForm.get('buyX')?.touched){
+                <div class="text-danger">
+                Buy X must be at least {{ couponForm.get('buyX')?.errors?.['min'].min }}
+                </div>
+            }
+            </div>
+            <div class="mb-3 col-6">
+            <label for="gety" class="form-label">Get Y</label>
+            <input type="number" class="form-control" id="gety" formControlName="gety" >
+            @if(couponForm.get('gety')?.errors?.['min'] && couponForm.get('gety')?.touched){
+                <div class="text-danger">
+                Buy X must be at least {{ couponForm.get('gety')?.errors?.['min'].min }}
+                </div>
+            }
+            </div>
+        }
+        
+        <div class=" col-4 mb-3">
+            <label for="validFrom" class="form-label">Valid From</label>
+            <input type="date" class="form-control" id="validFrom" formControlName="validFrom" >
+            @if(couponForm.get('validFrom')?.errors?.['required'] && couponForm.get('validFrom')?.touched){
+                <div class="text-danger">
+                Start date is required
+                </div>
+            }
+
+        </div>
+        <div class="col-4 mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="noExpiry" formControlName="noExpiry">
+                <label class="form-check-label" for="noExpiry">
+                    No Expiry Date
+                </label>
+            </div>
+        </div>
+        @if (!couponForm.get('noExpiry')?.value) {
+        <div class="col-4 mb-3">
+            <label for="validTo" class="form-label">Valid To</label>
+            <input type="date" class="form-control" id="validTo" formControlName="validTo" >
+        </div>
+        }
+        
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" [disabled]="couponForm.invalid || isLoading()" (click)="createCoupon()">
+        @if (isLoading()) {
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        }
+        {{ (isLoading()) ? 'Creating...' : 'Create Coupon' }}
+        </button>
+    </div>
+</form>
