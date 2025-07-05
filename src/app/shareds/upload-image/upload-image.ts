@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, EventEmitter, input, Input, model, output, Output, signal } from '@angular/core';
-import { FileUploader, FileItem } from 'ng2-file-upload';
+import { Component, computed, effect, input, model, output, signal } from '@angular/core';
 @Component({
   selector: 'upload-image',
   imports: [CommonModule],
