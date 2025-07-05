@@ -18,13 +18,7 @@ export class Category implements OnInit{
 
   private modalService = inject(NgbModal);
   private categoryService = inject(CategoryS)
-  private categories = signal<any[]>([
-    { _id: '1', name: 'Electronics', products: 42, status: 'active', createdAt: new Date('2023-01-15') },
-    { _id: '2', name: 'Clothing', products: 38, status: 'active', createdAt: new Date('2023-02-20') },
-    { _id: '3', name: 'Home & Garden', products: 25, status: 'active', createdAt: new Date('2023-03-10') },
-    { _id: '4', name: 'Toys', products: 15, status: 'inactive', createdAt: new Date('2023-04-05') },
-    { _id: '5', name: 'Sports Equipment', products: 30, status: 'active', createdAt: new Date('2023-05-12') }
-  ]);
+  private categories = signal<any[]>([]);
 
   // Search control with debounce
   searchControl = new FormControl('');
