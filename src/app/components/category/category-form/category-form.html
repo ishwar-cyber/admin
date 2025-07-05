@@ -1,0 +1,59 @@
+
+
+<button type="button" class="btn-close align-items-end" (click)="true" aria-label="Close"></button>
+
+<form [formGroup]="categoryForm" novalidate>
+<div class="modal-body">
+    <div class="row g-3">
+    <!-- Name Field -->
+    <div class="col-md-6">
+        <label for="name" class="form-label">Category Name</label>
+        <input type="text" class="form-control" id="name" 
+                formControlName="name"
+                [class.is-invalid]="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched"
+                placeholder="e.g. Electronics">
+        @if (categoryForm.get('name')?.errors?.['required'] && categoryForm.get('name')?.touched) {
+        <div class="invalid-feedback">Category name is required</div>
+        }
+        @if (categoryForm.get('name')?.errors?.['minlength'] && categoryForm.get('name')?.touched) {
+        <div class="invalid-feedback">Minimum 3 characters required</div>
+        }
+    </div>
+
+    <!-- Status Field -->
+    <div class="col-md-6">
+        <label class="form-label">Status</label>
+        <div class="btn-group w-100" role="group">
+        <input type="radio" class="btn-check" name="status" 
+                id="statusActive" value="active" formControlName="status">
+        <label class="btn btn-outline-success" for="statusActive">Active</label>
+
+        <input type="radio" class="btn-check" name="status" 
+                id="statusInactive" value="inactive" formControlName="status">
+        <label class="btn btn-outline-danger" for="statusInactive">Inactive</label>
+        </div>
+    </div>
+
+    <!-- Image Upload -->
+    <upload-image 
+    [maxFileSizeMB]="maxFileSize()"
+    [allowedTypes]="allowedFileTypes()"
+    (filesSelected)="onFilesSelected($event)"
+    (uploadComplete)="onUploadComplete($event)"
+    >
+    </upload-image>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="submit" class="btn btn-primary" (click)=" editMode() ? updateCategory() : procced() " [disabled]="(categoryForm.invalid && imageUploaded())|| isLoading() ">
+    @if (isLoading()) {
+        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+        <span>{{ editMode() ? 'Saving...' : 'Creating...' }}</span>
+    } @else {
+        {{ editMode() ? 'Save Changes' : 'Create Category' }}
+    }
+    <span class="visually-hidden">category</span>
+    </button>
+</div>
+</form>

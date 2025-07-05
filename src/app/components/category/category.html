@@ -1,1 +1,154 @@
-<p>category works!</p>
+<!-- categories.component.html -->
+<div class="container-fluid py-4">
+  <!-- Page Header -->
+  <header class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="mb-1">Categories</h1>
+      <p class="text-muted mb-0">Manage your product categories</p>
+    </div>
+    <button class="btn btn-primary" (click)="openModal()" aria-label="Add new category">
+      <i class="bi bi-plus-lg me-2"></i>Add Category
+    </button>
+  </header>
+
+  <!-- Search and Stats Row -->
+  <div class="row mb-4 g-3">
+    <div class="col-md-6 col-lg-4">
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="Search categories..." 
+          [formControl]="searchControl"
+          aria-label="Search categories">
+        @if (searchControl.value) {
+          <button class="btn btn-outline-secondary" type="button" (click)="searchControl.setValue('')">
+            <i class="bi bi-x"></i>
+          </button>
+        }
+      </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-8">
+      <div class="d-flex flex-wrap gap-3 justify-content-md-end">
+        <div class="border rounded p-2 px-3 d-flex align-items-center">
+          <i class="bi bi-grid-3x3-gap text-primary me-2"></i>
+          <div>
+            <div class="text-muted small">Total</div>
+            <div class="fw-bold">{{ totalCategories }}</div>
+          </div>
+        </div>
+        
+        <div class="border rounded p-2 px-3 d-flex align-items-center">
+          <i class="bi bi-check-circle text-success me-2"></i>
+          <div>
+            <div class="text-muted small">Active</div>
+            <div class="fw-bold">{{ activeCategories }}</div>
+          </div>
+        </div>
+        
+        <div class="border rounded p-2 px-3 d-flex align-items-center">
+          <i class="bi bi-exclamation-circle text-secondary me-2"></i>
+          <div>
+            <div class="text-muted small">Inactive</div>
+            <div class="fw-bold">{{ totalCategories - activeCategories }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Table Card -->
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" class="ps-4" style="width: 60px">#</th>
+              <th scope="col" (click)="sortBy('name')">
+                Name
+                <i class="bi bi-arrow-down-up ms-1 small"></i>
+              </th>
+              <th scope="col" (click)="sortBy('products')">
+                Products
+                <i class="bi bi-arrow-down-up ms-1 small"></i>
+              </th>
+              <th scope="col">Status</th>
+              <th scope="col" (click)="sortBy('createdAt')">
+                Created
+                <i class="bi bi-arrow-down-up ms-1 small"></i>
+              </th>
+              <th scope="col" class="pe-4 text-end" style="width: 120px">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (filteredCategories().length === 0) {
+              <tr>
+                <td colspan="6" class="text-center py-5 text-muted">
+                  @if (searchControl.value) {
+                    <i class="bi bi-search-x fs-4 d-block mb-2"></i>
+                    No categories match "{{ searchControl.value }}"
+                    <button class="btn btn-sm btn-link mt-2" (click)="searchControl.setValue('')">
+                      Clear search
+                    </button>
+                  } @else {
+                    <i class="bi bi-folder-x fs-4 d-block mb-2"></i>
+                    No categories found
+                  }
+                </td>
+              </tr>
+            } @else {
+              @for (category of filteredCategories(); track category._id; let i = $index) {
+                <tr>
+                  <td class="ps-4">{{ i + 1 }}</td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="flex-shrink-0 me-2">
+                        <i class="bi bi-folder-fill text-warning"></i>
+                      </div>
+                      <div class="flex-grow-1">
+                        {{ category.name }}
+                        @if (category.description) {
+                          <div class="text-muted small">{{ category.description | truncate:30 }}</div>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ category.products || 0 }}</td>
+                  <td>
+                    <span class="badge rounded-pill py-1" 
+                          [class.bg-success]="category.status === 'active'"
+                          [class.bg-secondary]="category.status === 'inactive'">
+                      <i class="bi bi-check-circle-fill me-1 small"></i>
+                      {{ category.status | titlecase }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="small">{{ category.createdAt | date:'shortDate' }}</div>
+                    <div class="text-muted small">{{ category.createdAt | date:'shortTime' }}</div>
+                  </td>
+                  <td class="pe-4 text-end">
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button type="button" class="btn btn-outline-primary" 
+                              (click)="openModal(category)" 
+                              aria-label="Edit category">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button type="button" class="btn btn-outline-danger" 
+                              (click)="deleteCategory(category._id)"
+                              aria-label="Delete category">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -13,7 +13,7 @@ import { UploadImage } from '../../../shareds/upload-image/upload-image';
   styleUrl: './brand-form.scss'
 })
 export class BrandForm implements OnInit {
- @Input() item: Brands | null = null;
+  @Input() item: Brands | null = null;
   isNewItem: boolean = false;
   brandFrom!: FormGroup;
   isLoading = signal(false);
@@ -21,6 +21,19 @@ export class BrandForm implements OnInit {
   selectedCategory = signal<Brands | null>(null);
   selectedFile: File | null = null;
   imagePreview = signal<string | null>(null);
+    // Configuration signals
+  maxFileSize = signal(3);
+  allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
+  
+  // State signals
+  uploadedImages = signal<string[]>([]);
+  selectedFiles = signal<File[]>([]);
+  
+  // Computed values
+  galleryEmpty = computed(() => this.uploadedImages().length === 0);
+  totalFileSize = computed(() => 
+    this.selectedFiles().reduce((sum, file) => sum + file.size, 0)
+  );
   private formBuilder = inject(FormBuilder);
   private BrandService = inject(BrandService);
   private activeModal = inject(NgbActiveModal);
@@ -65,30 +78,18 @@ export class BrandForm implements OnInit {
       description: this.brandFrom.controls['description'].value,
       status: this.brandFrom.controls['status'].value
     }
-    this.BrandService.createBrand(payload, this.selectedFile).subscribe(() => {
+    this.BrandService.createBrand(payload, this.selectedFiles()).subscribe(() => {
           this.activeModal.close(true);
     });
       // }
     // }
   }
 
-  // Configuration signals
-  maxFileSize = signal(3);
-  allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
-  
-  // State signals
-  uploadedImages = signal<string[]>([]);
-  selectedFiles = signal<File[]>([]);
-  
-  // Computed values
-  galleryEmpty = computed(() => this.uploadedImages().length === 0);
-  totalFileSize = computed(() => 
-    this.selectedFiles().reduce((sum, file) => sum + file.size, 0)
-  );
+
 
   onFilesSelected(files: File[]): void {
-    this.selectedFiles.set(files);
     console.log('Files selected:', files);
+    this.selectedFiles.set(files);
   }
 
   onUploadComplete(imageUrls: string[]): void {

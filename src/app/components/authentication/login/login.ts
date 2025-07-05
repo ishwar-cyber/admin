@@ -36,6 +36,8 @@ loginForm: FormGroup;
 
   ngOnInit(): void {
     // Check if there's a stored email in localStorage
+    this.storageHandlerService.deleteCookie(CookiesKeys.authToken);
+    this.storageHandlerService.removeSessionStorage(StorageKeys.currentUser);
     const savedEmail = localStorage.getItem('rememberedEmail');
     if (savedEmail) {
       this.loginForm.patchValue({ email: savedEmail, rememberMe: true });
@@ -46,7 +48,7 @@ loginForm: FormGroup;
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
-      const { email, password, rememberMe } = this.loginForm.value;
+      const { email, password } = this.loginForm.value;
       const payload ={
         email: email,
         password: password
@@ -66,6 +68,8 @@ loginForm: FormGroup;
           // Handle successful login
         },
         error: (err) => {
+          console.error(err);
+          
           this.errorMessage = 'Invalid email or password';
           this.isLoading = false;
         },
