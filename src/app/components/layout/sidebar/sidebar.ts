@@ -69,7 +69,7 @@ export class Sidebar {
       children: [
         {
           title: 'All Products',
-          route: '/admin/products',
+          route: '/admin/product',
           icon: 'bi bi-box-seam'
         },
         {
@@ -79,7 +79,7 @@ export class Sidebar {
         },
         {
           title: 'Service Pincode',
-          route: '/admin/service-pincode',
+          route: '/admin/pincode',
           icon: 'bi bi-amd'
         },
       ]

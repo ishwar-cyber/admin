@@ -1,0 +1,79 @@
+
+<div class="d-flex align-items-end justify-content-end p-2">
+    <i class="bi bi-x-circle"  (click)="activeModal.close(true)"></i>
+</div>
+
+ <form [formGroup]="subCategoryForm" novalidate>
+    <div class="modal-body">
+    <div class="row g-3">
+        <!-- Brand Selection -->
+        <div class="col-md-6">
+        <label for="brandSelect" class="form-label">Category</label>
+        <select class="form-select" formControlName="category" id="brandSelect" 
+                [class.is-invalid]="subCategoryForm.get('category')?.invalid && subCategoryForm.get('category')?.touched">
+            <option value="" disabled selected>Select Category</option>
+            @for (category of categories(); track category?._id) {
+            <option [value]="category?._id">{{ category.name }}</option>
+            }
+        </select>
+        @if (subCategoryForm.get('category')?.invalid && subCategoryForm.get('category')?.touched) {
+            <div class="invalid-feedback">
+            Please select a category
+            </div>
+        }
+        </div>
+
+        <!-- Name Field -->
+        <div class="col-md-6">
+        <label for="name" class="form-label">Sub Category Name</label>
+        <input type="text" class="form-control" id="name" 
+                formControlName="name"
+                [class.is-invalid]="subCategoryForm.get('name')?.invalid && subCategoryForm.get('name')?.touched"
+                placeholder="e.g. Electronics">
+        @if (subCategoryForm.get('name')?.errors?.['required'] && subCategoryForm.get('name')?.touched) {
+            <div class="invalid-feedback">Sub Category name is required</div>
+        }
+        @if (subCategoryForm.get('name')?.errors?.['minlength'] && subCategoryForm.get('name')?.touched) {
+            <div class="invalid-feedback">Minimum 3 characters required</div>
+        }
+        </div>
+
+        <!-- Status Field -->
+        <div class="col-md-6">
+        <label class="form-label">Status</label>
+        <div class="btn-group w-100" role="group">
+            <input type="radio" class="btn-check" name="status" 
+                    id="statusActive" value="active" formControlName="status">
+            <label class="btn btn-outline-success" for="statusActive">Active</label>
+
+            <input type="radio" class="btn-check" name="status" 
+                    id="statusInactive" value="inactive" formControlName="status">
+            <label class="btn btn-outline-danger" for="statusInactive">Inactive</label>
+        </div>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="col-md-12">
+            <label class="form-label">Sub Category Image</label>
+            <upload-image
+                [maxFileSizeMB]="maxFileSize()"
+                [allowedTypes]="allowedFileTypes()"
+                (filesSelected)="onFilesSelected($event)"
+                (uploadComplete)="onUploadComplete($event)"
+            />
+        </div>
+    </div>
+    </div>
+
+    <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" (click)="procced()" [disabled]="subCategoryForm.invalid || isLoading()">
+        @if (isLoading()) {
+        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+        <span>{{ editMode() ? 'Saving...' : 'Creating...' }}</span>
+        } @else {
+        {{ editMode() ? 'Save Changes' : ' Create Sub category' }}
+        }
+        <span class="visually-hidden">category</span>
+    </button>
+    </div>
+</form>

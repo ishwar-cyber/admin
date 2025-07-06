@@ -1,2 +1,2 @@
-export interface SubCategory {
+export interface SubCategoryM {
 }

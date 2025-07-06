@@ -3,7 +3,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Coupon } from '../../../services/coupon';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { CouponseM } from '../../../models/couponse';
-import { Product } from '../../../services/product';
+import { ProductS } from '../../../services/product';
 import { MultipleSelect } from "../../../shareds/multiple-select/multiple-select";
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -18,7 +18,7 @@ export class CouponseForm implements OnInit{
   couponForm!: FormGroup;
   isLoading = signal(false);
   public couponseService = inject(Coupon);
-  public productService = inject(Product);
+  public productService = inject(ProductS);
   private formBuilder =inject(FormBuilder);
    private activeModal = inject(NgbActiveModal);
   coupons = signal<CouponseM[] | any>([]);

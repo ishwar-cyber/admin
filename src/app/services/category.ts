@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { ApiResponse } from '../models/response';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,8 @@ export class CategoryS {
      * Get all categories
      * @returns Observable of Category array
      */
-    public getCategories(): Observable<Response[]> {
-      return this.httpClient.get<Response[]>(this.baseUrl);
+    public getCategories(): Observable<ApiResponse[]> {
+      return this.httpClient.get<ApiResponse[]>(this.baseUrl);
     }
   
     /**
