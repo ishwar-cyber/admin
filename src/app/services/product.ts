@@ -32,86 +32,6 @@ export class ProductS {
     return this.httpClient.get(url);
   }
   
-  // public updateProduct(id: string, payload: any, thumbnail?: File, variantsImages?: File[]) {
-  //   const formData = this.createFormData(payload, thumbnail, variantsImages);
-  //   const url = `${environment.BASE_URL}/products/${id}`;
-  //   return this.httpClient.put(url, formData);
-  // }
-
-  // public getProducts(): Observable<Response> {
-  //   return this.httpClient.get<Response>(`${environment.BASE_URL}/products`);
-  // }
-
-  private createFormData(payload: any, thumbnail?: File, variantsImages?: File[] ): FormData {
-    const formData = new FormData();
-    formData.append('name', payload.name);
-    formData.append('model', payload.model);
-    formData.append('status', payload.status);
-    formData.append('brand', payload.brand);
-    formData.append('subCategory', payload.subCategory);
-    formData.append('description', payload.description);
-    formData.append('price', payload.price.toString());
-    formData.append('stock', payload.stock.toString());
-    formData.append('productWeight', payload.productWeight.toString() || null);
-    
-    if (payload.discount) {
-      formData.append('discount', payload.discount.toString());
-    }
-
-    if (thumbnail) {
-      formData.append('thumbnail', thumbnail);
-    }
-    if (payload.specifications && payload.specifications.length > 0) {
-    }
-     // Handle optional discount field
-     if (payload.discount) {
-      formData.append('discount', payload.discount.toString());
-    }
-
-    if(payload.category) {
-      payload.category.forEach((category: any, index: number) => {
-        formData.append(`category[${index}]`, category._id || '');
-      });
-    }
-    // Handle specifications array
-    if (payload.specifications && payload.specifications.length > 0) {
-      // Append each specification as separate form data entries
-      payload.specifications.forEach((spec: any, index: number) => {
-        formData.append(`specifications[${index}][name]`, spec.name);
-        formData.append(`specifications[${index}][value]`, spec.value);
-      });
-    }
-       // Handle specifications array
-    if (payload.offerPrice && payload.offerPrice.length > 0) {
-      // Append each specification as separate form data entries
-      payload.offerPrice.forEach((item: any, index: number) => {
-        formData.append(`offerPrice[${index}][quantity]`, item.quantity);
-        formData.append(`offerPrice[${index}][price]`, item.price);
-      });
-    }
-
-    // Handle warranty object
-    if (payload.warranty) {
-      formData.append('warranty[period]', payload.warranty.period?.toString() || '');
-      formData.append('warranty[type]', payload.warranty.type || '');
-      formData.append('warranty[details]', payload.warranty.details || '');
-    }
-
-    // Handle variants array if exists
-    if (payload.variants && payload.variants.length > 0) {
-      payload.variants.forEach((variant: any, index: number) => {
-        formData.append(`variants[${index}][variantName]`, variant.variantName || '');
-        formData.append(`variants[${index}][sku]`, variant.sku || '');
-        formData.append(`variants[${index}][price]`, variant.price?.toString() || '');
-        formData.append(`variants[${index}][stock]`, variant.stock?.toString() || '');
-        // Handle variant image if exists
-        if (variantsImages && variantsImages[index]) {
-          formData.append(`variants[${index}][variantImage]`, variantsImages[index]);
-        }
-      });
-    }
-    return formData;
-  }
 
   private http = inject(HttpClient);
   // State with Signals
@@ -180,32 +100,17 @@ export class ProductS {
     );
   }
 
-  createProduct(product: Omit<Product, 'id' | 'updatedAt'>): Observable<Product | null> {
-    this._loading.set(true);
-    return this.http.post<Product>(`${environment.BASE_URL}/products`, product).pipe(
-      tap(newProduct => {
-        this._products.update(products => [...products, newProduct]);
-        this._loading.set(false);
-      }),
-      catchError(error => {
-        this._error.set('Failed to create product');
-        this._loading.set(false);
-        return of(null);
-      })
-    );
+  public createProduct(payload: any, thumbnail?: File[], variantsImages?: File[]) {
+   const formData = this.createFormData(payload, thumbnail, variantsImages);
+    const url = `${environment.BASE_URL}/products`;
+    return this.httpClient.post(url, formData);
   }
 
-  /**
-   * Update an existing product
-   */
-  updateProduct(id: string, product: Partial<Product>): Observable<Product | null> {
-    return this.http.patch<Product>(`${environment.BASE_URL}/products/${id}`, product).pipe(
-    );
+  public updateProduct(id: string, payload: any, thumbnail?: File, variantsImages?: File[]) {
+    const formData = this.createFormData(payload, thumbnail ? [thumbnail] : undefined, variantsImages);
+    const url = `${environment.BASE_URL}/products/${id}`;
+    return this.httpClient.put(url, formData);
   }
-
-  /**
-   * Delete a product
-   */
   deleteProduct(id: string): Observable<boolean> {
     return this.http.delete<{ success: boolean }>(`${environment.BASE_URL}/products/${id}`).pipe(
       map(response => response.success),
@@ -213,12 +118,6 @@ export class ProductS {
     );
   }
 
-  /**
- 
-
-  /**
-   * Reset all product state
-   */
   resetState() {
     this._products.set([]);
     this._brands.set([]);
@@ -226,4 +125,84 @@ export class ProductS {
     this._error.set(null);
     this._totalItems.set(0);
   }
+
+  private createFormData(payload: any, thumbnail?: File[], variantsImages?: File[] ): FormData {
+    const formData = new FormData();
+    formData.append('name', payload.name);
+    formData.append('model', payload.model);
+    formData.append('status', payload.status);
+    formData.append('brand', payload.brand);
+    formData.append('subCategory', payload.subCategory);
+    formData.append('description', payload.description);
+    formData.append('price', payload.price);
+    formData.append('stock', payload.stock);
+    formData.append('width', payload.stock);
+    formData.append('height', payload.height);
+    formData.append('length', payload.stock);
+    formData.append('weight', payload.weight || null);
+    
+    if (payload.discount) {
+      formData.append('discount', payload.discount.toString());
+    }
+
+    if (thumbnail && Array.isArray(thumbnail)) {
+      thumbnail.forEach((file, index) => {
+        formData.append('thumbnail', file);
+      });
+    }
+     // Handle optional discount field
+     if (payload.discount) {
+      formData.append('discount', payload.discount.toString());
+    }
+
+    if(payload.category) {
+      payload.category.forEach((category: any, index: number) => {
+        formData.append(`category[${index}]`, category || '');
+      });
+    }
+    if(payload.pincode){
+       payload.pincode.forEach((pincode: any, index: number) => {
+        formData.append(`pincode[${index}]`, pincode || '');
+      });
+    }
+    // Handle specifications array
+    if (payload.specifications && payload.specifications.length > 0) {
+      // Append each specification as separate form data entries
+      payload.specifications.forEach((spec: any, index: number) => {
+        formData.append(`specifications[${index}][name]`, spec.name);
+        formData.append(`specifications[${index}][value]`, spec.value);
+      });
+    }
+       // Handle specifications array
+    if (payload.offerPrice && payload.offerPrice.length > 0) {
+      // Append each specification as separate form data entries
+      payload.offerPrice.forEach((item: any, index: number) => {
+        formData.append(`offerPrice[${index}][quantity]`, item.quantity);
+        formData.append(`offerPrice[${index}][price]`, item.price);
+      });
+    }
+
+    // Handle warranty object
+    if (payload.warranty) {
+      formData.append('warranty[period]', payload.warranty.period?.toString() || '');
+      formData.append('warranty[type]', payload.warranty.type || '');
+      formData.append('warranty[details]', payload.warranty.details || '');
+    }
+
+    // Handle variants array if exists
+    if (payload.variants && payload.variants.length > 0) {
+      payload.variants.forEach((variant: any, index: number) => {
+        formData.append(`variants[${index}][variantName]`, variant.variantName || '');
+        formData.append(`variants[${index}][sku]`, variant.sku || '');
+        formData.append(`variants[${index}][price]`, variant.price?.toString() || '');
+        formData.append(`variants[${index}][stock]`, variant.stock?.toString() || '');
+        // Handle variant image if exists
+        if (variantsImages && variantsImages[index]) {
+          formData.append(`variants[${index}][variantImage]`, variantsImages[index]);
+        }
+      });
+    }
+    return formData;
+  }
+
 }

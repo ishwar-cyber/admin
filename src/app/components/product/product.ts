@@ -58,20 +58,7 @@ export class Product {
     // Initial data load
     this.loadProducts();
 
-  
     this.loadProduct();
-    // Load brands and categories
-    this.brandService.getBrands().subscribe({
-      next: (res: any) =>{
-       this.brands.set(res.data)
-      }
-    });
-    this.categoryService.getCategories().subscribe({
-      next: (res: any) =>{
-       this.categories.set(res.data)
-      } 
-    });
-
     // Setup search debounce
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
@@ -106,17 +93,17 @@ export class Product {
     }
   }
   openAddProductModal(item?: any){
-    const modalRef = this.modalService.open(ProductForm, { size: 'lg' });
-        if (modalRef && modalRef.componentInstance) {
-          modalRef.componentInstance.item = item ? { ...item } : null;
-          if (modalRef.result) {
-            modalRef.result.then((result: any) => {
-              if (result) {
-                this.loadProduct();
-              }
-            }).catch(() => {});
+    const modalRef = this.modalService.open(ProductForm, { size: 'lg', backdrop: false });
+    if (modalRef && modalRef.componentInstance) {
+      modalRef.componentInstance.item = item ? { ...item } : null;
+      if (modalRef.result) {
+        modalRef.result.then((result: any) => {
+          if (result) {
+            this.loadProduct();
           }
-        }
+        }).catch(() => {});
+      }
+    }
   }
   resetFilters(){}
    // Product actions

@@ -35,7 +35,6 @@ loginForm: FormGroup;
   }
 
   ngOnInit(): void {
-    // Check if there's a stored email in localStorage
     this.storageHandlerService.deleteCookie(CookiesKeys.authToken);
     this.storageHandlerService.removeSessionStorage(StorageKeys.currentUser);
     const savedEmail = localStorage.getItem('rememberedEmail');

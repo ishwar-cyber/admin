@@ -1,4 +1,411 @@
 
-<div class="d-flex align-items-end justify-content-end p-2">
-    <i class="bi bi-x-circle"  (click)="activeModal.close(true)"></i>
+<div class="d-flex align-items-center justify-content-between p-2">
+    <span class="fs-4 fw-bold">Add Product</span>
+    <i class="bi bi-x-circle close"  (click)="activeModal.close(true)"></i>
+</div>
+<!-- product-form.component.html -->
+<div class="container my-4">
+      <form [formGroup]="productForm">
+        <!-- Basic Product Info -->
+        <div class="mb-4 p-3 border rounded">
+          <h4 class="mb-3">Basic Information</h4>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="name" class="form-label">Product Name</label>
+              <input type="text" class="form-control" id="name" formControlName="name"/>
+              <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
+                <div *ngIf="f['name'].errors['required']">Product name is required</div>
+                <div *ngIf="f['name'].errors['minlength']">Product name must be at least 3 characters long</div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="brand" class="form-label">Brand</label>
+              <select class="form-select" id="brand" formControlName="brand">
+                <option value="">Select a brand</option>
+                @for(brand of brands(); track brand.name){
+                   <option [value]="brand.id">{{ brand.name }}</option>
+                }
+              </select>
+              @if(submitted && f['brand'].errors) {
+                <div class="invalid-feedback">
+                  @if(f['brand'].errors['required']) {
+                    Brand is required
+                  }
+                </div>
+              }
+             
+            </div>
+            
+            <div class="col-md-6">
+              <label for="category" class="form-label">Category</label>
+              <app-multiple-select 
+                formControlName="category"
+                [options]="categories()" [prepopulate]="prepopulate()" (selectionChange)="selectedCategoryId($event)"
+                placeholder="Select Category"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="pincode" class="form-label">Pincode</label>
+              <app-multiple-select
+                formControlName="pincode"
+                [options]="pincodes()" [prepopulate]="prepopulate()" (selectionChange)="selectedCategoryId($event)"
+                placeholder="Select Category"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="subCategory" class="form-label">Sub Category</label>
+              <select class="form-select" id="subCategory" formControlName="subCategory">
+                <option value="">Select a category</option>
+                @for(sub of subCategories(); track sub.name){
+                  <option [value]="sub.id">{{ sub.name }}</option>
+                }
+              </select>
+              @if(submitted && f['subCategory'].errors) {
+                <div class="invalid-feedback">
+                  @if(f['subCategory'].errors['required']) {
+                    Sub Category is required
+                  }
+                </div>
+              }
+            </div>
+            <div class="col-md-6">
+              <label for="model" class="form-label">SKU</label>
+              <input type="text" class="form-control" id="model" formControlName="model">
+              <div *ngIf="submitted && f['model'].errors" class="invalid-feedback">
+                <div *ngIf="f['model'].errors['required']">Model is required</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label d-block">Status</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="status" formControlName="status">
+                <label class="form-check-label" for="status">
+                  {{ productForm.get('status')?.value ? 'Active' : 'Inactive' }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Main Product Image -->
+        <div class="mb-4 p-3 border rounded">
+            <upload-image 
+                
+                [maxFileSizeMB]="maxFileSize()"
+                [allowedTypes]="allowedFileTypes()"
+                (filesSelected)="onFilesSelected($event)"
+                (uploadComplete)="onUploadComplete($event)"
+            />
+        </div>
+        
+       
+
+        <!-- Pricing & Stock -->
+        <div class="mb-4 p-3 border rounded">
+          <h4 class="mb-3">Pricing & Inventory</h4>
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="price" class="form-label">Price</label>
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input type="number" class="form-control"  min="0" id="price" formControlName="price"
+>
+              </div>
+              <div *ngIf="submitted && f['price'].errors" class="invalid-feedback">
+                @if(submitted && f['price'].errors){
+                  @if(f['price'].errors['required']){
+                    <div >Stock is required</div>
+
+                  } @else if (f['price'].errors['min']) {
+                    <div >Stock must be positive</div>
+
+                  } @else if (f['price'].errors['numberOnly']) {
+                    <div>only number allowed</div>
+                  }
+                }
+               
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="d-flex align-items-center">
+                <label class="form-label d-block">Inventory Tracker</label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="stockStatus"  formControlName="stockStatus">
+                  <label class="form-check-label" for="stockStatus">
+                    {{ productForm.get('stockStatus')?.value ? 'Active' : 'Inactive' }}
+                  </label>
+                </div>
+              </div>
+              @if(!productForm.get('stockStatus')?.value) {
+                <div class="">
+                  <input type="number" class="form-control"  min="1" id="stock" formControlName="stock"
+>
+                </div>  
+              } @else {
+                <div>
+                  <select class="form-select" id="stock" formControlName="stock"
+    >
+                      <option value="">Select a brand</option>
+                      @for(stock of productStock(); track stock){
+                        <option [value]="stock.value">{{ stock.label }}</option>
+                      }
+                  </select>
+              </div>
+              }
+              
+            </div>
+            <!-- <div class="col-md-6">
+              
+              <label for="stock" class="form-label">Stock</label>
+              
+              <div *ngIf="submitted && f['stock'].errors" class="invalid-feedback">
+                <div *ngIf="f['stock'].errors['required']">Stock is required</div>
+                <div *ngIf="f['stock'].errors['min']">Stock must be positive</div>
+              </div>
+            </div> -->
+            <div class="col-md-6">
+              <label for="weight" class="form-label">Product Weight <span class="">(Centimiters)</span></label>
+              <div class="input-group">
+                <!-- <span class="input-group-text">Kg</span> -->
+                <input type="number" class="form-control"  min="0" id="weight" formControlName="weight"/>
+              </div>
+              <!-- <span class="">100 - 1kg calculate same price</span> -->
+              <div *ngIf="submitted && f['weight'].errors" class="invalid-feedback">
+                <div *ngIf="f['weight'].errors['required']">Product Weight is required</div>
+                <div *ngIf="f['weight'].errors['min']">Product Weight must be positive</div>
+              </div>
+            </div>
+             <div class="col-md-6">
+              <label for="length" class="form-label">Product Lenght <span class="">(Centimiters)</span></label>
+              <div class="input-group">
+                <!-- <span class="input-group-text">Kg</span> -->
+                <input type="number" class="form-control"  min="0" id="length" formControlName="length"/>
+              </div>
+              <!-- <span class="">100 - 1kg calculate same price</span> -->
+              <div *ngIf="submitted && f['length'].errors" class="invalid-feedback">
+                <div *ngIf="f['length'].errors['required']">Product Weight is required</div>
+                <div *ngIf="f['length'].errors['min']">Product Weight must be positive</div>
+              </div>
+            </div>
+             <div class="col-md-6">
+              <label for="height" class="form-label">Product Height <span class="">(Centimiters)</span></label>
+              <div class="input-group">
+                <!-- <span class="input-group-text">Kg</span> -->
+                <input type="number" class="form-control"  min="0" id="height" formControlName="height"/>
+              </div>
+              <!-- <span class="">100 - 1kg calculate same price</span> -->
+              <div *ngIf="submitted && f['height'].errors" class="invalid-feedback">
+                <div *ngIf="f['height'].errors['required']">Product Weight is required</div>
+                <div *ngIf="f['height'].errors['min']">Product Weight must be positive</div>
+              </div>
+            </div>
+             <div class="col-md-6">
+              <label for="width" class="form-label">Product width <span class="">(Centimiters)</span></label>
+              <div class="input-group">
+                <!-- <span class="input-group-text">Kg</span> -->
+                <input type="number" class="form-control"  min="0" id="width" formControlName="width"/>
+              </div>
+              <!-- <span class="">100 - 1kg calculate same price</span> -->
+              <div *ngIf="submitted && f['width'].errors" class="invalid-feedback">
+                <div *ngIf="f['width'].errors['required']">Product Weight is required</div>
+                <div *ngIf="f['width'].errors['min']">Product Weight must be positive</div>
+              </div>
+            </div>
+          </div>
+             <!-- Specification -->
+          <div class="my-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="mb-0">Offer Price </h4>  
+              <button type="button" class="btn btn-primary" (click)="addOfferPrice()">
+                <i class="bi bi-plus"></i> Add Price
+              </button>
+            </div>
+            
+            <div formArrayName="offerPrice">
+              @for(item of offerPrice.controls; track item; let i = $index) {
+                <div [formGroupName]="i" class="mb-4 border rounded position-relative">
+                  <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2" (click)="removeSpecification(i)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                  
+                  <div class="row g-3 p-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Quntity</label>
+                      <input type="number" class="form-control" formControlName="quantity"/>
+                      @if (submitted && item.get('quantity')?.errors) {
+                         <div class="invalid-feedback">
+                            Name is required
+                         </div>
+                      }
+                     
+                    </div>
+                    
+                    <div class="col-md-6">
+                      <label class="form-label">Price</label>
+                        <input type="number" class="form-control" formControlName="price" />
+                      @if (submitted && item.get('price')?.errors) {
+                        <div class="invalid-feedback">
+                            @if (item.get('price')?.errors?.['required']) {
+                              <div class="text-danger">Price is required</div>
+                            } 
+                            @if (item.get('price')?.errors?.['min']) {
+                              <div class="text-danger">price must be positive</div>
+                            }
+                            @if(item.get('price')?.errors?.['numberOnly']){
+                              <div class="text-danger mt-1">
+                                Only numeric values are allowed
+                              </div>
+                            }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <!-- Variants -->
+        <div class="mb-4 p-3 border rounded">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Product Variants</h4>
+            <button type="button" class="btn btn-primary" (click)="addVariant()">
+              <i class="bi bi-plus"></i> Add Variant
+            </button>
+          </div>
+          
+          <div formArrayName="variants">
+            <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i" class="mb-4 p-3 border rounded position-relative">
+              <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2" (click)="removeVariant(i)">
+                <i class="bi bi-trash"></i>
+              </button>
+              
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Variant Name</label>
+                  <input type="text" class="form-control" formControlName="variantName"/>
+                  <div *ngIf="submitted && variant.get('variantName')?.errors" class="invalid-feedback">
+                    Variant namre is required
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">SKU</label>
+                  <input type="text" class="form-control" formControlName="sku" />
+                  <div *ngIf="submitted && variant.get('sku')?.errors" class="invalid-feedback">
+                    SKU is required
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label">Price</label>
+                  <div class="input-group">
+                    <span class="input-group-text">₹</span>
+                    <input type="number" class="form-control" formControlName="price"
+/>
+                  </div>
+                  <div *ngIf="submitted && variant.get('price')?.errors" class="invalid-feedback">
+                    <div *ngIf="variant.get('price')?.errors?.['required']">Price is required</div>
+                    <div *ngIf="variant.get('price')?.errors?.['min']">Price must be positive</div>
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label">Stock</label>
+                  <input type="number" class="form-control" formControlName="stock"/>
+                  <div *ngIf="submitted && variant.get('stock')?.errors" class="invalid-feedback">
+                    <div *ngIf="variant.get('stock')?.errors?.['required']">Stock is required</div>
+                    <div *ngIf="variant.get('stock')?.errors?.['min']">Stock must be positive</div>
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label">Variant Image</label>
+                  <input type="file" class="form-control" (change)="onVariantImageChange($event, i)" accept="image/*">
+
+                  <div *ngIf="variant.get('imagePreview')?.value" class="mt-2">
+                    <img [src]="variant.get('imagePreview')?.value" class="img-thumbnail" style="max-height: 100px;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description & Key Features -->
+        <div class="mb-4 p-3 border rounded">
+          <h4 class="mb-3">Description</h4>
+          <textarea class="form-control" rows="4" formControlName="description"></textarea>
+
+           <!-- Specification -->
+          <div class="my-4 p-3 border rounded">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="mb-0">Specifications</h4>
+              <button type="button" class="btn btn-primary" (click)="addSpecification()">
+                <i class="bi bi-plus"></i> Add Specification
+              </button>
+            </div>
+            
+            <div formArrayName="specifications">
+              <div *ngFor="let spec of specifications.controls; let i = index" [formGroupName]="i" class="mb-4 p-3 border rounded position-relative">
+                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2" (click)="removeSpecification(i)">
+                  <i class="bi bi-trash"></i>
+                </button>
+                
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" formControlName="name"/>
+                    <div *ngIf="submitted && spec.get('name')?.errors" class="invalid-feedback">
+                      Name is required
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <label class="form-label">Value</label>
+                      <input type="text" class="form-control" formControlName="value"/>
+          
+                    <div *ngIf="submitted && spec.get('value')?.errors" class="invalid-feedback">
+                      <div *ngIf="spec.get('value')?.errors?.['required']">value is required</div>
+                      <div *ngIf="spec.get('value')?.errors?.['min']">value must be positive</div>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warranty -->
+        <div class="mb-4 p-3 border rounded">
+          <h4 class="mb-3">Warranty Information</h4>
+          <div formGroupName="warranty">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Warranty Period (months)</label>
+                <input type="number" class="form-control" formControlName="period">
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">Warranty Type</label>
+                <input type="text" class="form-control" formControlName="type">
+              </div>
+              
+              <div class="col-12">
+                <label class="form-label">Warranty Details</label>
+                <textarea class="form-control" rows="2" formControlName="details"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Submit Button -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button class="btn btn-primary btn-lg" (click)="onSubmit()">Save Product</button>
+        </div>
+      </form>
+ 
 </div>
