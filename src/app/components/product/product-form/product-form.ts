@@ -206,33 +206,30 @@ export class ProductForm implements OnInit {
 
   public buildForm(){
     this.productForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.maxLength(100)]],
-      brand: ['', [Validators.required, Validators.maxLength(50)]],
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      brand: ['', Validators.required],
       category: ['', Validators.required],
-      pincode:[],
+      pincode: [],
       subCategory: ['', Validators.required],
-      model: ['', [Validators.required, Validators.maxLength(50)]],
-      price: [0, [Validators.required, Validators.min(0),this.numberOnlyValidator()]],
-      stock: ['', [Validators.required, this.numberOnlyValidator()]],
+      model: ['', Validators.required],
+      status: [true],
+      price: ['', [Validators.required, Validators.min(0)]],
       stockStatus: [false],
-      status:[true, Validators.required],
-      weight: [this.numberOnlyValidator()],
-      length: [this.numberOnlyValidator()],
-      height: [this.numberOnlyValidator()],
-      width: [this.numberOnlyValidator()],
-      thumbnail: [null],
-      // productImages: [''],
-      variants: this.formBuilder.array([]),
-      description: ['', Validators.maxLength(1000)],
-      specifications: this.formBuilder.array([]),
+      stock: ['', [Validators.required, Validators.min(0)]],
+      weight: ['', [Validators.required, Validators.min(0)]],
+      length: ['', [Validators.required, Validators.min(0)]],
+      height: ['', [Validators.required, Validators.min(0)]],
+      width: ['', [Validators.required, Validators.min(0)]],
+      description: ['', Validators.required],
       offerPrice: this.formBuilder.array([]),
-      productImages: this.formBuilder.array([]),
+      variants: this.formBuilder.array([]),
+      specifications: this.formBuilder.array([]),
       warranty: this.formBuilder.group({
-        period: [0, Validators.min(0)],
-        type: [''],
-        details: ['']
+        period: ['', Validators.required],
+        type: ['', Validators.required],
+        details: ['', Validators.required]
       })
-    });
+    });    
   }
   
   get f() { return this.productForm.controls; }
@@ -262,7 +259,6 @@ export class ProductForm implements OnInit {
     if(status){
 
     }
-  
   }
   addVariant(): void {
     this.variants.push(this.formBuilder.group({
@@ -307,16 +303,19 @@ export class ProductForm implements OnInit {
   }));
 }
 
-  removeSpecification(index: number): void {
-    if (this.specifications.length > 1) {
-      this.specifications.removeAt(index);
-    }
+removeOfferPrice(index: number){
+  if(this.offerPrice.length > 1) this.offerPrice.removeAt(index)
+}
+removeSpecification(index: number): void {
+  if (this.specifications.length > 1) {
+    this.specifications.removeAt(index);
   }
+}
 
   onSubmit(): void {
     this.submitted = true;
     if (this.productForm.valid) {
-      const mainImageFile = this.productForm.get('thumbnail')?.value;
+      const mainImageFile = this.selectedFiles();
       const variantsImages = this.variants.controls.map((control) => control.get('image')?.value).filter((image: any) => image !== null);
       const payload = this.createPayload();
       let callApi: any;
@@ -491,11 +490,8 @@ export class ProductForm implements OnInit {
   numberOnlyValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value;
-
       if (value === null || value === '') return null;
-
       const isValid = /^\d+$/.test(value);
-
       return isValid ? null : { numberOnly: true };
     };
   }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, of, shareReplay, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
@@ -16,17 +16,6 @@ export class ProductS {
 
    private httpClient = inject(HttpClient);
   constructor() { }
-
-  // public createProduct(payload: any, thumbnail?: File, variantsImages?: File[]) {
-  //  const formData = this.createFormData(payload, thumbnail, variantsImages);
-  //   const url = `${environment.BASE_URL}/products`;
-  //   return this.httpClient.post(url, formData);
-  // }
-
-  // public getProductById(id: string) {
-  //   const url = `${environment.BASE_URL}/products/${id}`;
-  //   return this.httpClient.get(url);
-  // }
   public getProductList(page: number, pageSize: number) {
     const url = `${environment.BASE_URL}/products?page=${page}&pageSize=${pageSize}`;
     return this.httpClient.get(url);
@@ -57,32 +46,59 @@ export class ProductS {
   /**
    * Fetch products with optional query parameters
    */
-  getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
+getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     this._loading.set(true);
     this._error.set(null);
 
-    const queryParams = {
-      page: params?.page || 1,
-      limit: params?.limit || 10,
-      ...(params?.search && { search: params.search }),
-      ...(params?.category && { category: params.category }),
-      ...(params?.brand && { brand: params.brand }),
-      ...(params?.status && { status: params.status })
+    // Set default values if not provided
+    const queryParams: ProductQueryParams = {
+      page: params?.page ,
+      limit: params?.limit,
+      sortBy: params?.sortBy ,
+      sortOrder: params?.sortOrder,
+      ...params
     };
 
-    return this.http.get<ProductApiResponse>(`${environment.BASE_URL}/products`).pipe(
-      tap((response:any) => {
-        this._products.set(response?.products);
-        this._totalItems.set(response.total);
-        this._loading.set(false);
-      }),
-      catchError(error => {
-        this._error.set('Failed to load products');
-        this._loading.set(false);
-        return of({ products: [], total: 0 });
-      }),
-      shareReplay(1) // Cache the response
-    );
+    // Build HTTP params dynamically
+    let httpParams = new HttpParams()
+      .set('page',queryParams.page || '')
+      .set('limit', queryParams.limit || 10)
+      .set('sortBy', queryParams.sortBy || 'createdAt')
+      .set('sortOrder', queryParams.sortOrder  || 'desc');
+
+    // Add optional parameters if they exist
+    if (queryParams.search) {
+      httpParams = httpParams.set('search', queryParams.search);
+    }
+    if (queryParams.category) {
+      httpParams = httpParams.set('category', queryParams.category);
+    }
+    if (queryParams.brand) {
+      httpParams = httpParams.set('brand', queryParams.brand);
+    }
+    if (queryParams.status) {
+      httpParams = httpParams.set('status', queryParams.status);
+    }
+    // if (queryParams.minPrice) {
+    //   httpParams = httpParams.set('minPrice', queryParams.minPrice.toString());
+    // }
+    // if (queryParams.maxPrice) {
+    //   httpParams = httpParams.set('maxPrice', queryParams.maxPrice.toString());
+    // }
+
+    return this.http.get<ProductApiResponse>(`${environment.BASE_URL}/products`, { params: httpParams });
+  }
+
+  /**
+   * Reset all filters and reload products with default parameters
+   */
+  resetFilters(): void {
+    this.getProducts({
+      page: 1,
+      limit: 10,
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+    }).subscribe();
   }
 
   /**
@@ -136,9 +152,9 @@ export class ProductS {
     formData.append('description', payload.description);
     formData.append('price', payload.price);
     formData.append('stock', payload.stock);
-    formData.append('width', payload.stock);
+    formData.append('width', payload.width);
     formData.append('height', payload.height);
-    formData.append('length', payload.stock);
+    formData.append('length', payload.length);
     formData.append('weight', payload.weight || null);
     
     if (payload.discount) {

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, Pipe, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { catchError, debounceTime, distinctUntilChanged, forkJoin, merge, of, switchMap, tap } from 'rxjs';
 import { ProductS } from '../../services/product';
 import { BrandService } from '../../services/brand';
 import { CategoryS } from '../../services/category';
@@ -15,13 +14,13 @@ import { ProductForm } from './product-form/product-form';
   templateUrl: './product.html',
   styleUrl: './product.scss'
 })
-export class Product {
+export class Product implements OnInit {
   public productService = inject(ProductS);
   public brandService = inject(BrandService);
   public categoryService = inject(CategoryS);
   private modalService = inject(NgbModal);
   // Filter controls
-  searchControl = new FormControl('');
+   searchControl = new FormControl('');
   // Filter controls
   selectedCategory = signal<string>('');
   selectedBrand = signal<string>('');
@@ -35,53 +34,48 @@ export class Product {
   brands = signal<any[]>([]);
   productList = signal<any[]>([]);
   // Computed values
-  totalPages = computed(() => Math.ceil(this.productService.totalItems() / this.itemsPerPage()));
-  
-  pages = computed(() => {
-    const pages = [];
-    const total = this.totalPages();
-    const current = this.currentPage();
-    const range = 2;
+  totalPages = signal<number>(0);
+  pages = signal<any[]>([]);  
+  queryParams: any;
+  // pages = computed(() => {
+  //   const pages = [];
+  //   const total = this.totalPages();
+  //   const current = this.currentPage();
+  //   const range = 2;
     
-    for (let i = 1; i <= total; i++) {
-      if (i === 1 || i === total || (i >= current - range && i <= current + range)) {
-        pages.push(i);
-      } else if (i === current - range - 1 || i === current + range + 1) {
-        pages.push(-1);
-      }
-    }
+  //   for (let i = 1; i <= total; i++) {
+  //     if (i === 1 || i === total || (i >= current - range && i <= current + range)) {
+  //       pages.push(i);
+  //     } else if (i === current - range - 1 || i === current + range + 1) {
+  //       pages.push(-1);
+  //     }
+  //   }
     
-    return pages;
-  });
+  //   return pages;
+  // });
 
   constructor() {
-    // Initial data load
-    this.loadProducts();
-
     this.loadProduct();
-    // Setup search debounce
-    this.searchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(() => this.loadProducts())
-    ).subscribe();
+  }
+  ngOnInit(): void {
+   
   }
 
-  public filterProducts(){}
-  private loadProducts() {
-    return this.productService.getProducts({
-      page: this.currentPage(),
-      limit: this.itemsPerPage(),
-      search: this.searchControl.value || '',
-      // Add other filters as needed
-    });
-  }
+
 
   loadProduct(){
-      this.productService.getProducts().subscribe({
+    const queryParams = {
+        page: this.currentPage(),
+        limit: this.itemsPerPage(),
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      };
+    this.productService.getProducts(queryParams).subscribe({
       next : (res: any) =>{
        this.productList.set(res.data);
-        
+       this.currentPage.set(res.page);
+       this.totalItems.set(res.totalProducts);
+       this.totalPages.set(res.totalPages)
       }
     })
   }
@@ -89,7 +83,7 @@ export class Product {
   onPageChange(page: number) {
     if (page > 0 && page <= this.totalPages()) {
       this.currentPage.set(page);
-      this.loadProducts().subscribe();
+      this.loadProduct();
     }
   }
   openAddProductModal(item?: any){

@@ -29,6 +29,8 @@ export interface ProductQueryParams {
   category?: string;
   brand?: string;
   status?: string;
+  sortBy?: string;
+  sortOrder?: string
 }
 
 
