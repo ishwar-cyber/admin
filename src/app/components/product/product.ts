@@ -37,39 +37,28 @@ export class Product implements OnInit {
   totalPages = signal<number>(0);
   pages = signal<any[]>([]);  
   queryParams: any;
-  // pages = computed(() => {
-  //   const pages = [];
-  //   const total = this.totalPages();
-  //   const current = this.currentPage();
-  //   const range = 2;
-    
-  //   for (let i = 1; i <= total; i++) {
-  //     if (i === 1 || i === total || (i >= current - range && i <= current + range)) {
-  //       pages.push(i);
-  //     } else if (i === current - range - 1 || i === current + range + 1) {
-  //       pages.push(-1);
-  //     }
-  //   }
-    
-  //   return pages;
-  // });
 
   constructor() {
     this.loadProduct();
+
+    this.categoryService.getCategories().subscribe({
+      next: (category: any)=>{
+        this.categories.set(category.data);
+      }
+    })
   }
   ngOnInit(): void {
    
+    this,this.selectedCategory
   }
-
-
 
   loadProduct(){
     const queryParams = {
-        page: this.currentPage(),
-        limit: this.itemsPerPage(),
-        sortBy: 'createdAt',
-        sortOrder: 'desc'
-      };
+      page: this.currentPage(),
+      limit: this.itemsPerPage(),
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+    };
     this.productService.getProducts(queryParams).subscribe({
       next : (res: any) =>{
        this.productList.set(res.data);
@@ -85,6 +74,10 @@ export class Product implements OnInit {
       this.currentPage.set(page);
       this.loadProduct();
     }
+  }
+
+  selectCategory(id: string){
+    
   }
   openAddProductModal(item?: any){
     const modalRef = this.modalService.open(ProductForm, { size: 'lg', backdrop: false });
@@ -128,7 +121,10 @@ export class Product implements OnInit {
 
 
   getCategoryName(categoryId: string): string {
+
     const category = this.categories().find((c: any) => c.id === categoryId);
+    console.log('remove all duplicate',[...new Set(category)]);
+    
     return category?.name || '';
   }
 }

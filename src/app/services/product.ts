@@ -163,7 +163,7 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
 
     if (thumbnail && Array.isArray(thumbnail)) {
       thumbnail.forEach((file, index) => {
-        formData.append('thumbnail', file);
+        formData.append('productImages', file);
       });
     }
      // Handle optional discount field
@@ -221,4 +221,14 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     return formData;
   }
 
+  uploadImage(files: File[]) {
+    const formData = new FormData();
+      if (files && Array.isArray(files)) {
+      files.forEach((file, index) => {
+        formData.append('productImages', file);
+      });
+    }
+    const url = `${environment.BASE_URL}/images`;
+    return this.httpClient.post(url, formData);
+  }
 }

@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrandService } from '../../../services/brand';
-import { Observable, forkJoin, map, switchMap, take } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { MultipleSelect } from '../../../shareds/multiple-select/multiple-select';
 import { UploadImage } from '../../../shareds/upload-image/upload-image';
 import { CategoryS } from '../../../services/category';
@@ -13,19 +13,13 @@ import { SubCategoryS } from '../../../services/sub-category';
 import { PincodeS } from '../../../services/pincode-s';
 import { CategoryM } from '../../../models/category';
 import { Brands } from '../../../models/brand';
-import { ProductM, ProductModal, ProductOfferPrice, ProductVariant, Specification } from '../../../models/product';
+import { ProductModal } from '../../../models/product';
 
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MultipleSelect,
-    UploadImage,
-    RouterModule,
-    NgbModule
-  ],
+  imports: [ CommonModule, ReactiveFormsModule,
+    MultipleSelect, UploadImage, RouterModule,  NgbModule ],
   templateUrl: './product-form.html',
   styleUrl: './product-form.scss'
 })
@@ -91,8 +85,6 @@ export class ProductForm implements OnInit {
             status: pincode.status || false
           }));
         });
-
-        // this.loadProductData(); // Uncomment if needed after loading
       },
       error: (error) => {
         console.error('Error loading initial data:', error);
@@ -113,8 +105,10 @@ export class ProductForm implements OnInit {
     this.selectedFiles.set(files);
   }
 
-  onUploadComplete(imageUrls: string[]): void {
-    this.uploadedImages.update(current => [...current, ...imageUrls]);
+  onUploadComplete(files: File[]): void {
+    // this.uploadedImages.update(current => [...current, ...imageUrls]);
+
+    this.productService.uploadImage(files).subscribe({})
     console.log('Upload complete. Total images:', this.uploadedImages().length);
   }
 
@@ -208,25 +202,25 @@ export class ProductForm implements OnInit {
     this.productForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       brand: ['', Validators.required],
-      category: ['', Validators.required],
-      pincode: [],
+      category: [[], Validators.required],
+      pincode: [[]],
       subCategory: ['', Validators.required],
       model: ['', Validators.required],
       status: [true],
-      price: ['', [Validators.required, Validators.min(0)]],
       stockStatus: [false],
-      stock: ['', [Validators.required, Validators.min(0)]],
-      weight: ['', [Validators.required, Validators.min(0)]],
-      length: ['', [Validators.required, Validators.min(0)]],
-      height: ['', [Validators.required, Validators.min(0)]],
-      width: ['', [Validators.required, Validators.min(0)]],
+      price: [0, [Validators.required, Validators.min(0)]],
+      stock: [0, [Validators.required, Validators.min(0)]],
+      weight: [0.5, [Validators.required, Validators.min(0)]],
+      length: [5, [Validators.required, Validators.min(0)]],
+      height: [5, [Validators.required, Validators.min(0)]],
+      width: [5, [Validators.required, Validators.min(0)]],
       description: ['', Validators.required],
       offerPrice: this.formBuilder.array([]),
       variants: this.formBuilder.array([]),
       specifications: this.formBuilder.array([]),
       warranty: this.formBuilder.group({
         period: ['', Validators.required],
-        type: ['', Validators.required],
+        type: ['Years', Validators.required],
         details: ['', Validators.required]
       })
     });    
@@ -239,27 +233,6 @@ export class ProductForm implements OnInit {
   // get specification(): FormArray { return this.productForm.get('specifications') as FormArray; }
   get warranty(): FormGroup { return this.productForm.get('warranty') as FormGroup; }
 
-  onMainImageChange(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.productForm.patchValue({ thumbnail: file });
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.mainImagePreview = reader.result as string;
-        this.productForm.patchValue({ mainImage: this.mainImagePreview });
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  public onStockStatusChange(event: any): void {
-    const status = event.target.value;
-    console.log('Stock status', status);
-    if(status){
-
-    }
-  }
   addVariant(): void {
     this.variants.push(this.formBuilder.group({
       variantName: ['', Validators.required],
@@ -269,6 +242,39 @@ export class ProductForm implements OnInit {
       image: [null],
     }));
   }
+  removeVariant(index: number): void {
+    this.variants.removeAt(index);
+  }
+  removeOfferPrice(index: number){
+    if(this.offerPrice.length > 1) this.offerPrice.removeAt(index)
+  }
+  removeSpecification(index: number): void {
+    if (this.specifications.length > 1) {
+      this.specifications.removeAt(index);
+    }
+  }
+
+  addSpecification(): void {
+    this.specifications.push(this.formBuilder.group({
+      name:[null],
+      value:[null],
+    }));
+  }
+
+  addOfferPrice(): void {
+    this.offerPrice.push(this.formBuilder.group({
+      quantity:[null, this.numberOnlyValidator()],
+      price:[null, this.numberOnlyValidator()],
+    }));
+  }
+  public onStockStatusChange(event: any): void {
+    const status = event.target.value;
+    console.log('Stock status', status);
+    if(status){
+
+    }
+  }
+  
 
   onVariantImageChange(event: any, index: number): void {
     const file = event.target.files[0];
@@ -285,34 +291,7 @@ export class ProductForm implements OnInit {
     }
   }
 
-  removeVariant(index: number): void {
-    this.variants.removeAt(index);
-  }
-
- public addSpecification(): void {
-    this.specifications.push(this.formBuilder.group({
-      name:[null],
-      value:[null],
-    }));
-  }
-
- public addOfferPrice(): void {
-  this.offerPrice.push(this.formBuilder.group({
-    quantity:[null, this.numberOnlyValidator()],
-    price:[null, this.numberOnlyValidator()],
-  }));
-}
-
-removeOfferPrice(index: number){
-  if(this.offerPrice.length > 1) this.offerPrice.removeAt(index)
-}
-removeSpecification(index: number): void {
-  if (this.specifications.length > 1) {
-    this.specifications.removeAt(index);
-  }
-}
-
-  onSubmit(): void {
+  proccedNext(): void {
     this.submitted = true;
     if (this.productForm.valid) {
       const mainImageFile = this.selectedFiles();
@@ -354,11 +333,7 @@ removeSpecification(index: number): void {
     let category:any = [];
     let pincode: any = [];
     this.productForm.value.category.forEach((categoryId: any) => {
-      // console.log('after seleted loop', category);
-      
       category.push(categoryId.id);
-      console.log('category', category);
-      
     });
     this.productForm.value.pincode.forEach((pincodeId: any) => {
       pincode.push(pincodeId.id);
@@ -395,7 +370,6 @@ removeSpecification(index: number): void {
       specifications: specificationsArray,
       offerPrice: offerPriceArray || [],
       status: this.productForm.value.status,
-      // productImages: this.productForm.value.productImages,
     }
     return payload;
   }
@@ -428,56 +402,6 @@ removeSpecification(index: number): void {
     reader.readAsDataURL(file);
   }
 
-
-  onMultipleFilesSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-
-      this.selectedImages = input.files;
-      console.log('selectedImages', this.selectedImages);
-      
-      this.previewUrls = []; // Clear existing previews
-      
-      Array.from(input.files).forEach(file => {
-        if (file.size > this.maxSizeMB * 1024 * 1024) {
-          this.errorMessage.set(`File ${file.name} exceeds ${this.maxSizeMB}MB limit.`);
-          return;
-        }
-        this.createImagePreview(file);
-      });
-    }
-  }
-
-  onDropMultiple(event: DragEvent): void {
-    event.preventDefault();
-    if (event.dataTransfer?.files) {
-      Array.from(event.dataTransfer.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.previewUrls.push(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-  }
-
-  removeImage(index: number): void {
-    this.previewUrls.splice(index, 1);
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-  }
-
-  private createImagePreview(file: File): void {
-    const reader = new FileReader();
-    // console.log('files', file);
-    
-    reader.onload = () => {
-      this.previewUrls.push(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  }
 
   private resetForm(): void {
     this.productForm.reset();

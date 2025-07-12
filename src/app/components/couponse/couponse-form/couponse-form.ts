@@ -20,7 +20,7 @@ export class CouponseForm implements OnInit{
   public couponseService = inject(Coupon);
   public productService = inject(ProductS);
   private formBuilder =inject(FormBuilder);
-   private activeModal = inject(NgbActiveModal);
+  public activeModal = inject(NgbActiveModal);
   coupons = signal<CouponseM[] | any>([]);
   products = signal([]);
   currentDate: string = '';

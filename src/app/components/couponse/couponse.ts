@@ -22,7 +22,7 @@ export class Couponse implements OnInit{
   }
 
   public addCoupon(item?: any){
-    const modalRef = this.modalService.open(CouponseForm, { size: 'lg' });
+    const modalRef = this.modalService.open(CouponseForm, { size: 'lg', backdrop: false});
     if (modalRef && modalRef.componentInstance) {
       modalRef.componentInstance.item = item ? { ...item } : null;
       if (modalRef.result) {
