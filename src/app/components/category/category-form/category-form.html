@@ -1,7 +1,8 @@
 
-
-<button type="button" class="btn-close align-items-end" (click)="true" aria-label="Close"></button>
-
+<div class="d-flex align-items-center justify-content-between p-2">
+    <span class="fs-4 fw-bold">Add Category</span>
+    <i class="bi bi-x-circle close" (click)="activeModal.close(true)"></i>
+  </div>
 <form [formGroup]="categoryForm" novalidate>
 <div class="modal-body">
     <div class="row g-3">
@@ -39,7 +40,6 @@
     [maxFileSizeMB]="maxFileSize()"
     [allowedTypes]="allowedFileTypes()"
     (filesSelected)="onFilesSelected($event)"
-    (uploadComplete)="onUploadComplete($event)"
     />
 
     </div>

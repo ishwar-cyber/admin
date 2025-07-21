@@ -36,7 +36,7 @@ export class SubCategoryForm implements OnInit {
     this.subCategoryForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       category: ['', Validators.required],
-      status: ['active', Validators.required],
+      status: [true, Validators.required],
     });
   }
   loadCategory(){
@@ -53,7 +53,7 @@ export class SubCategoryForm implements OnInit {
     const payload ={
       name: this.subCategoryForm.value.name,
       category: this.subCategoryForm.value.category,
-      status: this.subCategoryForm.value.status,
+      status: this.subCategoryForm.value.status === 'active' ? true : false,
     }
     this.subCategoryService.addSubCategory(payload, this.selectedFiles).subscribe({
       next: (response)=>{

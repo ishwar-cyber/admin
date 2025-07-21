@@ -12,8 +12,8 @@
         <select class="form-select" formControlName="category" id="brandSelect" 
                 [class.is-invalid]="subCategoryForm.get('category')?.invalid && subCategoryForm.get('category')?.touched">
             <option value="" disabled selected>Select Category</option>
-            @for (category of categories(); track category?._id) {
-            <option [value]="category?._id">{{ category.name }}</option>
+            @for (category of categories(); track category?.id) {
+            <option [value]="category?.id">{{ category.name }}</option>
             }
         </select>
         @if (subCategoryForm.get('category')?.invalid && subCategoryForm.get('category')?.touched) {

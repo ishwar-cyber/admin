@@ -1,4 +1,4 @@
-export interface Brands {
+export interface BrandM {
     name? : string;
     _id?: string;
     image?: string;

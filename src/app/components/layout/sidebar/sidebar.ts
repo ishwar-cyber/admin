@@ -90,7 +90,7 @@ export class Sidebar {
       children: [
         {
           title: 'All Orders',
-          route: '/admin/sell',
+          route: '/admin/order',
           icon: 'bi bi-amd'
         },
         {

@@ -23,7 +23,7 @@ export class CategoryForm implements OnInit{
   imageUploaded = signal<boolean>(false);
   private formBuilder = inject(FormBuilder);
   private categoryService = inject(CategoryS);
-  private activeModal = inject(NgbActiveModal);
+  public activeModal = inject(NgbActiveModal);
 
   ngOnInit(): void {
     this.buildForm();
@@ -40,10 +40,6 @@ export class CategoryForm implements OnInit{
     this.selectedFiles.set(files);
   }
 
-  onUploadComplete(imageUrls: string[]): void {
-    this.uploadedImages.update(current => [...current, ...imageUrls]);
-    console.log('Upload complete. Total images:', this.uploadedImages().length);
-  }
   public updateCategory(){}
   
   public procced(){
@@ -73,7 +69,7 @@ export class CategoryForm implements OnInit{
   createPayload(){
      const payload ={
         name: this.categoryForm.value.name,
-        status: this.categoryForm.value.status,
+        status: this.categoryForm.value.status === 'active' ? true : false,
       }
       return payload;
   }  

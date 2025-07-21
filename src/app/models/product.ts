@@ -1,17 +1,20 @@
+import { BrandM } from "./brand";
+
 export interface ProductM {
   id: string;
   name: string;
   sku?: string;
+  model:string;
   category: [];
   pincode: [];
-  brand: string;
+  brand: BrandM;
   price: number;
   originalPrice?: number;
   stock: number;
   maxStock: number;
   rating?: number;
   reviewCount?: number;
-  status: 'active' | 'inactive' | 'draft';
+  status: true | false | 'draft';
   thumbnail?: string;
   updatedAt: string;
 
@@ -72,6 +75,7 @@ export interface ProductModal {
   height: number;
   status: 'active' | 'inactive' | 'draft';
   slug?: string;
+  productImages: any[];
   createdAt?: Date;
   updatedAt?: Date;
 }

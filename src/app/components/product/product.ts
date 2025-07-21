@@ -48,8 +48,7 @@ export class Product implements OnInit {
     })
   }
   ngOnInit(): void {
-   
-    this,this.selectedCategory
+    this.selectedCategory
   }
 
   loadProduct(){

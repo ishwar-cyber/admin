@@ -80,7 +80,7 @@ export class Category implements OnInit{
   }
 
   get activeCategories(): number {
-    return this.categories().filter(c => c.status === 'active').length;
+    return this.categories().filter(c => c.status === true).length;
   }
 
   // Add to the CategoriesComponent class

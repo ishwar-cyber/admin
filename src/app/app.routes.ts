@@ -40,7 +40,7 @@ export const routes: Routes = [
       },
       {
         path:'order',
-        loadComponent:()=>import('./components/order/order').then(m => m.Order)
+        loadComponent:()=>import('./components/order/order').then(m => m.OrderComponent)
       },
       {
         path:'customer',
@@ -66,6 +66,10 @@ export const routes: Routes = [
         path:'coupons',
         loadComponent:()=>import('./components/couponse/couponse').then(m => m.Couponse)
       },
+      {
+        path:'pincode',
+        loadComponent:()=>import('./components/pincode/pincode').then(m => m.Pincode)
+      }
     ]
   },
 ];

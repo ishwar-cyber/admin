@@ -6,7 +6,7 @@ import { Brand } from '../components/brand/brand';
 import { Category } from '../components/category/category';
 import { Product } from '../components/product/product';
 import { ProductQueryParams, ProductApiResponse } from '../models/product';
-import { Brands } from '../models/brand';
+import { BrandM } from '../models/brand';
 import { CategoryM } from '../models/category';
 
 @Injectable({
@@ -25,7 +25,7 @@ export class ProductS {
   private http = inject(HttpClient);
   // State with Signals
   private _products = signal<Product[]>([]);
-  private _brands = signal<Brands[]>([]);
+  private _brands = signal<BrandM[]>([]);
   private _categories = signal<CategoryM[]>([]);
   private _loading = signal(false);
   private _error = signal<string | null>(null);
@@ -156,16 +156,17 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     formData.append('height', payload.height);
     formData.append('length', payload.length);
     formData.append('weight', payload.weight || null);
+    // formData.append('productImages', payload.productImages);
     
     if (payload.discount) {
       formData.append('discount', payload.discount.toString());
     }
 
-    if (thumbnail && Array.isArray(thumbnail)) {
-      thumbnail.forEach((file, index) => {
-        formData.append('productImages', file);
-      });
-    }
+    // if (thumbnail && Array.isArray(thumbnail)) {
+    //   thumbnail.forEach((file, index) => {
+    //     formData.append('productImages', file);
+    //   });
+    // }
      // Handle optional discount field
      if (payload.discount) {
       formData.append('discount', payload.discount.toString());
@@ -204,6 +205,9 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
       formData.append('warranty[type]', payload.warranty.type || '');
       formData.append('warranty[details]', payload.warranty.details || '');
     }
+    payload.productImages.forEach((productImage: any, index:number)=>{
+      formData.append(`productImages[${index}]`,productImage)
+    })
 
     // Handle variants array if exists
     if (payload.variants && payload.variants.length > 0) {
@@ -228,7 +232,7 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
         formData.append('productImages', file);
       });
     }
-    const url = `${environment.BASE_URL}/images`;
+    const url = `${environment.BASE_URL}/products/images`;
     return this.httpClient.post(url, formData);
   }
 }

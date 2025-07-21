@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Brands } from '../../../models/brand';
+import { BrandM } from '../../../models/brand';
 import { BrandService } from '../../../services/brand';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { UploadImage } from '../../../shareds/upload-image/upload-image';
@@ -13,12 +13,12 @@ import { UploadImage } from '../../../shareds/upload-image/upload-image';
   styleUrl: './brand-form.scss'
 })
 export class BrandForm implements OnInit {
-  @Input() item: Brands | null = null;
+  @Input() item: BrandM | null = null;
   isNewItem: boolean = false;
   brandFrom!: FormGroup;
   isLoading = signal(false);
   editMode = signal(false);
-  selectedCategory = signal<Brands | null>(null);
+  selectedCategory = signal<BrandM | null>(null);
   selectedFile: File | null = null;
   imagePreview = signal<string | null>(null);
     // Configuration signals
@@ -36,7 +36,7 @@ export class BrandForm implements OnInit {
   );
   private formBuilder = inject(FormBuilder);
   private BrandService = inject(BrandService);
-  private activeModal = inject(NgbActiveModal);
+  public activeModal = inject(NgbActiveModal);
   ngOnInit(): void {
     this.initForm()
   }

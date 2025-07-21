@@ -119,10 +119,10 @@
                   <td>{{ category.products || 0 }}</td>
                   <td>
                     <span class="badge rounded-pill py-1" 
-                          [class.bg-success]="category.status === 'active'"
-                          [class.bg-secondary]="category.status === 'inactive'">
+                          [class.bg-success]="category.status === true"
+                          [class.bg-secondary]="category.status === false">
                       <i class="bi bi-check-circle-fill me-1 small"></i>
-                      {{ category.status | titlecase }}
+                      {{ category.status === true ? 'ACTIVE' : 'INACTIVE' | titlecase }}
                     </span>
                   </td>
                   <td>

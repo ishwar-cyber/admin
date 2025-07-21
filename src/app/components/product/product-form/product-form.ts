@@ -12,7 +12,7 @@ import { ProductS } from '../../../services/product';
 import { SubCategoryS } from '../../../services/sub-category';
 import { PincodeS } from '../../../services/pincode-s';
 import { CategoryM } from '../../../models/category';
-import { Brands } from '../../../models/brand';
+import { BrandM } from '../../../models/brand';
 import { ProductModal } from '../../../models/product';
 
 @Component({
@@ -51,11 +51,11 @@ export class ProductForm implements OnInit {
   productId = signal<string>('');
   previewUrls: string[] = [];
   public selectedImages: FileList | null = null;
-  readonly maxSizeMB = 5;
+  readonly maxSizeMB = 10;
 
-  maxFileSize = signal(3);
+  maxFileSize = signal(10);
   allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
-  uploadedImages = signal<string[]>([]);
+  uploadedImages = signal<any[]>([]);
   selectedFiles = signal<File[]>([]);
   imageUploaded = signal<boolean>(false);
   constructor() {}
@@ -108,8 +108,19 @@ export class ProductForm implements OnInit {
   onUploadComplete(files: File[]): void {
     // this.uploadedImages.update(current => [...current, ...imageUrls]);
 
-    this.productService.uploadImage(files).subscribe({})
-    console.log('Upload complete. Total images:', this.uploadedImages().length);
+    this.productService.uploadImage(files).subscribe({
+      next: (res:any) =>{
+        for(const image of res.data){
+        this.uploadedImages().push(image);
+
+        }
+        console.log('Upload complete. Total images:', this.uploadedImages());
+      },
+      error : (err)=>{
+
+      }
+    })
+    // console.log('Upload complete. Total images:', this.uploadedImages());
   }
 
   public loadProductData(){
@@ -185,7 +196,7 @@ export class ProductForm implements OnInit {
     });
   }
   private updateBrand(brandId: string): void {
-    const brandValue =  this.brands().filter((brand: Brands) => {
+    const brandValue =  this.brands().filter((brand: BrandM) => {
       return brand?._id === brandId;  
     });
     this.productForm.patchValue({ brand: brandValue[0]._id });
@@ -299,7 +310,7 @@ export class ProductForm implements OnInit {
       const payload = this.createPayload();
       let callApi: any;
       // if(!this.editProduct()){
-        callApi = this.productService.createProduct(payload, mainImageFile, variantsImages);
+        callApi = this.productService.createProduct(payload, variantsImages);
       // } else {
         // callApi = this.productService.updateProduct(this.productId(), payload, mainImageFile, variantsImages);
       // }
@@ -356,6 +367,7 @@ export class ProductForm implements OnInit {
       brand: this.productForm.value.brand,
       category: category,
       pincode: pincode,
+      productImages: this.uploadedImages(),
       subCategory: this.productForm.value.subCategory,
       stock: this.productForm.value.stock,
       price: this.productForm.value.price,

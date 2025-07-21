@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Brands } from '../../models/brand';
+import { BrandM } from '../../models/brand';
 import { BrandService } from '../../services/brand';
 import { BrandForm } from './brand-form/brand-form';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,7 +15,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class Brand implements OnInit{
   isLoading = signal(false);
   editMode = signal(false);
-  brands = signal<Brands[]>([]);
+  brands = signal<BrandM[]>([]);
   private modalService = inject(NgbModal);
   private brandService = inject(BrandService)
 
@@ -30,7 +30,7 @@ export class Brand implements OnInit{
       }
     })
   }
-  openModal(item?: Brands): void {
+  openModal(item?: BrandM): void {
     const modalRef = this.modalService.open(BrandForm, { size: 'lg' });
     if (modalRef && modalRef.componentInstance) {
       modalRef.componentInstance.item = item ? { ...item } : null;
