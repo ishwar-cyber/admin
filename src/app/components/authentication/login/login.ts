@@ -28,7 +28,7 @@ loginForm: FormGroup;
     }
 
     this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required, Validators.minLength(6)]],
       password: ['', [Validators.required]],
       rememberMe: [false]
     });
@@ -47,9 +47,9 @@ loginForm: FormGroup;
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
-      const { email, password } = this.loginForm.value;
+      const { username, password } = this.loginForm.value;
       const payload ={
-        email: email,
+        username: username,
         password: password
       }
       this.authService.login(payload).subscribe({
@@ -62,14 +62,14 @@ loginForm: FormGroup;
                 this.router.navigate(['/admin']);
                 
             } else {
-              this.errorMessage = 'Invalid email or password';
+              this.errorMessage = 'Invalid username or password';
             }
           // Handle successful login
         },
         error: (err) => {
           console.error(err);
           
-          this.errorMessage = 'Invalid email or password';
+          this.errorMessage = 'Invalid username or password';
           this.isLoading = false;
         },
         complete: () => {
@@ -110,6 +110,6 @@ loginForm: FormGroup;
     });
   }
 
-  get email() { return this.loginForm.get('email'); }
+  get username() { return this.loginForm.get('username'); }
   get password() { return this.loginForm.get('password'); }
 }

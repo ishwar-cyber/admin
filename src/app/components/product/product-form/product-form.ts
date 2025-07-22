@@ -10,7 +10,7 @@ import { UploadImage } from '../../../shareds/upload-image/upload-image';
 import { CategoryS } from '../../../services/category';
 import { ProductS } from '../../../services/product';
 import { SubCategoryS } from '../../../services/sub-category';
-import { PincodeS } from '../../../services/pincode-s';
+import { PincodeS } from '../../../services/pincode';
 import { CategoryM } from '../../../models/category';
 import { BrandM } from '../../../models/brand';
 import { ProductModal } from '../../../models/product';

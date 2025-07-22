@@ -79,7 +79,7 @@ export class Product implements OnInit {
     
   }
   openAddProductModal(item?: any){
-    const modalRef = this.modalService.open(ProductForm, { size: 'lg', backdrop: false });
+    const modalRef = this.modalService.open(ProductForm, { size: 'lg', backdrop: false, keyboard: true });
     if (modalRef && modalRef.componentInstance) {
       modalRef.componentInstance.item = item ? { ...item } : null;
       if (modalRef.result) {

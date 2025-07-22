@@ -1,0 +1,50 @@
+<div class="d-flex align-items-center justify-content-between p-2">
+    <span class="fs-4 fw-bold">Add Pincode</span>
+    <i class="bi bi-x-circle close" (click)="activeModal.close(true)"></i>
+</div>
+<form [formGroup]="pincodeForm">
+    <div class="modal-body">
+      <div class="row d-flex flex-column gap-2">
+        <!-- Name Field -->
+        <div class="col-md-6">
+          <label for="pin" class="form-label">Pincode</label>
+          <input type="text" inputmode="numeric" class="form-control" id="pin" (keypress)="allowOnlyNumbers($event)"
+                 formControlName="pincode" maxlength="6" minlength="6" pattern="[0-9]{6}"
+                 [class.is-invalid]="pincodeForm.get('pincode')?.invalid && pincodeForm.get('pincode')?.touched"
+                 placeholder="e.g. 411019">
+          @if (pincodeForm.get('name')?.errors?.['required'] && pincodeForm.get('pincode')?.touched) {
+            <div class="invalid-feedback">Pincode is required</div>
+          }
+          @if (pincodeForm.get('name')?.errors?.['minlength'] && pincodeForm.get('pincode')?.touched) {
+            <div class="invalid-feedback">Minimum 6 digit required</div>
+          }
+        </div>
+
+        <!-- Status Field -->
+        <div class="col-md-6">
+          <label class="form-label">Status</label>
+          <div class="btn-group w-100" role="group">
+            <input type="radio" class="btn-check" name="status" 
+                   id="statusActive" value="true" formControlName="status">
+            <label class="btn btn-outline-success" for="statusActive">Active</label>
+
+            <input type="radio" class="btn-check" name="status" 
+                   id="statusInactive" value="false" formControlName="status">
+            <label class="btn btn-outline-danger" for="statusInactive">Inactive</label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <!-- <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">Cancel</button> -->
+      <button type="submit" class="btn btn-primary" (click)="procced(); isLoading.set(true)" [disabled]="pincodeForm.invalid || isLoading()">
+        @if (isLoading()) {
+          <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+        }
+        <span>{{isLoading() ? 'Creating...': 'Create' }}</span>
+
+      </button>
+    </div>
+  </form>

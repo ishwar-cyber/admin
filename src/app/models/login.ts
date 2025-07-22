@@ -1,5 +1,5 @@
 export interface Login {
-    email: string,
+    username: string,
     password: string
 }
 
@@ -11,7 +11,8 @@ export interface LoginResponse {
 }
 export interface User {
     _id?: string
-    email?: string
+    email?: string,
+    username?: string
     name?: string
     role?: string
 }

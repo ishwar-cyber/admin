@@ -7,20 +7,20 @@
 
     <form [formGroup]="loginForm" class="login-form">
       <div class="form-group">
-        <label for="email">Email Address</label>
+        <label for="username">Username</label>
         <div class="input-container">
           <!-- <i class="fas fa-envelope input-icon"></i> -->
           <input 
-            type="email" 
-            id="email" 
-            formControlName="email" 
-            placeholder="Enter your email"
-            [class.is-invalid]="email?.invalid && (email?.dirty || email?.touched)"
+            type="username" 
+            id="username" 
+            formControlName="username" 
+            placeholder="Enter your username"
+            [class.is-invalid]="username?.invalid && (username?.dirty || username?.touched)"
             class="form-control">
         </div>
-        <div class="error-message" *ngIf="email?.invalid && (email?.dirty || email?.touched)">
-          <span *ngIf="email?.errors?.['required']">Email is required</span>
-          <span *ngIf="email?.errors?.['email']">Please enter a valid email address</span>
+        <div class="error-message" *ngIf="username?.invalid && (username?.dirty || username?.touched)">
+          <span *ngIf="username?.errors?.['required']">username is required</span>
+          <span *ngIf="username?.errors?.['username']">Please enter a valid username address</span>
         </div>
       </div>
 

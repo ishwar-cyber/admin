@@ -13,7 +13,12 @@ export class PincodeS {
     const url = `${environment.BASE_URL}/pincode`;
     return this.httpClient.post(url, payload)
   }
+
   public getPincode(){
     return this.httpClient.get(`${environment.BASE_URL}/pincode`);
+  }
+
+  deletePincode(id:string){
+    return this.httpClient.delete(`${environment.BASE_URL}/pincode/${id}`)
   }
 }

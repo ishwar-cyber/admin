@@ -31,7 +31,7 @@ export class Brand implements OnInit{
     })
   }
   openModal(item?: BrandM): void {
-    const modalRef = this.modalService.open(BrandForm, { size: 'lg' });
+    const modalRef = this.modalService.open(BrandForm, { size: 'lg',  backdrop: false});
     if (modalRef && modalRef.componentInstance) {
       modalRef.componentInstance.item = item ? { ...item } : null;
       if (modalRef.result) {
