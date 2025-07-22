@@ -71,7 +71,11 @@ export class Category implements OnInit{
   }
 
   deleteCategory(id: string): void {
-    this.categories.update(cats => cats.filter(c => c._id !== id));
+    this.categoryService.deleteCategory(id).subscribe({
+      next: (res) =>{
+        this.loadCategories();
+      }
+    });
   }
 
   // Additional helper methods

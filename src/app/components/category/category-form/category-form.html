@@ -34,7 +34,19 @@
         <label class="btn btn-outline-danger" for="statusInactive">Inactive</label>
         </div>
     </div>
-
+    <div class="col-md-6">
+        <label for="serviceCharges" class="form-label">Service charges</label>
+        <input type="number" class="form-control" id="serviceCharges" 
+                formControlName="serviceCharges"
+                [class.is-invalid]="categoryForm.get('serviceCharges')?.invalid && categoryForm.get('serviceCharges')?.touched"
+                placeholder="e.g. Electronics">
+        @if (categoryForm.get('serviceCharges')?.errors?.['required'] && categoryForm.get('serviceCharges')?.touched) {
+        <div class="invalid-feedback">Category name is required</div>
+        }
+        @if (categoryForm.get('serviceCharges')?.errors?.['minlength'] && categoryForm.get('serviceCharges')?.touched) {
+        <div class="invalid-feedback">Minimum 3 characters required</div>
+        }
+    </div>
     <!-- Image Upload -->
     <upload-image 
     [maxFileSizeMB]="maxFileSize()"

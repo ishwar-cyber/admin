@@ -73,11 +73,6 @@ export class Sidebar {
           icon: 'bi bi-box-seam'
         },
         {
-          title: 'Add Product',
-          route: '/admin/add-product',
-          icon: 'bi bi-amd'
-        },
-        {
           title: 'Service Pincode',
           route: '/admin/pincode',
           icon: 'bi bi-amd'
