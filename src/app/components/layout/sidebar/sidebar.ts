@@ -90,7 +90,7 @@ export class Sidebar {
         },
         {
           title: 'Create Order',
-          route: '/admin/create-order',
+          route: '/admin/sell',
           icon: 'bi bi-amd'
         }
       ]

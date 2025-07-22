@@ -18,11 +18,33 @@ export class Main {
 
   sidebarCollapsed = signal<boolean>(false);
   searchQuery = '';
+
+  // State for notification and message sections
+  showNotificationSection = signal<boolean>(false);
+  showMessageSection = signal<boolean>(false);
+
   toggleSidebar() {
     this.sidebarCollapsed.set(!this.sidebarCollapsed());  
   }
+
   onSearch(){
     // Implement search functionality here
     console.log('Search query:', this.searchQuery);
+  }
+
+  // Toggle notification section
+  toggleNotificationSection() {
+    this.showNotificationSection.set(!this.showNotificationSection());
+    if (this.showNotificationSection()) {
+      this.showMessageSection.set(false);
+    }
+  }
+
+  // Toggle message section
+  toggleMessageSection() {
+    this.showMessageSection.set(!this.showMessageSection());
+    if (this.showMessageSection()) {
+      this.showNotificationSection.set(false);
+    }
   }
 }

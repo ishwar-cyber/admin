@@ -1,1 +1,48 @@
-// Migrated from sell.scss
+
+
+.create-order-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+
+  .card {
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+
+    &-header {
+      padding: 1.5rem;
+      font-weight: 600;
+    }
+
+    &-body {
+      padding: 2rem;
+    }
+  }
+
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .order-items-section {
+    .order-item-card {
+    //   background-color: rgba(, 0.05);
+    //   border-left: 4px solid ;
+    }
+  }
+
+  .order-summary-card {
+    // border: 1px solid $gray-300;
+  }
+
+  .invalid-feedback {
+    display: block;
+  }
+
+//   @include media-breakpoint-down(md) {
+//     .card-body {
+//       padding: 1.5rem;
+//     }
+//   }
+}

@@ -23,20 +23,83 @@
       </div>
       <div class="top-bar-actions">
         <div class="action-item">
-          <i class="bi bi-bell notification-icon"></i>
+          <i class="bi bi-bell notification-icon" (click)="toggleNotificationSection()"></i>
           <span class="badge">4</span>
         </div>
          <div class="action-item">
-          <i class="bi bi-envelope message-icon"></i>
+          <i class="bi bi-envelope message-icon" (click)="toggleMessageSection()"></i>
           <span class="badge">4</span>
         </div>
-        <div class="user-dropdown">
+        <!-- <div class="user-dropdown">
           <img src="" alt="">
           <span>Admin</span>
           <i class="bi bi-chevron-down"></i>
+        </div> -->
+      </div>
+    </div>
+    <!-- Notification and Message Context Sections -->
+    <div class="notification-message-overlay" *ngIf="showNotificationSection() || showMessageSection()">
+      <div *ngIf="showNotificationSection()" class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+          <i class="bi bi-bell me-2"></i>
+          <span>Notifications</span>
+        </div>
+        <div class="card-body p-2">
+          <!-- Example notification list -->
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex align-items-center">
+              <i class="bi bi-info-circle text-info me-2"></i>
+              New user registered
+              <span class="ms-auto text-muted small">2 min ago</span>
+            </li>
+            <li class="list-group-item d-flex align-items-center">
+              <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+              Low stock alert for product X
+              <span class="ms-auto text-muted small">10 min ago</span>
+            </li>
+            <li class="list-group-item d-flex align-items-center">
+              <i class="bi bi-check-circle text-success me-2"></i>
+              Order #1234 delivered
+              <span class="ms-auto text-muted small">1 hour ago</span>
+            </li>
+          </ul>
+          <!-- <div class="text-end mt-2">
+            <a href="#" class="btn btn-link btn-sm">View all notifications</a>
+          </div> -->
+        </div>
+      </div>
+      <div *ngIf="showMessageSection()" class="card shadow-sm">
+        <div class="card-header bg-success text-white d-flex align-items-center">
+          <i class="bi bi-envelope me-2"></i>
+          <span>Messages</span>
+        </div>
+        <div class="card-body p-2">
+          <!-- Example message list -->
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex align-items-center">
+              <img src="https://i.pravatar.cc/32?img=1" class="rounded-circle me-2" width="32" height="32" alt="User" />
+              <div>
+                <div class="fw-bold">John Doe</div>
+                <div class="text-muted small">"Can you check my order status?"</div>
+              </div>
+              <span class="ms-auto text-muted small">5 min ago</span>
+            </li>
+            <li class="list-group-item d-flex align-items-center">
+              <img src="https://i.pravatar.cc/32?img=2" class="rounded-circle me-2" width="32" height="32" alt="User" />
+              <div>
+                <div class="fw-bold">Jane Smith</div>
+                <div class="text-muted small">"Received my package, thanks!"</div>
+              </div>
+              <span class="ms-auto text-muted small">20 min ago</span>
+            </li>
+          </ul>
+          <!-- <div class="text-end mt-2">
+            <a href="#" class="btn btn-link btn-sm">View all messages</a>
+          </div> -->
         </div>
       </div>
     </div>
+    <!-- End Notification and Message Context Sections -->
     <div class="content-container">
           <router-outlet/>
     </div>

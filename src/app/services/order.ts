@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { Order, OrderApiResponse, OrderQueryParams } from '../models/order';
 import { ApiResponse } from '../models/response';
@@ -86,6 +86,49 @@ export class OrderService {
     return this.httpClient.get<OrderApiResponse>(`${environment.BASE_URL}/order`, { params: httpParams });
   }
 
+/**
+ * Create a new order
+ */
+createOrder(orderData: any): Observable<OrderApiResponse> {
+  this._loading.set(true);
+  this._error.set(null);
+
+  // Validate required fields
+  if (!orderData.customerId || !orderData.items || orderData.items.length === 0) {
+    this._loading.set(false);
+    this._error.set('Customer ID and at least one order item are required');
+    return throwError(() => new Error('Validation failed'));
+  }
+
+  // Calculate totals if not provided
+  if (!orderData.subTotal || !orderData.taxAmount || !orderData.totalAmount) {
+    orderData.subTotal = orderData.items.reduce((sum: number, item: any) => 
+      sum + (item.quantity * item.unitPrice), 0);
+    orderData.taxAmount = orderData.subTotal * 0.18; // Assuming 18% tax
+    orderData.totalAmount = orderData.subTotal + orderData.taxAmount;
+  }
+
+  // Set default status if not provided
+  if (!orderData.status) {
+    orderData.status = 'pending';
+  }
+
+  return this.httpClient.post<OrderApiResponse>(`${this.baseUrl}`, orderData).pipe(
+    tap((response: any) => {
+      // Update local state with the new order
+      if (response.success && response.data) {
+        this._orders.update(orders => [response.data!, ...orders]);
+        this._totalItems.update(count => count + 1);
+      }
+      this._loading.set(false);
+    }),
+    catchError(error => {
+      this._loading.set(false);
+      this._error.set(error.message || 'Failed to create order');
+      return throwError(() => error);
+    })
+  );
+}
   /**
    * Get order by ID
    */

@@ -178,3 +178,46 @@
         }
     }
 }
+
+// Overlay for notification/message sections
+.notification-message-overlay {
+  position: absolute;
+  top: 70px; // below top-bar
+  left: 0;
+  width: 100%;
+  z-index: 1001;
+  display: flex;
+  gap: 1rem;
+  justify-content: end;
+  pointer-events: none;
+}
+.notification-message-overlay > .card {
+  min-width: 320px;
+  max-width: 400px;
+  width: 100%;
+  margin-right: 15px;
+  pointer-events: auto;
+}
+
+@media (max-width: 991px) {
+  .notification-message-overlay {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .notification-message-overlay > .card {
+    max-width: 95vw;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .notification-message-overlay {
+    top: 56px;
+    padding: 0 4px;
+  }
+  .notification-message-overlay > .card {
+    max-width: 100vw;
+    border-radius: 0;
+  }
+}
