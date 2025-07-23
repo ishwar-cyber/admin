@@ -63,14 +63,13 @@
                         formControlName="pincode"
                         [options]="pincodes()" [prepopulate]="prepopulate()" (selectionChange)="selectedCategoryId($event)"
                         placeholder="Select Pincode"
-                        required
                     />
                 </div>
                 
                 <div class="col-md-6">
                     <label for="subCategory" class="form-label">Sub Category</label>
                     <select class="form-select" id="subCategory" formControlName="subCategory" required>
-                        <option value="">Select a category</option>
+              `          <option>Select a category</option>
                         @for(sub of subCategories(); track sub.name){
                             <option [value]="sub.id">{{ sub.name }}</option>
                         }

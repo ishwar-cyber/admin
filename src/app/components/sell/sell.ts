@@ -61,14 +61,14 @@ export class Sell {
 
   subTotal = computed(() => {
     return this.items.controls.reduce((sum: number, item: AbstractControl) => {
-      return sum + ((item.get('quantity')?.value || 0) * (item.get('unitPrice')?.value || 0));
+      return sum + (item.get('totalPrice')?.value || 0);
     }, 0);
   });
-
+  
   taxAmount = computed(() => {
     return this.subTotal() * 0.18; // Assuming 18% tax
   });
-
+  
   totalAmount = computed(() => {
     return this.subTotal() + this.taxAmount();
   });
