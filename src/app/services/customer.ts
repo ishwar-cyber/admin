@@ -12,7 +12,7 @@ import { CustomerApiResponse, CustomerQueryParams } from '../models/customer';
 export class CustomerService {
 
   private httpClient = inject(HttpClient);
-  private baseUrl = `${environment.BASE_URL}/customers`;
+  private baseUrl = `${environment.BASE_URL}/users`;
 
   // State with Signals
   private _customers = signal<Customer[]>([]);

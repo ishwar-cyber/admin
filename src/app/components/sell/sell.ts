@@ -89,7 +89,7 @@ export class Sell {
     this.isLoading.set(true);
     this.customerService.getCustomers().subscribe({
       next: (customers:any) => {
-        this.customers.set(customers);
+        this.customers.set(customers.data);
         this.isLoading.set(false);
       },
       error: (err) => {
