@@ -55,7 +55,7 @@
                 <th (click)="updateSort('category')">
                   Category
                   <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'category' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'category' && sortDirection() === 'desc'}"></i>
+                    'bi-arrow-down': sortField() === 'category' && sortDirection() === 'desc'}"></i>
                 </th>
                 <th (click)="updateSort('brand')">
                   Brand
@@ -85,7 +85,7 @@
                   <td>{{ joinCategory(item.category) }}</td>
                   <!-- <pre>{{item.brand.name}}</pre> -->
                   <td>{{ item.brand.name }}</td>
-                  <td class="text-end">{{ item?.price | currency }}</td>
+                  <td class="text-end">{{ item?.price | currency:'INR' }}</td>
                   <td class="text-center">
                     {{ item.stock }}
                     <span *ngIf="item.stock <= 5" class="badge bg-danger ms-1">Low</span>

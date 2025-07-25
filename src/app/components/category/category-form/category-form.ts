@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UploadImage } from "../../../shareds/upload-image/upload-image";
 import { CategoryS } from '../../../services/category';
@@ -21,12 +21,24 @@ export class CategoryForm implements OnInit{
   uploadedImages = signal<string[]>([]);
   selectedFiles = signal<File[]>([]);
   imageUploaded = signal<boolean>(false);
+ @Input() item: any; // from modal
+
   private formBuilder = inject(FormBuilder);
   private categoryService = inject(CategoryS);
   public activeModal = inject(NgbActiveModal);
 
   ngOnInit(): void {
     this.buildForm();
+
+    if(this.item !== null) {
+      this.editMode.set(true);
+      this.categoryForm.patchValue({
+        name: this.item.name,
+        serviceCharges: this.item.serviceCharges,
+        isActive: this.item.isActive
+      });
+      this.uploadedImages.set(this.item?.image?.url || '');
+    } 
   }
   public buildForm(){
     this.categoryForm = this.formBuilder.group({
@@ -41,7 +53,22 @@ export class CategoryForm implements OnInit{
     this.selectedFiles.set(files);
   }
 
-  public updateCategory(){}
+  public updateCategory(){
+    if (this.categoryForm.invalid) {
+      this.markFormGroupTouched(this.categoryForm);
+      return;
+    }
+    const payload = this.createPayload();
+    console.log('payload', this.item);
+
+    this.categoryService.updateCategory(this.item.id, payload, this.selectedFiles()).subscribe({
+      next: (response) => {
+        this.activeModal.close(true);
+      },
+      error: (error) => this.activeModal.close(true),
+      complete: () => this.isLoading.set(false)
+    });
+  }
   
   public procced(){
        if (this.categoryForm.invalid) {
@@ -71,7 +98,7 @@ export class CategoryForm implements OnInit{
      const payload ={
         name: this.categoryForm.value.name,
         serviceCharges: this.categoryForm.value.serviceCharges,
-        isActive: this.categoryForm.value.isActive,
+        isActive: this.categoryForm.value.isActive === 'true' ? true : false,
       }
       return payload;
   }  

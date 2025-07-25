@@ -47,7 +47,7 @@ export class CategoryS {
       const formData = new FormData();
       formData.append('name', payload.name);
       formData.append('serviceCharges', payload.serviceCharges);
-      formData.append('status', payload.status);
+      formData.append('isActive', payload.isActive);
       if (selectedFile) {
         formData.append('image', selectedFile[0]);
       }
@@ -59,8 +59,9 @@ export class CategoryS {
      * @param payload Updated category data
      * @returns Observable of updated Category
      */
-    public updateCategory(id: string, payload: Partial<Response>): Observable<Response> {
-      return this.httpClient.put<Response>(`${this.baseUrl}/${id}`, payload);
+    public updateCategory(id: string, payload: any, selectedFile: any): Observable<Response> {
+      const formData = this.createPayload(payload, selectedFile);
+      return this.httpClient.put<Response>(`${environment.BASE_URL}/category/${id}`, formData);
     }
   
     /**

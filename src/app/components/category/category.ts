@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { TruncatePipe } from '../../common/truncate-pipe';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CategoryForm } from './category-form/category-form';
 import { CategoryS } from '../../services/category';
+import { CategoryM } from '../../models/category';
 
 @Component({
   selector: 'app-category',
@@ -48,7 +49,9 @@ export class Category implements OnInit{
   ngOnInit(): void {
       this.loadCategories();
   } 
-  openModal(item?: Category): void {
+  openModal(item?: CategoryM): void {
+    console.log('openModal called with item:', item);
+    
     const modalRef = this.modalService.open(CategoryForm, { size: 'lg', backdrop: false });
     if (modalRef && modalRef.componentInstance) {
       modalRef.componentInstance.item = item ? { ...item } : null;
@@ -84,7 +87,7 @@ export class Category implements OnInit{
   }
 
   get activeCategories(): number {
-    return this.categories().filter(c => c.status === true).length;
+    return this.categories().filter(c => c.isActive === true).length;
   }
 
   // Add to the CategoriesComponent class

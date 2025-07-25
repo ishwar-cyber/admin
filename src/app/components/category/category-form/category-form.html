@@ -27,11 +27,11 @@
         <div class="btn-group w-100" role="group">
             <input type="radio" class="btn-check" 
                     id="statusActive" value="true" formControlName="isActive">
-            <label class="btn btn-outline-success" for="statusActive">Active</label>
+            <label class="btn btn-outline-success" for="statusActive" [ngClass]="{'active': item?.isActive === true}">Active</label>
 
             <input type="radio" class="btn-check" 
                     id="statusInactive" value="false" formControlName="isActive">
-            <label class="btn btn-outline-danger" for="statusInactive">Inactive</label>
+            <label class="btn btn-outline-danger" for="statusInactive" [ngClass]="{'active': item?.isActive === false}">Inactive</label>
         </div>
     </div>
     <div class="col-md-6">
@@ -49,9 +49,10 @@
     </div>
     <!-- Image Upload -->
     <upload-image 
-    [maxFileSizeMB]="maxFileSize()"
-    [allowedTypes]="allowedFileTypes()"
-    (filesSelected)="onFilesSelected($event)"
+        [maxFileSizeMB]="maxFileSize()"
+        [imageUrl]=" uploadedImages()"
+        [allowedTypes]="allowedFileTypes()"
+        (filesSelected)="onFilesSelected($event)"
     />
 
     </div>

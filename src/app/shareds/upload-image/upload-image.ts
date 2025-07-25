@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, input, model, output, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, Input, input, model, output, signal } from '@angular/core';
 @Component({
   selector: 'upload-image',
   imports: [CommonModule],
   templateUrl: './upload-image.html',
   styleUrl: './upload-image.scss'
 })
-export class UploadImage {
+export class UploadImage implements AfterViewInit {
   maxFileSizeMB = input(5);
   allowedTypes = input<string[]>(['image/jpeg', 'image/png', 'image/gif']);
 
@@ -15,8 +15,8 @@ export class UploadImage {
   uploadComplete = output<string[]>();
 
   // Model for two-way binding (alternative to ngModel)
-  previewUrls = model<string[]>([]);
-
+  previewUrls = model<any[]>([]);
+  @Input() imageUrl: any[] | null = null; // For single image preview
   // State signals
   isDragging = signal(false);
   errorMessage = signal<string | null>(null);
@@ -37,8 +37,23 @@ export class UploadImage {
     effect(() => {
       console.log('Current upload progress:', this.uploadProgress());
     });
+    if(this.imageUrl) {
+      this.previewUrls.update(urls => {
+        if (this.imageUrl) {
+          return [this.imageUrl]; // Initialize with single image URL if provided
+        }
+        return urls; // Keep existing URLs
+      });
+    }
+   
+    
   }
-
+  ngAfterViewInit(): void {
+    // Initialize previewUrls with imageUrl if available
+    if (this.imageUrl) {
+      this.previewUrls.set([this.imageUrl]);
+    }
+  }
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files?.length) {
