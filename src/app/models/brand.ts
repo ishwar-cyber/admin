@@ -1,6 +1,6 @@
 export interface BrandM {
     name? : string;
-    _id?: string;
-    image?: string;
-    status?: string;
+    id: string;
+    image?: any;
+    isActive?: boolean;
 }

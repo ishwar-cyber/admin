@@ -26,7 +26,9 @@ export class Brand implements OnInit{
     this.brandService.getBrands().subscribe({
       next: (brand : any) => {
         console.log('brand', brand);
-        this.brands.set(brand.data)
+        this.brands.set(brand.data.data)
+        console.log('this', this.brands);
+        
       }
     })
   }
@@ -47,7 +49,7 @@ export class Brand implements OnInit{
     // if (confirm(`Are you sure you want to delete ${brand?.name}?`)) {
      this.brandService.deleteBrandById(brand).subscribe({
       next :() =>{
-
+        this.loadBrands();
       },
      })
     // }

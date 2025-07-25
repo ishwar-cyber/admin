@@ -25,13 +25,13 @@
     <div class="col-md-6">
         <label class="form-label">Status</label>
         <div class="btn-group w-100" role="group">
-        <input type="radio" class="btn-check" name="status" 
-                id="statusActive" value="active" formControlName="status">
-        <label class="btn btn-outline-success" for="statusActive">Active</label>
+            <input type="radio" class="btn-check" 
+                    id="statusActive" value="true" formControlName="isActive">
+            <label class="btn btn-outline-success" for="statusActive">Active</label>
 
-        <input type="radio" class="btn-check" name="status" 
-                id="statusInactive" value="inactive" formControlName="status">
-        <label class="btn btn-outline-danger" for="statusInactive">Inactive</label>
+            <input type="radio" class="btn-check" 
+                    id="statusInactive" value="false" formControlName="isActive">
+            <label class="btn btn-outline-danger" for="statusInactive">Inactive</label>
         </div>
     </div>
     <div class="col-md-6">

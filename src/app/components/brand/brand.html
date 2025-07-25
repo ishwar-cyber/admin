@@ -38,23 +38,23 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{brand.name}}</td>
                     <td>
-                      <img [src]="brand.image" 
+                      <img [src]="brand?.image?.url" 
                            alt="{{brand.name}}" 
                            class="img-thumbnail" 
                            style="width: 50px; height: 50px;">
                     </td>
                     <td>
                       <span class="badge" 
-                            [class.bg-success]="brand.status === 'active'"
-                            [class.bg-danger]="brand.status === 'inactive'">
-                        {{brand.status}}
+                            [class.bg-success]="brand.isActive === true "
+                            [class.bg-danger]="brand.isActive === false">
+                        {{brand.isActive === true ? 'Active' : 'Inactive'}}
                       </span>
                     </td>
                     <!-- <td>{{category.createdAt | date:'mediumDate'}}</td> -->
                     <td>
                       <div class="btn-group">
                         <button class="btn btn-sm btn-outline-danger" 
-                                (click)="deleteBrand(brand?._id!)">
+                                (click)="deleteBrand(brand.id)">
                           <i class="bi bi-trash"></i>
                         </button>
                       </div>

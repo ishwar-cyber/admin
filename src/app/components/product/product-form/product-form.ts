@@ -197,7 +197,7 @@ export class ProductForm implements OnInit {
   }
   private updateBrand(brandId: string): void {
     const brandValue =  this.brands().filter((brand: BrandM) => {
-      return brand?._id === brandId;  
+      return brand?.id === brandId;  
     });
     this.productForm.patchValue({ brand: brandValue[0]._id });
   }

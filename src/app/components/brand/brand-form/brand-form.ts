@@ -44,7 +44,7 @@ export class BrandForm implements OnInit {
     this.brandFrom = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      status: ['active', Validators.required]
+      status: [true, Validators.required]
     });
   }
 

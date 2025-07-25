@@ -32,7 +32,7 @@ export class CategoryForm implements OnInit{
     this.categoryForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       serviceCharges:[0, Validators.required],
-      status: ['active', Validators.required],
+      isActive: [true, Validators.required],
     })
   }
 
@@ -71,7 +71,7 @@ export class CategoryForm implements OnInit{
      const payload ={
         name: this.categoryForm.value.name,
         serviceCharges: this.categoryForm.value.serviceCharges,
-        status: this.categoryForm.value.status === 'active' ? true : false,
+        isActive: this.categoryForm.value.isActive,
       }
       return payload;
   }  
