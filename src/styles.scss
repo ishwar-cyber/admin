@@ -126,3 +126,9 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+  @media (min-width: 992px) {
+    ::ng-deep .modal-lg, ::ng-deep .modal-xl {
+        --bs-modal-width: 80% !important;
+    }
+  }

@@ -1,15 +1,4 @@
-<!-- <div class="layout-container" [class.sidebar-collapsed]="isSidebarCollapsed()">
-  <app-sidebar [collapsed]="isSidebarCollapsed()"></app-sidebar>
-  <div class="main-content">
-    <app-header 
-      [isCollapsed]="isSidebarCollapsed()"
-      (toggleSidebar)="toggleSidebar()">
-    </app-header>
-    <div class="content-wrapper">
-      <router-outlet/>
-    </div>
-  </div>
-</div> -->
+
 <div class="main-layout">
 <app-sidebar [collapsed]="sidebarCollapsed()" (toggleSidebar)="toggleSidebar()" />
   <div class="main-content" [ngClass]="{'collapsed': sidebarCollapsed()}">
@@ -105,3 +94,4 @@
     </div>
   </div>
 </div>
+

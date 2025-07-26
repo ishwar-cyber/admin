@@ -23,7 +23,7 @@ export class BrandService {
     const formData = new FormData();
     formData.append('name', payload.name);
     formData.append('description', payload.description);
-    formData.append('status', payload.status);
+    formData.append('isActive', payload.isActive);
     formData.append('image', file[0]);
 
     return this.httpClient.post(`${environment.BASE_URL}/brands`, formData);

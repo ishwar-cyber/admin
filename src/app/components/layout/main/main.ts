@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { Sidebar } from '../sidebar/sidebar';
 import {FormsModule} from '@angular/forms';
+import { Loader } from '../../../services/loader';
 @Component({
   selector: 'app-main',
   imports: [CommonModule,RouterOutlet, FormsModule, Sidebar],
@@ -11,7 +12,7 @@ import {FormsModule} from '@angular/forms';
 })
 export class Main {
   isSidebarCollapsed = signal<boolean>(false);
-
+  public loader = inject(Loader);
   // toggleSidebar() {
   //   this.isSidebarCollapsed.update(value => !value);
   // }

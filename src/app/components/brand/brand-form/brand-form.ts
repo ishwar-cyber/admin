@@ -5,6 +5,7 @@ import { BrandM } from '../../../models/brand';
 import { BrandService } from '../../../services/brand';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { UploadImage } from '../../../shareds/upload-image/upload-image';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-brand-form',
@@ -37,6 +38,7 @@ export class BrandForm implements OnInit {
   private formBuilder = inject(FormBuilder);
   private BrandService = inject(BrandService);
   public activeModal = inject(NgbActiveModal);
+  private toastr = inject(ToastrService);
   ngOnInit(): void {
     this.initForm()
   }
@@ -44,7 +46,7 @@ export class BrandForm implements OnInit {
     this.brandFrom = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      status: [true, Validators.required]
+      isActive: [true, Validators.required]
     });
   }
 
@@ -53,14 +55,15 @@ export class BrandForm implements OnInit {
     if(this.brandFrom.valid){
       this.isLoading.set(true);
       const payload ={
-        name: this.brandFrom.controls['name'].value,
-        description: this.brandFrom.controls['description'].value,
-        status: this.brandFrom.controls['status'].value
+        name: this.brandFrom.value.name,
+        description: this.brandFrom.value.description,
+        isActive: this.brandFrom.value.isActive
       }
       this.selectedFile && this.BrandService.createBrand(payload, this.selectedFile).subscribe({
         next: (res: any) => {
           this.imagePreview.set(null);
           this.selectedFile = null;
+         
         },
         error(err) {
           console.log(err);
@@ -74,13 +77,14 @@ export class BrandForm implements OnInit {
    saveItem(): void {
     // if (this.item) {
     const payload ={
-      name: this.brandFrom.controls['name'].value,
-      description: this.brandFrom.controls['description'].value,
-      status: this.brandFrom.controls['status'].value
+      name: this.brandFrom.value.name,
+      description: this.brandFrom.value.description,
+      isActive: this.brandFrom.value.isActive
     }
     this.BrandService.createBrand(payload, this.selectedFiles()).subscribe({
       next: (res) => {
         this.activeModal.close(true);
+         this.toastr.success('Brand created successfully', 'Success');
       },
       error:(err)=>{
         this.activeModal.close(true);

@@ -3,9 +3,17 @@
   <i class="bi bi-x-circle close" (click)="activeModal.close(true)"></i>
 </div>
 <form [formGroup]="brandFrom">
-    <div class="modal-body">
+    <div class="modal-body row">
+        <div class="mb-3 col-xl-6 col-lg-6 col-md-12">
+          <upload-image 
+            [maxFileSizeMB]="maxFileSize()"
+            [allowedTypes]="allowedFileTypes()"
+            (filesSelected)="onFilesSelected($event)"
+          >
+          </upload-image>
+        </div>
       <!-- Name Field -->
-      <div class="mb-3">
+      <div class="mb-3 col-12 col-sm-12 col-md-6">
         <label for="name" class="form-label">Brand Name</label>
         <input type="text" 
           class="form-control" 
@@ -21,7 +29,27 @@
           }
         </div>
       </div>
+  <!-- Status Field -->
+      <div class="mb-3 col-12 col-sm-12 col-md-6">
+        <label class="form-label">Status</label>
+        <div class="btn-group w-100">
+          <input type="radio" 
+                  class="btn-check" 
+                  name="isActive" 
+                  id="active" 
+                  [value]="true"
+                  formControlName="isActive">
+          <label class="btn btn-outline-success" for="active">Active</label>
 
+          <input type="radio" 
+                  class="btn-check" 
+                  name="isActive" 
+                  id="inactive" 
+                  [value]="false"
+                  formControlName="isActive">
+          <label class="btn btn-outline-danger" for="inactive">Inactive</label>
+        </div>
+      </div>
       <!-- Description Field -->
       <div class="mb-3">
         <label for="description" class="form-label">Description</label>
@@ -39,35 +67,8 @@
           }
         </div>
       </div>
-      <div class="mb-3">
-        <upload-image 
-         [maxFileSizeMB]="maxFileSize()"
-          [allowedTypes]="allowedFileTypes()"
-          (filesSelected)="onFilesSelected($event)"
-          (uploadComplete)="onUploadComplete($event)"
-        >
-        </upload-image>
-      <!-- Status Field -->
-      <div class="mb-3">
-        <label class="form-label">Status</label>
-        <div class="btn-group w-100">
-          <input type="radio" 
-                  class="btn-check" 
-                  name="status" 
-                  id="active" 
-                  [value] = true
-                  formControlName="status">
-          <label class="btn btn-outline-success" for="active">Active</label>
-
-          <input type="radio" 
-                  class="btn-check" 
-                  name="status" 
-                  id="inactive" 
-                  [value]=false
-                  formControlName="status">
-          <label class="btn btn-outline-danger" for="inactive">Inactive</label>
-        </div>
-      </div>
+    
+    
     </div>
   
     <div class="modal-footer">
@@ -82,5 +83,4 @@
         }
       </button>
     </div>
-  </div>
 </form>
