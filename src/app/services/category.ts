@@ -46,7 +46,6 @@ export class CategoryS {
     public createPayload(payload: any, selectedFile: any): FormData {
       const formData = new FormData();
       formData.append('name', payload.name);
-      formData.append('serviceCharges', payload.serviceCharges);
       formData.append('isActive', payload.isActive);
       if (selectedFile) {
         formData.append('image', selectedFile[0]);

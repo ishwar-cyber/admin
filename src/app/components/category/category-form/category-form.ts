@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { UploadImage } from "../../../shareds/upload-image/upload-image";
 import { CategoryS } from '../../../services/category';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CommonConstants } from '../../../common/common-constant';
 
 @Component({
   selector: 'app-category-form',
@@ -21,6 +22,7 @@ export class CategoryForm implements OnInit{
   uploadedImages = signal<string[]>([]);
   selectedFiles = signal<File[]>([]);
   imageUploaded = signal<boolean>(false);
+  statusMenu = signal<any[]>(CommonConstants.statusMenu);
  @Input() item: any; // from modal
 
   private formBuilder = inject(FormBuilder);
@@ -34,7 +36,6 @@ export class CategoryForm implements OnInit{
       this.editMode.set(true);
       this.categoryForm.patchValue({
         name: this.item.name,
-        serviceCharges: this.item.serviceCharges,
         isActive: this.item.isActive
       });
       this.uploadedImages.set(this.item?.image?.url || '');
@@ -43,7 +44,7 @@ export class CategoryForm implements OnInit{
   public buildForm(){
     this.categoryForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      serviceCharges:[0, Validators.required],
+
       isActive: [true, Validators.required],
     })
   }
@@ -97,8 +98,7 @@ export class CategoryForm implements OnInit{
   createPayload(){
      const payload ={
         name: this.categoryForm.value.name,
-        serviceCharges: this.categoryForm.value.serviceCharges,
-        isActive: this.categoryForm.value.isActive === 'true' ? true : false,
+        isActive: this.categoryForm.value.isActive,
       }
       return payload;
   }  

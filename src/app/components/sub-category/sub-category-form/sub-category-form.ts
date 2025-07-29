@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CategoryS } from '../../../services/category';
 import { UploadImage } from "../../../shareds/upload-image/upload-image";
 import { SubCategoryS } from '../../../services/sub-category';
+import { CommonConstants } from '../../../common/common-constant';
 
 @Component({
   selector: 'app-sub-category-form',
@@ -22,30 +23,56 @@ export class SubCategoryForm implements OnInit {
   allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
   uploadedImages = signal<string[]>([]);
   selectedFiles = signal<File[]>([]);
+  statusMenu = signal<any[]>(CommonConstants.statusMenu);
+  @Input() item: any; // from modal
+  set category(value: any) {
+    if (value) {
+      this.subCategoryForm.patchValue({
+        category: value.id,
+      });
+    }
+  }
   public activeModal = inject(NgbActiveModal);
   private categoryService = inject(CategoryS);
   private formBuilder =inject(FormBuilder);
   private subCategoryService = inject(SubCategoryS)
 
   ngOnInit(): void {
-    this.formBUild();
+    this.formBuild();
     this.loadCategory();
+    console.log('SubCategoryForm ngOnInit called with item:', this.item);
+    
+    if (this.item !== null) {
+      this.editMode.set(true);
+      let categoryFind = this.categories().filter(cat => cat.id === this.item.category?.id);
+      console.log('Category found:', categoryFind);
+      
+      this.subCategoryForm.patchValue({
+        name: this.item.name,
+        category: this.item.category?.id,
+        serviceCharges: this.item.serviceCharges,
+        isActive: this.item.isActive
+      });
+      this.uploadedImages.set(this.item?.image?.url || '');
+    }
   }
 
-  private formBUild(): void {
+  private formBuild(): void {
     this.subCategoryForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       category: ['', Validators.required],
-      status: [true, Validators.required],
+      serviceCharges: ['', [Validators.required, Validators.min(0)]],
+      isActive: [true, Validators.required],
     });
   }
+  
   loadCategory(){
     this.categoryService.getCategories().subscribe({
       next: (res: any)=>{
         this.categories.set(res.data)
       }, 
-      error:()=>{
-
+      error:(errorResponse)=>{
+        console.error('Error loading categories:', errorResponse);
       }
     })
   }
@@ -53,9 +80,13 @@ export class SubCategoryForm implements OnInit {
     const payload ={
       name: this.subCategoryForm.value.name,
       category: this.subCategoryForm.value.category,
-      status: this.subCategoryForm.value.status === 'active' ? true : false,
+      serviceCharges: this.subCategoryForm.value.serviceCharges,
+      isActive: this.subCategoryForm.value.isActive,
     }
-    this.subCategoryService.addSubCategory(payload, this.selectedFiles).subscribe({
+    const subCategoryRequest = this.editMode() ?
+      this.subCategoryService.updateSubCategory(this.item.id, payload, this.selectedFiles()) :
+      this.subCategoryService.addSubCategory(payload, this.selectedFiles());
+    subCategoryRequest.subscribe({
       next: (response)=>{
         this.activeModal.close(true);
       },error :(err) =>{

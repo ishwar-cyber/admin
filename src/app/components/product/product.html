@@ -58,7 +58,7 @@
             </select>
           </div>
           <div class="col-md-3 d-flex align-items-end gap-2">
-            <button type="submit" class="btn btn-primary px-4">
+            <button type="submit" class="btn btn-primary px-4" (click)="applyFilter()">
               <i class="bi bi-funnel me-1"></i> Apply
             </button>
             <button type="reset" class="btn btn-outline-secondary px-4">
@@ -101,7 +101,7 @@
                     </div>
                   </div>
                 </td>
-                <td class="text-muted">{{item.model || '--'}}</td>
+                <td class="text-muted">{{item.sku || '--'}}</td>
                 <td>
                   @for (item of item.category; track $index) {
                      <span> {{item.name}},</span>

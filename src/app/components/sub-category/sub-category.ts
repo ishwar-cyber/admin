@@ -71,19 +71,16 @@ export class SubCategory {
       },
     })
   }
-  public loadCategory(){
-    this.categoryService.getCategories().subscribe({
-      next : (response: any)=>{
-        this.category.set(response?.data)
-      },
-      error :(err)=>{
-
-      }
-    })
-  }
-
   deleteCategory(id: string): void {
-    this.subCategories.update(cats => cats.filter(c => c._id !== id));
+   this.subCategoryService.deleteSubCategory(id).subscribe({
+      next: () => {
+       this.loadSubCategories();
+      //  this.loadCategory();
+      },
+      error: (error) => { 
+        console.error('Error deleting sub-category:', error);
+      }
+    });
   }
 
   // Additional helper methods

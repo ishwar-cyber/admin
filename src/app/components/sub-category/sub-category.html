@@ -104,7 +104,7 @@
                 </td>
               </tr>
             } @else {
-              @for (category of filteredCategories(); track category._id; let i = $index) {
+              @for (subCategory of filteredCategories(); track subCategory.id; let i = $index) {
                 <tr>
                   <td class="ps-4">{{ i + 1 }}</td>
                   <td>
@@ -113,36 +113,36 @@
                         <i class="bi bi-folder-fill text-warning"></i>
                       </div>
                       <div class="flex-grow-1">
-                        {{ category.name }}
-                        @if (category.description) {
-                          <div class="text-muted small">{{ category.description | truncate:30 }}</div>
+                        {{ subCategory.name }}
+                        @if (subCategory.description) {
+                          <div class="text-muted small">{{ subCategory.description | truncate:30 }}</div>
                         }
                       </div>
                     </div>
                   </td>
-                  <td>{{ category.category?.name }}</td>
-                  <td>{{ category.products || 0 }}</td>
+                  <td>{{ subCategory.category?.name }}</td>
+                  <td>{{ subCategory.productCount || 0 }}</td>
                   <td>
                     <span class="badge rounded-pill py-1" 
-                          [class.bg-success]="category.isActive === true"
-                          [class.bg-secondary]="category.isActive === false">
+                          [class.bg-success]="subCategory.isActive === true"
+                          [class.bg-secondary]="subCategory.isActive === false">
                       <i class="bi bi-check-circle-fill me-1 small"></i>
-                      {{ category.isActive ? 'Active' : 'Inactive' | titlecase }}
+                      {{ subCategory.isActive ? 'Active' : 'Inactive' | titlecase }}
                     </span>
                   </td>
                   <td>
-                    <div class="small">{{ category.createdAt | date:'shortDate' }}</div>
-                    <div class="text-muted small">{{ category.createdAt | date:'shortTime' }}</div>
+                    <div class="small">{{ subCategory.createdAt | date:'shortDate' }}</div>
+                    <div class="text-muted small">{{ subCategory.createdAt | date:'shortTime' }}</div>
                   </td>
                   <td class="pe-4 text-end">
                     <div class="btn-group btn-group-sm" role="group">
                       <button type="button" class="btn btn-outline-primary" 
-                              (click)="openModal(category)" 
+                              (click)="openModal(subCategory)" 
                               aria-label="Edit category">
                         <i class="bi bi-pencil"></i>
                       </button>
                       <button type="button" class="btn btn-outline-danger" 
-                              (click)="deleteCategory(category._id)"
+                              (click)="deleteCategory(subCategory.id)"
                               aria-label="Delete category">
                         <i class="bi bi-trash"></i>
                       </button>

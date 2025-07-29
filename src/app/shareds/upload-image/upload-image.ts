@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, computed, effect, Input, input, model, output, signal } from '@angular/core';
+import { Loader } from "../loader/loader";
 @Component({
   selector: 'upload-image',
-  imports: [CommonModule],
+  imports: [CommonModule, Loader],
   templateUrl: './upload-image.html',
   styleUrl: './upload-image.scss'
 })
@@ -50,7 +51,7 @@ export class UploadImage implements AfterViewInit {
   }
   ngAfterViewInit(): void {
     // Initialize previewUrls with imageUrl if available
-    if (this.imageUrl) {
+    if (this.imageUrl !== null && this.imageUrl.length > 0) {
       this.previewUrls.set([this.imageUrl]);
     }
   }

@@ -33,7 +33,9 @@ export interface ProductQueryParams {
   brand?: string;
   status?: string;
   sortBy?: string;
-  sortOrder?: string
+  sortOrder?: string,
+  minPrice?: number,
+  maxPrice?:number
 }
 
 
@@ -50,7 +52,7 @@ export interface ProductVariant {
   sku: string;
   price: number;
   stock: number;
-  variantImages?: string[]
+  image?: string[]
 }
 
 export interface ProductModal {

@@ -100,7 +100,7 @@
                 </td>
               </tr>
             } @else {
-              @for (category of filteredCategories(); track category._id; let i = $index) {
+              @for (category of filteredCategories(); track category.id; let i = $index) {
                 <tr>
                   <td class="ps-4">{{ i + 1 }}</td>
                   <td>

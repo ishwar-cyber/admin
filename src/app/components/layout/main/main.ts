@@ -3,16 +3,15 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { Sidebar } from '../sidebar/sidebar';
 import {FormsModule} from '@angular/forms';
-import { Loader } from '../../../services/loader';
+import { Loader } from '../../../shareds/loader/loader';
 @Component({
   selector: 'app-main',
-  imports: [CommonModule,RouterOutlet, FormsModule, Sidebar],
+  imports: [CommonModule,RouterOutlet, Loader, FormsModule, Sidebar],
   templateUrl: './main.html',
   styleUrl: './main.scss'
 })
 export class Main {
   isSidebarCollapsed = signal<boolean>(false);
-  public loader = inject(Loader);
   // toggleSidebar() {
   //   this.isSidebarCollapsed.update(value => !value);
   // }

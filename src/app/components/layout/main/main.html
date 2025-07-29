@@ -1,5 +1,6 @@
 
 <div class="main-layout">
+   <app-loader/>
 <app-sidebar [collapsed]="sidebarCollapsed()" (toggleSidebar)="toggleSidebar()" />
   <div class="main-content" [ngClass]="{'collapsed': sidebarCollapsed()}">
     <div class="top-bar">

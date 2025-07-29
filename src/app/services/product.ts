@@ -79,12 +79,12 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     if (queryParams.status) {
       httpParams = httpParams.set('status', queryParams.status);
     }
-    // if (queryParams.minPrice) {
-    //   httpParams = httpParams.set('minPrice', queryParams.minPrice.toString());
-    // }
-    // if (queryParams.maxPrice) {
-    //   httpParams = httpParams.set('maxPrice', queryParams.maxPrice.toString());
-    // }
+    if (queryParams.minPrice) {
+      httpParams = httpParams.set('minPrice', queryParams.minPrice.toString());
+    }
+    if (queryParams.maxPrice) {
+      httpParams = httpParams.set('maxPrice', queryParams.maxPrice.toString());
+    }
 
     return this.http.get<ProductApiResponse>(`${environment.BASE_URL}/products`, { params: httpParams });
   }
@@ -116,14 +116,14 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     );
   }
 
-  public createProduct(payload: any, thumbnail?: File[], variantsImages?: File[]) {
-   const formData = this.createFormData(payload, thumbnail, variantsImages);
+  public createProduct(payload: any, image?: File[]) {
+   const formData = this.createFormData(payload, image);
     const url = `${environment.BASE_URL}/products`;
     return this.httpClient.post(url, formData);
   }
 
-  public updateProduct(id: string, payload: any, thumbnail?: File, variantsImages?: File[]) {
-    const formData = this.createFormData(payload, thumbnail ? [thumbnail] : undefined, variantsImages);
+  public updateProduct(id: string, payload: any, image?: File[]) {
+    const formData = this.createFormData(payload, image);
     const url = `${environment.BASE_URL}/products/${id}`;
     return this.httpClient.put(url, formData);
   }
@@ -142,10 +142,10 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     this._totalItems.set(0);
   }
 
-  private createFormData(payload: any, thumbnail?: File[], variantsImages?: File[] ): FormData {
+  private createFormData(payload: any, image?: File[] ): FormData {
     const formData = new FormData();
     formData.append('name', payload.name);
-    formData.append('model', payload.model);
+    formData.append('sku', payload.model);
     formData.append('status', payload.status);
     formData.append('brand', payload.brand);
     formData.append('subCategory', payload.subCategory);
@@ -156,17 +156,10 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     formData.append('height', payload.height);
     formData.append('length', payload.length);
     formData.append('weight', payload.weight || null);
-    // formData.append('productImages', payload.productImages);
-    
+
     if (payload.discount) {
       formData.append('discount', payload.discount.toString());
     }
-
-    // if (thumbnail && Array.isArray(thumbnail)) {
-    //   thumbnail.forEach((file, index) => {
-    //     formData.append('productImages', file);
-    //   });
-    // }
      // Handle optional discount field
      if (payload.discount) {
       formData.append('discount', payload.discount.toString());
@@ -206,19 +199,20 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
       formData.append('warranty[details]', payload.warranty.details || '');
     }
     payload.productImages.forEach((productImage: any, index:number)=>{
-      formData.append(`productImages[${index}]`,productImage)
+      formData.append(`images[url][${index}]`, productImage.url)
+      formData.append(`images[public_id][${index}]`, productImage.public_id)
     })
 
     // Handle variants array if exists
     if (payload.variants && payload.variants.length > 0) {
       payload.variants.forEach((variant: any, index: number) => {
-        formData.append(`variants[${index}][variantName]`, variant.variantName || '');
+        formData.append(`variants[${index}][name]`, variant.name || '');
         formData.append(`variants[${index}][sku]`, variant.sku || '');
         formData.append(`variants[${index}][price]`, variant.price?.toString() || '');
         formData.append(`variants[${index}][stock]`, variant.stock?.toString() || '');
         // Handle variant image if exists
-        if (variantsImages && variantsImages[index]) {
-          formData.append(`variants[${index}][variantImage]`, variantsImages[index]);
+        if (image && image[index]) {
+          formData.append(`variants[${index}][image]`, image[index]);
         }
       });
     }
@@ -227,11 +221,13 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
 
   uploadImage(files: File[]) {
     const formData = new FormData();
-      if (files && Array.isArray(files)) {
-      files.forEach((file, index) => {
-        formData.append('productImages', file);
-      });
-    }
+      if (files.length > 1 && Array.isArray(files)) {
+        files.forEach((file, index) => {
+          formData.append('image', file);
+        });
+      } else {
+          formData.append('image', files[0]);
+      }
     const url = `${environment.BASE_URL}/products/images`;
     return this.httpClient.post(url, formData);
   }

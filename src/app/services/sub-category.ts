@@ -18,20 +18,31 @@ export class SubCategoryS {
     return this.httpClient.get(`${this.url}/${id}`);
   }
   addSubCategory(payload: any, file: any) {
-    const formData = new FormData();
-    formData.append('name', payload.name);
-    formData.append('category', payload.category);
-    formData.append('status', payload.status);
-
+    const formData = this.createPayload(payload, file);
     return this.httpClient.post(this.url, formData);
   }
-  updateSubCategory(id: number, payload: any) {
-    return this.httpClient.put(`${this.url}/${id}`, payload);
+  updateSubCategory(id: number, payload: any, file: File[]) {
+    const formData = this.createPayload(payload, file);
+    return this.httpClient.put(`${this.url}/${id}`, formData);
   }
-  deleteSubCategory(id: number) {
+  deleteSubCategory(id: string) {
     return this.httpClient.delete(`${this.url}/${id}`);
   }
   getSubCategoryByCategoryId(id: number) {
     return this.httpClient.get(`${this.url}/category/${id}`);
+  }
+
+  createPayload(payload: any, selectedFile: File[]): FormData {
+    console.log('Creating payload with:', payload, selectedFile);
+    
+    const formData = new FormData();
+    formData.append('name', payload.name);
+    formData.append('category', payload.category);
+    formData.append('serviceCharges', payload.serviceCharges);
+    formData.append('isActive', payload.isActive);
+    if (selectedFile) {
+      formData.append('image', selectedFile[0]);
+    }
+    return formData;
   }
 }

@@ -48,22 +48,24 @@ export class Product implements OnInit {
     })
   }
   ngOnInit(): void {
-    this.selectedCategory
+   
   }
 
   loadProduct(){
     const queryParams = {
       page: this.currentPage(),
       limit: this.itemsPerPage(),
+      
       sortBy: 'createdAt',
       sortOrder: 'desc'
     };
     this.productService.getProducts(queryParams).subscribe({
       next : (res: any) =>{
-       this.productList.set(res.data);
-       this.currentPage.set(res.page);
-       this.totalItems.set(res.totalProducts);
-       this.totalPages.set(res.totalPages)
+        let pegination = res.pagination;
+        this.productList.set(res.data);
+        this.currentPage.set(pegination.page);
+        this.totalItems.set(pegination.total);
+        this.totalPages.set(pegination.pages);
       }
     })
   }
@@ -75,6 +77,10 @@ export class Product implements OnInit {
     }
   }
 
+  applyFilter(){
+    console.log('qwertyuio',this.searchTerm());
+    this.loadProduct();
+  }
   selectCategory(id: string){
     
   }

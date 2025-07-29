@@ -56,6 +56,7 @@ export class ProductForm implements OnInit {
   maxFileSize = signal(10);
   allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
   uploadedImages = signal<any[]>([]);
+  varinatImages = signal<any[]>([]);
   selectedFiles = signal<File[]>([]);
   imageUploaded = signal<boolean>(false);
   constructor() {}
@@ -76,8 +77,7 @@ export class ProductForm implements OnInit {
       next: ({ brands, categories, pincodes, subCategories }: any) => {
         this.brands.set(brands.data);
         this.categories.set(categories.data);
-        this.subCategories.set(subCategories.data);
-
+        this.subCategories.set(subCategories.data);   
         this.pincodes.update(() => {
           return pincodes.data.map((pincode: any) => ({
             name: pincode.pincode || '',
@@ -105,22 +105,22 @@ export class ProductForm implements OnInit {
     this.selectedFiles.set(files);
   }
 
-  onUploadComplete(files: File[]): void {
-    // this.uploadedImages.update(current => [...current, ...imageUrls]);
-
+  onUploadComplete(files: File[], productImages = true): void {
     this.productService.uploadImage(files).subscribe({
-      next: (res:any) =>{
-        for(const image of res.data){
-        this.uploadedImages().push(image);
-
+      next: (res:any) => {
+        if(productImages){
+          for(const image of res.data){
+          console.log('image response', image);
+          this.uploadedImages().push(image); 
+        }
+        } else {
+          this.varinatImages.update(value => [...value, res.data[0]]);
+          console.log('variant image', this.varinatImages());
+          
         }
         console.log('Upload complete. Total images:', this.uploadedImages());
-      },
-      error : (err)=>{
-
-      }
+      },error : (err)=>{}
     })
-    // console.log('Upload complete. Total images:', this.uploadedImages());
   }
 
   public loadProductData(){
@@ -305,12 +305,11 @@ export class ProductForm implements OnInit {
   proccedNext(): void {
     this.submitted = true;
     if (this.productForm.valid) {
-      const mainImageFile = this.selectedFiles();
-      const variantsImages = this.variants.controls.map((control) => control.get('image')?.value).filter((image: any) => image !== null);
+      const image = this.variants.controls.map((control) => control.get('image')?.value).filter((image: any) => image !== null);
       const payload = this.createPayload();
       let callApi: any;
       // if(!this.editProduct()){
-        callApi = this.productService.createProduct(payload, variantsImages);
+        callApi = this.productService.createProduct(payload, image);
       // } else {
         // callApi = this.productService.updateProduct(this.productId(), payload, mainImageFile, variantsImages);
       // }
@@ -343,21 +342,16 @@ export class ProductForm implements OnInit {
     }));
     let category:any = [];
     let pincode: any = [];
-    this.productForm.value.category.forEach((categoryId: any) => {
-      category.push(categoryId.id);
-    });
-    this.productForm.value.pincode.forEach((pincodeId: any) => {
-      pincode.push(pincodeId.id);
-      console.log('pincode', pincode);
-      
-    });
+    this.productForm.value.category.forEach((categoryId: any) => category.push(categoryId.id));
+    this.productForm.value.pincode.forEach((pincodeId: any) => pincode.push(pincodeId.id));
     const variantsArray = this.variants.controls.map(control => ({
-      variantName: control.get('variantName')?.value || '',
+      name: control.get('variantName')?.value || '',
       sku: control.get('sku')?.value || '',
       price: control.get('price')?.value || 0,
       stock: control.get('stock')?.value || 0,
     }));
-   const warranty = {
+  
+    const warranty = {
       period: this.productForm.get('warranty.period')?.value || 0,
       type: this.productForm.get('warranty.type')?.value || '',
       details: this.productForm.get('warranty.details')?.value || ''

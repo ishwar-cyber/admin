@@ -26,7 +26,7 @@ export class Brand implements OnInit{
     this.brandService.getBrands().subscribe({
       next: (brand : any) => {
         console.log('brand', brand);
-        this.brands.set(brand.data.data)
+        this.brands.set(brand.data)
         console.log('this', this.brands);
         
       }
