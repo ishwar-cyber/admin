@@ -80,32 +80,32 @@ export class Sidebar {
       ]
     },
     {
-      title: 'Orders',
+      title: 'Sales',
       icon: 'bi bi-amd',
       children: [
         {
-          title: 'All Orders',
+          title: 'All Sales',
           route: '/admin/order',
           icon: 'bi bi-amd'
         },
         {
-          title: 'Create Order',
+          title: 'Create Sale',
           route: '/admin/sell',
           icon: 'bi bi-amd'
         }
       ]
     },
     {
-      title: 'Purchase Orders',
+      title: 'Purchase',
       icon: 'bi bi-amd',
       children: [
         {
-          title: 'All Purchase Orders',
+          title: 'All Purchase',
           route: '/admin/purchase-orders',
           icon: 'bi bi-amd'
         },
         {
-          title: 'Create Purchase Order',
+          title: 'Create Purchase',
           route: '/admin/create-purchase-order',
           icon: 'bi bi-amd'
         }

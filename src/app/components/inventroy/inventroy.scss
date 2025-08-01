@@ -1,1 +1,16 @@
 // Migrated from inventroy.scss
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background 0.2s;
+}
+.badge {
+  font-size: 0.95em;
+  padding: 0.5em 0.75em;
+  border-radius: 0.5em;
+}
+.btn {
+  transition: box-shadow 0.2s, background 0.2s;
+}
+.btn:focus, .btn:hover {
+  box-shadow: 0 0 0 0.15rem #0d6efd40;
+}

@@ -1,133 +1,156 @@
-<div class="container-fluid mt-4">
-  <div class="card">
-    <div class="card-header bg-primary text-white">
-      <div class="d-flex justify-content-between align-items-center">
+<!-- Summary Card -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm border-0 rounded-4 bg-gradient bg-light">
+      <div class="card-body d-flex flex-wrap justify-content-between align-items-center">
         <div>
-          <h3 class="mb-0">Inventory Management
-            <button class="btn btn-link btn-sm text-white ms-2" title="Learn more about inventory management" (click)="showHelp()">
-              <i class="bi bi-info-circle"></i>
-            </button>
-          </h3>
-          <div class="text-light small mt-1">Track, search, and manage your product inventory efficiently. Use the table below to view, sort, and monitor stock levels.</div>
+          <h5 class="mb-1 fw-bold">Inventory Overview</h5>
+          <div class="text-muted small">Total Products: <span class="fw-semibold">{{ filteredItems().length }}</span></div>
         </div>
-        <button class="btn btn-success rounded-circle shadow" style="width:48px;height:48px;" title="Add new item" (click)="addItem()">
-          <i class="bi bi-plus-lg fs-4"></i>
+        <div>
+          <span class="badge bg-warning text-dark me-2" *ngIf="lowStockItems().length > 0">
+            <i class="bi bi-exclamation-triangle"></i> Low Stock: {{ lowStockItems().length }}
+          </span>
+          <span class="badge bg-success" *ngIf="lowStockItems().length === 0">
+            <i class="bi bi-check-circle"></i> All Stock Healthy
+          </span>
+        </div>
+        <button class="btn btn-primary rounded-pill px-4" (click)="addItem()">
+          <i class="bi bi-plus-lg me-2"></i> Add Product
         </button>
       </div>
     </div>
-    
-    <div class="card-body">
-      <div *ngIf="loading()" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
-      <div *ngIf="error()" class="alert alert-danger text-center">{{ error() }}</div>
-      <div *ngIf="!loading() && !error()">
-        <!-- Search and Filter -->
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control" placeholder="Search products..." 
-                     [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event); fetchProducts()">
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="alert alert-warning d-flex align-items-center gap-2" *ngIf="lowStockItems().length > 0">
-              <i class="bi bi-exclamation-triangle-fill"></i> 
-              <span>{{ lowStockItems().length }} product(s) low in stock</span>
-              <span *ngFor="let item of lowStockItems()" class="badge bg-danger ms-2">{{ item.name }}</span>
-            </div>
-          </div>
-        </div>
+  </div>
+</div>
 
-        <!-- Product Table -->
-        <div class="table-responsive">
-          <table class="table align-middle">
-            <thead class="table-dark">
-              <tr>
-                <th (click)="updateSort('name')">
-                  Name
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'name' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'name' && sortDirection() === 'desc'}"></i>
-                </th>
-                <th (click)="updateSort('category')">
-                  Category
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'category' && sortDirection() === 'asc',
-                    'bi-arrow-down': sortField() === 'category' && sortDirection() === 'desc'}"></i>
-                </th>
-                <th (click)="updateSort('brand')">
-                  Brand
-                </th>
-                <th class="text-end" (click)="updateSort('price')">
-                  Price
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'price' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'price' && sortDirection() === 'desc'}"></i>
-                </th>
-                <th class="text-end" (click)="updateSort('stock')">
-                  Stock
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'stock' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'stock' && sortDirection() === 'desc'}"></i>
-                </th>
-                <th>SKU</th>
-                <th>Status</th>
-                <th>Last Updated</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of filteredItems(); track item.id) {
-                <tr [class.table-warning]="item.stock <= 5">
-                  <td>
-                    <strong>{{ item.name }}</strong>
-                  </td>
-                  <td>{{ joinCategory(item.category) }}</td>
-                  <!-- <pre>{{item.brand.name}}</pre> -->
-                  <td>{{ item.brand.name }}</td>
-                  <td class="text-end">{{ item?.price | currency:'INR' }}</td>
-                  <td class="text-center">
-                    {{ item.stock }}
-                    <span *ngIf="item.stock <= 5" class="badge bg-danger ms-1">Low</span>
-                  </td>
-                  <td>{{ item?.model }}</td>
-                  <td>
-                    <span class="badge" [ngClass]="{
-                      'bg-success': item.status === true,
-                      'bg-secondary': item.status === false,
-                      'bg-warning': item.status === 'draft'
-                    }">{{ item.status ? 'active' : 'inactive' | uppercase}}</span>
-                  </td>
-                  <td>{{ item.updatedAt | date:'medium' }}</td>
-                  <td>
-                    <div class="btn-group btn-group-sm">
-                      <button class="btn btn-outline-danger" (click)="deleteItem(item.id)">
-                        <i class="bi bi-trash"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="9" class="text-center py-5">
-                    <div class="d-flex flex-column align-items-center">
-                      <i class="bi bi-box-seam display-4 text-secondary mb-2"></i>
-                      <div class="fw-bold mb-1">No products found</div>
-                      <div class="text-muted mb-2">Start by adding your first product to the inventory.</div>
-                      <button class="btn btn-primary" (click)="addItem()">
-                        <i class="bi bi-plus-lg"></i> Add Product
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    <div class="card-footer text-muted">
-      Total products: {{ filteredItems().length }}
+<!-- Filter/Search Bar -->
+<div class="row mb-3">
+  <div class="col-md-6">
+    <div class="input-group shadow-sm">
+      <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+      <input 
+        type="text" 
+        class="form-control border-start-0" 
+        placeholder="Search products..." 
+        [ngModel]="searchTerm()" 
+        (ngModelChange)="searchTerm.set($event); fetchProducts()" 
+        aria-label="Search products"
+      >
     </div>
   </div>
+  <div class="col-md-6 text-end">
+    <!-- Example: Add more filters here if needed -->
+  </div>
+</div>
+
+<!-- Modern Table -->
+<div class="table-responsive bg-white rounded-4 shadow-sm p-4">
+  <table class="table table-hover align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th class="cursor-pointer" (click)="updateSort('name')">
+          Name
+          <i class="bi ms-1" [ngClass]="{
+            'bi-arrow-up': sortField() === 'name' && sortDirection() === 'asc',
+            'bi-arrow-down': sortField() === 'name' && sortDirection() === 'desc'
+          }"></i>
+        </th>
+        <th class="cursor-pointer" (click)="updateSort('category')">
+          Category
+          <i class="bi ms-1" [ngClass]="{
+            'bi-arrow-up': sortField() === 'category' && sortDirection() === 'asc',
+            'bi-arrow-down': sortField() === 'category' && sortDirection() === 'desc'
+          }"></i>
+        </th>
+        <th>Brand</th>
+        <th class="text-end cursor-pointer" (click)="updateSort('price')">
+          Price
+          <i class="bi ms-1" [ngClass]="{
+            'bi-arrow-up': sortField() === 'price' && sortDirection() === 'asc',
+            'bi-arrow-down': sortField() === 'price' && sortDirection() === 'desc'
+          }"></i>
+        </th>
+        <th class="text-center cursor-pointer" (click)="updateSort('stock')">
+          Stock
+          <i class="bi ms-1" [ngClass]="{
+            'bi-arrow-up': sortField() === 'stock' && sortDirection() === 'asc',
+            'bi-arrow-down': sortField() === 'stock' && sortDirection() === 'desc'
+          }"></i>
+        </th>
+        <th>SKU</th>
+        <th>Status</th>
+        <th>Updated</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredItems(); track $index"
+          [class.table-warning]="item.stock <= 5"
+          class="align-middle border-bottom">
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-box-seam text-primary"></i>
+            <span class="fw-semibold">{{ item.name }}</span>
+          </div>
+        </td>
+        <td>
+          <span class="badge bg-info-subtle text-info">
+            {{ joinCategory(item.category) }}
+          </span>
+        </td>
+        <td>
+          <span class="badge bg-secondary-subtle text-secondary">
+            {{ item.brand.name }}
+          </span>
+        </td>
+        <td class="text-end fw-bold">
+          {{ item?.price | currency:'INR' }}
+        </td>
+        <td class="text-center">
+          <span [ngClass]="{ 'text-danger fw-bold': item.stock <= 5 }">
+            {{ item.stock }}
+          </span>
+          <span *ngIf="item.stock <= 5" class="badge bg-danger ms-1">Low</span>
+        </td>
+        <td>{{ item?.model }}</td>
+        <td>
+          <span class="badge" [ngClass]="{
+            'bg-success': item.status === true,
+            'bg-secondary': item.status === false,
+            'bg-warning text-dark': item.status === 'draft'
+          }">
+            {{
+              item.status === true ? 'ACTIVE' :
+              item.status === false ? 'INACTIVE' :
+              item.status === 'draft' ? 'DRAFT' : 'UNKNOWN'
+            }}
+          </span>
+        </td>
+        <td>
+          <span class="text-muted small">
+            {{ item.updatedAt | date:'short' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-outline-danger rounded-circle"
+                  (click)="deleteItem(item.id)"
+                  [attr.aria-label]="'Delete ' + item.name">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="filteredItems().length === 0">
+        <td colspan="9" class="text-center py-5 text-muted">
+          <div class="d-flex flex-column align-items-center">
+            <i class="bi bi-box-seam fs-1 mb-2 text-primary"></i>
+            <div class="fw-bold">No products found</div>
+            <div class="small mb-3">Start by adding your first product.</div>
+            <button class="btn btn-primary rounded-pill px-4" (click)="addItem()">
+              <i class="bi bi-plus-lg me-2"></i> Add Product
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

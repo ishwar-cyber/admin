@@ -1,181 +1,181 @@
-<!-- create-order.component.html -->
-<div class="create-order-container">
-    <div class="card shadow-lg">
-      <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Create New Order</h5>
-      </div>
-  
-      <div class="card-body">
-        <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
-          <!-- Error Message -->
-          @if (submissionError()) {
-            <div class="alert alert-danger" role="alert">
-              {{ submissionError() }}
-            </div>
-          }
-  
-          <div class="row g-3 mb-4">
-            <!-- Customer Selection -->
-            <div class="col-md-6">
-              <label for="customerId" class="form-label">Customer</label>
-              <select class="form-select" id="customerId" formControlName="customerId"
-                      [ngClass]="{ 'is-invalid': f['customerId'].touched && f['customerId'].errors }">
-                <option value="">Select a customer</option>
-                @for (customer of customers(); track customer.id) {
-                  <option [value]="customer.id">{{ customer.name }} ({{ customer.email }})</option>
+    <div class="create-order-container py-4">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white rounded-top-4">
+          <h5 class="mb-0 fw-bold"><i class="bi bi-cart-plus me-2"></i> Create New Order</h5>
+        </div>
+        <div class="card-body bg-light rounded-bottom-4">
+          <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+            <!-- Error Message -->
+            @if (submissionError()) {
+              <div class="alert alert-danger mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ submissionError() }}
+              </div>
+            }
+
+            <!-- Customer & Dates -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label for="customerId" class="form-label fw-semibold">Customer</label>
+                <div class="position-relative">
+                  <input type="text" class="form-control rounded-pill" 
+                         placeholder="Search customers..." 
+                         (input)="onCustomerSearch($event)"
+                         [value]="selectedCustomerName()"
+                         [ngClass]="{ 'is-invalid': f['customerId'].touched && f['customerId'].errors }">
+                  
+                  @if (showCustomerDropdown() && filteredCustomers().length > 0) {
+                    <div class="dropdown-menu show position-absolute w-100 mt-1" style="z-index: 1000;">
+                      @for (customer of filteredCustomers(); track customer.id) {
+                        <button type="button" class="dropdown-item" (click)="selectCustomer(customer)">
+                          {{ customer.name }} - {{ customer.email }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+                <input type="hidden" formControlName="customerId">
+                @if (f['customerId'].touched && f['customerId'].errors) {
+                  <div class="invalid-feedback d-block">Please select a customer</div>
                 }
-              </select>
-              @if (f['customerId'].touched && f['customerId'].errors) {
-                <div class="invalid-feedback">
-                  Please select a customer
-                </div>
-              }
+              </div>
+              <div class="col-md-3">
+                <label for="orderDate" class="form-label fw-semibold">Order Date</label>
+                <input type="date" class="form-control rounded-pill" id="orderDate" formControlName="orderDate"
+                       [ngClass]="{ 'is-invalid': f['orderDate'].touched && f['orderDate'].errors }">
+                @if (f['orderDate'].touched && f['orderDate'].errors) {
+                  <div class="invalid-feedback">Order date is required</div>
+                }
+              </div>
+              <div class="col-md-3">
+                <label for="deliveryDate" class="form-label fw-semibold">Delivery Date</label>
+                <input type="date" class="form-control rounded-pill" id="deliveryDate" formControlName="deliveryDate"
+                       [ngClass]="{ 'is-invalid': f['deliveryDate'].touched && f['deliveryDate'].errors }">
+                @if (f['deliveryDate'].touched && f['deliveryDate'].errors) {
+                  <div class="invalid-feedback">Delivery date is required</div>
+                }
+              </div>
             </div>
-  
-            <!-- Order Date -->
-            <div class="col-md-3">
-              <label for="orderDate" class="form-label">Order Date</label>
-              <input type="date" class="form-control" id="orderDate" formControlName="orderDate"
-                     [ngClass]="{ 'is-invalid': f['orderDate'].touched && f['orderDate'].errors }">
-              @if (f['orderDate'].touched && f['orderDate'].errors) {
-                <div class="invalid-feedback">
-                  Order date is required
-                </div>
-              }
-            </div>
-  
-            <!-- Delivery Date -->
-            <div class="col-md-3">
-              <label for="deliveryDate" class="form-label">Delivery Date</label>
-              <input type="date" class="form-control" id="deliveryDate" formControlName="deliveryDate"
-                     [ngClass]="{ 'is-invalid': f['deliveryDate'].touched && f['deliveryDate'].errors }">
-              @if (f['deliveryDate'].touched && f['deliveryDate'].errors) {
-                <div class="invalid-feedback">
-                  Delivery date is required
-                </div>
-              }
-            </div>
-          </div>
-  
-          <!-- Order Items -->
-          <div class="order-items-section mb-4">
-            <h5 class="mb-3">Order Items</h5>
-            
-            <div formArrayName="items">
-              @for (item of items.controls; let i = $index; track i) {
-                <div class="order-item-card mb-3 p-3 border rounded" [formGroupName]="i">
-                  <div class="row g-3">
-                    <div class="col-md-5">
-                      <label [for]="'productId-' + i" class="form-label">Product</label>
-                      <select class="form-select" [id]="'productId-' + i" formControlName="productId"
-                              (change)="onProductSelect(i)"
-                              [ngClass]="{ 'is-invalid': item.get('productId')?.touched && item.get('productId')?.errors }">
-                        <option value="">Select a product</option>
-                        @for (product of filteredProducts(); track product.id) {
-                          <option [value]="product.id">{{ product.name }} (₹{{ product.price }})</option>
+
+            <!-- Order Items -->
+            <div class="order-items-section mb-4">
+              <h5 class="mb-3 fw-bold"><i class="bi bi-box-seam me-2"></i> Order Items</h5>
+              <div formArrayName="items">
+                @for (item of items.controls; let i = $index; track i) {
+                  <div class="order-item-card mb-3 p-3 border rounded-3 bg-white shadow-sm" [formGroupName]="i">
+                    <div class="row g-3 align-items-end">
+                      <div class="col-md-5">
+                        <label [for]="'productId-' + i" class="form-label">Product</label>
+                        <div class="position-relative">
+                          <input type="text" class="form-control rounded-pill" 
+                                 [placeholder]="'Search products...'" 
+                                 (input)="onProductSearch($event, i)"
+                                 [value]="getSelectedProductName(i)"
+                                 [ngClass]="{ 'is-invalid': item.get('productId')?.touched && item.get('productId')?.errors }">
+                          
+                          @if (showProductDropdown(i) && getFilteredProducts(i).length > 0) {
+                            <div class="dropdown-menu show position-absolute w-100 mt-1" style="z-index: 1000;">
+                              @for (product of getFilteredProducts(i); track product.id) {
+                                <button type="button" class="dropdown-item" (click)="selectProduct(product, i)">
+                                  {{ product.name }} - ₹{{ product.price }} (Stock: {{ product.stock }})
+                                </button>
+                              }
+                            </div>
+                          }
+                        </div>
+                        <input type="hidden" formControlName="productId">
+                        @if (item.get('productId')?.touched && item.get('productId')?.errors) {
+                          <div class="invalid-feedback d-block">Please select a product</div>
                         }
-                      </select>
-                      @if (item.get('productId')?.touched && item.get('productId')?.errors) {
-                        <div class="invalid-feedback">
-                          Please select a product
+                      </div>
+                      <div class="col-md-2">
+                        <label [for]="'quantity-' + i" class="form-label">Quantity</label>
+                        <input type="number" class="form-control rounded-pill" [id]="'quantity-' + i" 
+                               formControlName="quantity" min="1"
+                               (input)="onQuantityChange()"
+                               [ngClass]="{ 'is-invalid': item.get('quantity')?.touched && item.get('quantity')?.errors }">
+                        @if (item.get('quantity')?.touched && item.get('quantity')?.errors) {
+                          <div class="invalid-feedback">
+                            @if (item.get('quantity')?.errors?.['required']) { <div>Quantity is required</div> }
+                            @if (item.get('quantity')?.errors?.['min']) { <div>Minimum quantity is 1</div> }
+                          </div>
+                        }
+                      </div>
+                      <div class="col-md-3">
+                        <label [for]="'unitPrice-' + i" class="form-label">Unit Price (₹)</label>
+                        <div class="input-group">
+                          <span class="input-group-text">₹</span>
+                          <input type="number" step="0.01" class="form-control" [id]="'unitPrice-' + i"
+                                 formControlName="unitPrice" readonly>
                         </div>
-                      }
-                    </div>
-  
-                    <div class="col-md-2">
-                      <label [for]="'quantity-' + i" class="form-label">Quantity</label>
-                      <input type="number" class="form-control" [id]="'quantity-' + i" formControlName="quantity"
-                             [ngClass]="{ 'is-invalid': item.get('quantity')?.touched && item.get('quantity')?.errors }">
-                      @if (item.get('quantity')?.touched && item.get('quantity')?.errors) {
-                        <div class="invalid-feedback">
-                          @if (item.get('quantity')?.errors?.['required']) {
-                            <div>Quantity is required</div>
-                          }
-                          @if (item.get('quantity')?.errors?.['min']) {
-                            <div>Minimum quantity is 1</div>
-                          }
-                        </div>
-                      }
-                    </div>
-  
-                    <div class="col-md-3">
-                      <label [for]="'unitPrice-' + i" class="form-label">Unit Price (₹)</label>
-                      <div class="input-group">
-                        <span class="input-group-text">₹</span>
-                        <input type="number" step="0.01"  class="form-control" [id]="'unitPrice-' + i" 
-                               formControlName="unitPrice" readonly>
+                      </div>
+                      <div class="col-md-2 d-flex align-items-end">
+                        @if (i === items.length - 1) {
+                          <button type="button" class="btn btn-success me-2 rounded-circle" (click)="addOrderItem()">
+                            <i class="bi bi-plus"></i>
+                          </button>
+                        }
+                        @if (items.length > 1) {
+                          <button type="button" class="btn btn-danger rounded-circle" (click)="removeOrderItem(i)">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        }
                       </div>
                     </div>
-  
-                    <div class="col-md-2 d-flex align-items-end">
-                      @if (i === items.length - 1) {
-                        <button type="button" class="btn btn-success me-2" (click)="addOrderItem()">
-                          <i class="bi bi-plus"></i>
-                        </button>
-                      }
-                      @if (items.length > 1) {
-                        <button type="button" class="btn btn-danger" (click)="removeOrderItem(i)">
-                          <i class="bi bi-trash"></i>
-                        </button>
-                      }
-                    </div>
                   </div>
-                </div>
-              }
+                }
+              </div>
             </div>
-          </div>
-  
-          <!-- Payment Method -->
-          <div class="row g-3 mb-4">
-            <div class="col-md-6">
-              <label for="paymentMethod" class="form-label">Payment Method</label>
-              <select class="form-select" id="paymentMethod" formControlName="paymentMethod">
-                <option value="credit_card">Credit Card</option>
-                <option value="debit_card">Debit Card</option>
-                <option value="net_banking">Net Banking</option>
-                <option value="upi">UPI</option>
-                <option value="cash_on_delivery">Cash on Delivery</option>
-              </select>
+
+            <!-- Payment & Notes -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label for="paymentMethod" class="form-label fw-semibold">Payment Method</label>
+                <select class="form-select rounded-pill" id="paymentMethod" formControlName="paymentMethod">
+                  <option value="credit_card">Credit Card</option>
+                  <option value="debit_card">Debit Card</option>
+                  <option value="net_banking">Net Banking</option>
+                  <option value="upi">UPI</option>
+                  <option value="cash_on_delivery">Cash on Delivery</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="notes" class="form-label fw-semibold">Order Notes</label>
+                <textarea class="form-control rounded-3" id="notes" formControlName="notes" rows="2"></textarea>
+              </div>
             </div>
-  
-            <div class="col-md-6">
-              <label for="notes" class="form-label">Order Notes</label>
-              <textarea class="form-control" id="notes" formControlName="notes" rows="2"></textarea>
+
+            <!-- Order Summary -->
+            <div class="order-summary-card p-4 mb-4 bg-white rounded-4 shadow-sm">
+              <h5 class="mb-3 fw-bold"><i class="bi bi-receipt me-2"></i> Order Summary</h5>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal:</span>
+                <span>₹{{ currentSubTotal() | number:'1.2-2' }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Tax (18%):</span>
+                <span>₹{{ currentTaxAmount() | number:'1.2-2' }}</span>
+              </div>
+              <div class="d-flex justify-content-between fw-bold fs-5">
+                <span>Total:</span>
+                <span>₹{{ currentTotalAmount() | number:'1.2-2' }}</span>
+              </div>
             </div>
-          </div>
-  
-          <!-- Order Summary -->
-          <div class="order-summary-card p-4 mb-4 bg-light rounded">
-            <h5 class="mb-3">Order Summary</h5>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Subtotal:</span>
-              <span>₹{{ subTotal() | number:'1.2-2' }}</span>
+
+            <!-- Form Actions -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button type="button" class="btn btn-outline-secondary rounded-pill me-md-2" routerLink="/orders">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary rounded-pill px-4" [disabled]="orderForm.invalid || isSubmitting()">
+                @if (isSubmitting()) {
+                  <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Processing...
+                } @else {
+                  Create Order
+                }
+              </button>
             </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Tax (18%):</span>
-              <span>₹{{ taxAmount() | number:'1.2-2' }}</span>
-            </div>
-            <div class="d-flex justify-content-between fw-bold fs-5">
-              <span>Total:</span>
-              <span>₹{{ totalAmount() | number:'1.2-2' }}</span>
-            </div>
-          </div>
-  
-          <!-- Form Actions -->
-          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="button" class="btn btn-outline-secondary me-md-2" routerLink="/orders">
-              Cancel
-            </button>
-            <button type="submit" class="btn btn-primary" [disabled]="disableSubmit()">
-              @if (isSubmitting()) {
-                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                Processing...
-              } @else {
-                Create Order
-              }
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
-  </div>

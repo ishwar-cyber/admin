@@ -23,6 +23,7 @@ export class Inventroy implements OnInit{
 
   // State for products
   products = signal<ProductM[]>([]);
+  peginations = signal<any>([]);
   loading = signal(false);
   error = signal<string | null>(null);
 
@@ -34,13 +35,14 @@ export class Inventroy implements OnInit{
     this.loading.set(true);
     this.productService.getProducts({
       page: 1,
-      limit: 50,
+      limit: 10,
       sortBy: this.sortField(),
       sortOrder: this.sortDirection(),
       search: this.searchTerm()
     }).subscribe({
       next: (res:any) => {
-        this.products.set(res.data);
+        this.products.set(res?.data);
+        this.peginations.set(res.pagination)
         this.loading.set(false);
       },
       error: (err) => {
@@ -135,4 +137,23 @@ export class Inventroy implements OnInit{
     
     return Array.isArray([...category]) ? category.join(', ') : String(category);
   }
+
+  // Add these properties
+page = signal(1);
+pageSize = signal(10);
+
+get pagedItems() {
+  const start = (this.page() - 1) * this.pageSize();
+  return this.filteredItems().slice(start, start + this.pageSize());
+}
+
+get totalPages() {
+  return Math.ceil(this.filteredItems().length / this.pageSize());
+}
+
+goToPage(pageNum: number) {
+  if (pageNum >= 1 && pageNum <= this.totalPages) {
+    this.page.set(pageNum);
+  }
+}
 }
