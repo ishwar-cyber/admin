@@ -278,16 +278,8 @@ export class ProductForm implements OnInit {
       price:[null, this.numberOnlyValidator()],
     }));
   }
-  public onStockStatusChange(event: any): void {
-    const status = event.target.value;
-    console.log('Stock status', status);
-    if(status){
-
-    }
-  }
   
-
-  onVariantImageChange(event: any, index: number): void {
+  VariantImageChange(event: any, index: number): void {
     const file = event.target.files[0];
     if (file) {
       const variantGroup = this.variants.at(index);

@@ -1,1 +1,8 @@
 // Migrated from product.scss
+.product__name {
+    max-width: 180px;
+    cursor: pointer;
+}
+.stock{
+    font-weight: 700;
+}

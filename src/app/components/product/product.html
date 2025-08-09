@@ -93,10 +93,12 @@
               <tr>
                 <td>
                   <div class="d-flex align-items-center">
-                    <img [src]="item.thumbnail || 'assets/images/product-placeholder.jpg'" 
+                    <img [src]="item.images[0].url || 'assets/images/product-placeholder.jpg'" 
                          class="rounded me-3 object-fit-cover" alt="Product" width="60" height="60">
-                    <div>
-                      <h6 class="mb-0 fw-semibold">{{item.name}}</h6>
+                    <div class="w-100">
+                      <h6 class="mb-0 fw-semibold product__name text-truncate"
+                          data-bs-toggle="tooltip"
+                          [attr.title]="item.name">{{item.name}}</h6>
                       <small class="text-muted">ID: {{item.id | slice:0:8}}</small>
                     </div>
                   </div>
@@ -128,13 +130,23 @@
                            [style.width]="(item.stock / item.maxStock * 100) + '%'">
                       </div>
                     </div> -->
-                    <span [ngClass]="{
-                      'text-success': item.stock > 20,
-                      'text-warning': item.stock <= 20 && item.stock > 0,
-                      'text-danger': item.stock === 0
-                    }">
-                      {{item.stock}} left
-                    </span>
+                   
+                    @if(isNumeric(item.stock)){
+                       <span class="stock" [ngClass]="{
+                          'text-success': item.stock > 20,
+                          'text-warning': item.stock <= 20 && item.stock > 0,
+                          'text-danger': item.stock === 0
+                        }">
+                      {{item.stock }} left </span>
+          
+                    } @else {
+                      <span class="stock" [ngClass]="{
+                          'text-success': item.stock === 'in',
+                          'text-danger': item.stock === 'out'
+                        }">
+                      In Stock
+                      </span>
+                    }
                   </div>
                 </td>
                 <td>

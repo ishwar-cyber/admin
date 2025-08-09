@@ -61,7 +61,7 @@ export class SubCategoryForm implements OnInit {
     this.subCategoryForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       category: ['', Validators.required],
-      serviceCharges: ['', [Validators.required, Validators.min(0)]],
+      serviceCharges: [0, [ Validators.min(0)]],
       isActive: [true, Validators.required],
     });
   }

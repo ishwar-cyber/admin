@@ -40,10 +40,8 @@
         </div>
         <div class="col-md-6">
                 <label for="serviceCharges" class="form-label">Service charges</label>
-                <input type="number" class="form-control" id="serviceCharges" 
-                    formControlName="serviceCharges"
-                    [class.is-invalid]="subCategoryForm.get('serviceCharges')?.invalid && subCategoryForm.get('serviceCharges')?.touched"
-                    placeholder="e.g. 100"/>
+                <input type="number" class="form-control" id="serviceCharges" formControlName="serviceCharges" placeholder="e.g. 100"/>
+                 <!-- [class.is-invalid]="subCategoryForm.get('serviceCharges')?.invalid && subCategoryForm.get('serviceCharges')?.touched" -->
         </div>
         <!-- Status Field -->
         <div class="col-md-6">

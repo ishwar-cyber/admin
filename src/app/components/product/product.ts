@@ -51,6 +51,10 @@ export class Product implements OnInit {
    
   }
 
+  isNumeric(value: any): boolean {
+  return !isNaN(Number(value));
+}
+
   loadProduct(){
     const queryParams = {
       page: this.currentPage(),

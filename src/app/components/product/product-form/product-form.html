@@ -158,7 +158,7 @@
                     } @else {
                         <div>
                             <select class="form-select" id="stock" formControlName="stock" required>
-                                <option value="">Select stock status</option>
+                                <option>Select stock status</option>
                                 @for(stock of productStock(); track stock){
                                     <option [value]="stock.value">{{ stock.label }}</option>
                                 }
