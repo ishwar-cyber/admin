@@ -1,0 +1,46 @@
+<div class="dropdown" [class.show]="isOpen()">
+  <!-- Input box showing selected -->
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Select category..."
+    readonly
+    [value]="selectedOption()?.name || ''"
+    (click)="isOpen.set(true)"
+  />
+
+  <!-- Dropdown -->
+  <div class="dropdown-menu p-3" [class.show]="isOpen()" style="max-height: 400px; overflow-y: auto;">
+    <!-- Search -->
+    <div class="mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search..."
+        (input)="filterOptions($event)"
+        (click)="$event.stopPropagation()"
+      >
+    </div>
+
+    <!-- Options (radio style) -->
+    <div class="list-group">
+      @for (option of filteredOptions(); track option.id) {
+        <div class="list-group-item">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="categorySelect"
+              [id]="'option-' + option.id"
+              [checked]="selectedOption()?.id === option.id"
+              (change)="selectOption(option)"
+            >
+            <label class="form-check-label" [for]="'option-' + option.id">
+              {{ option.name }}
+            </label>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

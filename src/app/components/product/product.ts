@@ -132,8 +132,6 @@ export class Product implements OnInit {
   getCategoryName(categoryId: string): string {
 
     const category = this.categories().find((c: any) => c.id === categoryId);
-    console.log('remove all duplicate',[...new Set(category)]);
-    
     return category?.name || '';
   }
 }

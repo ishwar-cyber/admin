@@ -156,6 +156,7 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     formData.append('height', payload.height);
     formData.append('length', payload.length);
     formData.append('weight', payload.weight || null);
+    formData.append('category', payload.category || null);
 
     if (payload.discount) {
       formData.append('discount', payload.discount.toString());
@@ -165,11 +166,6 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
       formData.append('discount', payload.discount.toString());
     }
 
-    if(payload.category) {
-      payload.category.forEach((category: any, index: number) => {
-        formData.append(`category[${index}]`, category || '');
-      });
-    }
     if(payload.pincode){
        payload.pincode.forEach((pincode: any, index: number) => {
         formData.append(`pincode[${index}]`, pincode || '');
@@ -211,8 +207,9 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
         formData.append(`variants[${index}][price]`, variant.price?.toString() || '');
         formData.append(`variants[${index}][stock]`, variant.stock?.toString() || '');
         // Handle variant image if exists
-        if (image && image[index]) {
-          formData.append(`variants[${index}][image]`, image[index]);
+        if ( variant.image) {
+          formData.append(`variants[${index}][image][url]`,  variant.image.url);
+          formData.append(`variants[${index}][image][public_id]`, variant.image.public_id)
         }
       });
     }

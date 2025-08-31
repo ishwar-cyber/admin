@@ -14,12 +14,13 @@ import { PincodeS } from '../../../services/pincode';
 import { CategoryM } from '../../../models/category';
 import { BrandM } from '../../../models/brand';
 import { ProductModal } from '../../../models/product';
+import { SingleSelect } from '../../../shareds/single-select/single-select';
 
 @Component({
   selector: 'app-product-form',
   standalone: true,
   imports: [ CommonModule, ReactiveFormsModule,
-    MultipleSelect, UploadImage, RouterModule,  NgbModule ],
+    MultipleSelect, UploadImage, RouterModule, NgbModule, SingleSelect],
   templateUrl: './product-form.html',
   styleUrl: './product-form.scss'
 })
@@ -97,7 +98,14 @@ export class ProductForm implements OnInit {
   }
 
   selectedCategoryId(event: any){
-    console.log('pinocde and category', event);
+    console.log('pincode', event);
+  }
+
+  selectedSubCategory(event: any){
+    console.log('subCategory', event);
+  }
+  selectedCategory(event: any){
+    console.log('categoryId', event);
   }
 
   onFilesSelected(files: File[]): void {
@@ -213,7 +221,7 @@ export class ProductForm implements OnInit {
     this.productForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       brand: ['', Validators.required],
-      category: [[], Validators.required],
+      category: ['', Validators.required],
       pincode: [[]],
       subCategory: ['', Validators.required],
       model: ['', Validators.required],
@@ -323,6 +331,8 @@ export class ProductForm implements OnInit {
   }
 
   public createPayload() {
+    console.log('Creating payload with form values:', this.productForm.value);
+
     const specificationsArray = this.specifications.controls.map(control => ({
       name: control.get('name')?.value || '',
       value: control.get('value')?.value || ''
@@ -332,9 +342,7 @@ export class ProductForm implements OnInit {
       quantity: control.get('quantity')?.value || '',
       price: control.get('price')?.value || 0
     }));
-    let category:any = [];
     let pincode: any = [];
-    this.productForm.value.category.forEach((categoryId: any) => category.push(categoryId.id));
     this.productForm.value.pincode.forEach((pincodeId: any) => pincode.push(pincodeId.id));
     const variantsArray = this.variants.controls.map(control => ({
       name: control.get('variantName')?.value || '',
@@ -351,10 +359,10 @@ export class ProductForm implements OnInit {
     const payload: ProductModal = {
       name: this.productForm.value.name,
       brand: this.productForm.value.brand,
-      category: category,
+      category: this.productForm.value.category.id,
       pincode: pincode,
       productImages: this.uploadedImages(),
-      subCategory: this.productForm.value.subCategory,
+      subCategory: this.productForm.value.subCategory.id,
       stock: this.productForm.value.stock,
       price: this.productForm.value.price,
       model: this.productForm.value.model,

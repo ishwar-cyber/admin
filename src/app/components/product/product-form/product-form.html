@@ -48,11 +48,10 @@
                 
                 <div class="col-md-6">
                     <label for="category" class="form-label">Category</label>
-                    <app-multiple-select 
+                    <app-single-select
                         formControlName="category"
-                        [options]="categories()" [prepopulate]="prepopulate()" (selectionChange)="selectedCategoryId($event)"
+                        [options]="categories()" (selectionChange)="selectedCategory($event)"
                         placeholder="Select Category"
-                        required
                     />
                     @if(submitted && f['category'].errors) {
                         <div class="text-danger">
@@ -74,12 +73,11 @@
                 
                 <div class="col-md-6">
                     <label for="subCategory" class="form-label">Sub Category</label>
-                    <select class="form-select" id="subCategory" formControlName="subCategory" required>
-              `          <option>Select a category</option>
-                        @for(sub of subCategories(); track sub.name){
-                            <option [value]="sub.id">{{ sub.name }}</option>
-                        }
-                    </select>
+                     <app-single-select
+                        formControlName="subCategory"
+                        [options]="subCategories()" (selectionChange)="selectedSubCategory($event)"
+                        placeholder="Select Sub Category"
+                    />
                     @if(submitted && f['subCategory'].errors) {
                         <div class="text-danger">
                             @if(f['subCategory'].errors['required']) {
