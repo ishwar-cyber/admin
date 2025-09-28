@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -53,7 +53,7 @@ export class ProductForm implements OnInit {
   previewUrls: string[] = [];
   public selectedImages: FileList | null = null;
   readonly maxSizeMB = 10;
-
+  @Input() item: any; // from modal
   maxFileSize = signal(10);
   allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
   uploadedImages = signal<any[]>([]);
@@ -95,6 +95,45 @@ export class ProductForm implements OnInit {
     this.productForm?.get('stockStatus')?.valueChanges.subscribe(stockStatus => { 
         console.log('stockStatus', stockStatus);
     }); 
+
+
+
+      if(this.item !== null) {
+      // this.editMode.set(true);
+      this.productForm.patchValue({
+        name: this.item.name,
+        brand: this.item.brand,
+        category: this.item.category,
+        subCategory: this.item.subCategory,
+        model: this.item.sku,
+        status: this.item.status,
+        price: this.item.price,
+        stock: this.item.stock,
+        weight: this.item.weight,
+        length: this.item.length,
+        height: this.item.height,
+        width: this.item.width,
+        warranty: {
+          period: this.item.warranty?.[0]?.period || 0,
+          type: this.item.warranty?.[0]?.type || '',  
+          details: this.item.warranty?.[0]?.details || '',
+        },
+        description: this.item.description,
+        pincode: this.item.pincode?.map((pincodeId: any) => {
+          return { id: pincodeId, name: pincodeId };
+        }),
+
+        variants: this.item.variants?.length ? this.item.variants.map((variant: any) => this.formBuilder.group({
+          variantName: variant.name || '',
+          sku: variant.sku || '',
+          thumbnail: this.item.thumbnail,
+        })) : [],
+        stockStatus: this.item.stock === 'in' || this.item.stock === 'out' ? true : false,
+
+      });
+    
+      this.uploadedImages.set(this.item?.image?.url || '');
+    } 
   }
 
   selectedCategoryId(event: any){

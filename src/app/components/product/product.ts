@@ -6,6 +6,7 @@ import { BrandService } from '../../services/brand';
 import { CategoryS } from '../../services/category';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProductForm } from './product-form/product-form';
+import { ProductEdit } from './product-edit/product-edit';
 
 
 @Component({
@@ -91,6 +92,7 @@ export class Product implements OnInit {
   openAddProductModal(item?: any){
     const modalRef = this.modalService.open(ProductForm, { size: 'lg', backdrop: false, keyboard: true });
     if (modalRef && modalRef.componentInstance) {
+      console.log('item',item);
       modalRef.componentInstance.item = item ? { ...item } : null;
       if (modalRef.result) {
         modalRef.result.then((result: any) => {
@@ -109,8 +111,17 @@ export class Product implements OnInit {
   }
 
   updateProduct(id: string) {
+    this.openAddProductModal(id);
     // Implementation for updating product
-    console.log('Update product:', id);
+    // this.productService.updateProduct(id).subscribe({
+    //   next: (res: any) => {
+    //     console.log('Product updated:', res);
+    //     this.loadProduct();
+    //   },
+    //   error: (err: any) => {
+    //     console.error('Error updating product:', err);
+    //   }
+    // });
   }
 
   duplicateProduct(id: string) {

@@ -20,7 +20,7 @@
 
   <!-- Statistics Cards -->
   <div class="row mb-4">
-    <div class="col-md-2 col-sm-6 mb-3">
+    <div class="col-md-3 col-sm-6 mb-3">
       <div class="card bg-primary text-white">
         <div class="card-body text-center">
           <i class="bi bi-cart-check fs-1"></i>
@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-2 col-sm-6 mb-3">
+    <div class="col-md-3 col-sm-6 mb-3">
       <div class="card bg-warning text-white">
         <div class="card-body text-center">
           <i class="bi bi-clock fs-1"></i>
@@ -38,7 +38,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-2 col-sm-6 mb-3">
+    <div class="col-md-3 col-sm-6 mb-3">
       <div class="card bg-info text-white">
         <div class="card-body text-center">
           <i class="bi bi-gear fs-1"></i>
@@ -47,7 +47,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-2 col-sm-6 mb-3">
+    <div class="col-md-3 col-sm-6 mb-3">
       <div class="card bg-success text-white">
         <div class="card-body text-center">
           <i class="bi bi-check-circle fs-1"></i>
@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-2 col-sm-6 mb-3">
+    <div class="col-md-3 col-sm-6 mb-3">
       <div class="card bg-danger text-white">
         <div class="card-body text-center">
           <i class="bi bi-x-circle fs-1"></i>
@@ -65,7 +65,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-2 col-sm-6 mb-3">
+    <div class="col-md-3 col-sm-6 mb-3">
       <div class="card bg-secondary text-white">
         <div class="card-body text-center">
           <i class="bi bi-currency-dollar fs-1"></i>
@@ -80,17 +80,22 @@
   <div class="card">
     <div class="card-body">
       <!-- Loading State -->
-      <div *ngIf="loading()" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
+       @if(loading()) { 
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
         </div>
-      </div>
+      }
 
       <!-- Error State -->
-      <div *ngIf="error()" class="alert alert-danger text-center">{{ error() }}</div>
+       @if(error()) {
+        <div class="alert alert-danger text-center">{{ error() }}</div>
+      }
 
       <!-- Content -->
-      <div *ngIf="!loading() && !error()">
+      @if(!loading() && !error()) {
+      <div>
         <!-- Filters -->
         <div class="row mb-4">
           <div class="col-md-3 mb-3">
@@ -181,11 +186,11 @@
                   <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'total' && sortDirection() === 'asc',
                                            'bi-arrow-down': sortField() === 'total' && sortDirection() === 'desc'}"></i>
                 </th>
-                <th (click)="updateSort('status')" style="cursor: pointer;">
+                <!-- <th (click)="updateSort('status')" style="cursor: pointer;">
                   Order Status
                   <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'status' && sortDirection() === 'asc',
                                            'bi-arrow-down': sortField() === 'status' && sortDirection() === 'desc'}"></i>
-                </th>
+                </th> -->
                 <th (click)="updateSort('deliveryStatus')" style="cursor: pointer;">
                   Delivery Status
                   <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'deliveryStatus' && sortDirection() === 'asc',
@@ -208,15 +213,15 @@
                     <div class="text-muted small">{{ order.paymentMethod | uppercase }}</div>
                   </td>
                   <td>
-                    <div class="fw-bold">{{ order.customer.name }}</div>
-                    <div class="text-muted small">{{ order.customer.email }}</div>
-                    <div class="text-muted small">{{ order.customer.phone }}</div>
+                    <div class="fw-bold">{{ order?.customer?.name }}</div>
+                    <div class="text-muted small">{{ order?.customer?.email }}</div>
+                    <div class="text-muted small">{{ order?.customer?.phone }}</div>
                   </td>
                   <td>
                     <span class="badge bg-secondary">{{ order.items.length }} items</span>
                     <div class="text-muted small mt-1">
-                      @for (item of order.items.slice(0, 2); track item.productId) {
-                        {{ item.productName }} ({{ item.quantity }})
+                      @for (item of order.items.slice(0, 2); track item.name) {
+                        {{ item.name }} ({{ item.quantity }})
                       }
                       @if (order.items.length > 2) {
                         <span class="text-muted">+{{ order.items.length - 2 }} more</span>
@@ -224,18 +229,20 @@
                     </div>
                   </td>
                   <td class="text-end">
-                    <div class="fw-bold">{{ order.total | currency }}</div>
+                    <div class="fw-bold">{{ order?.totalAmount | currency:'INR' }}</div>
                     <div class="text-muted small">
-                      <span *ngIf="order.discount > 0" class="text-success">-{{ order.discount | currency }}</span>
+                      @if (order.discount > 0) {
+                        <span class="text-success">-{{ order.discount | currency:'INR' }}</span>
+                      }
                     </div>
                   </td>
-                  <td>
-                    <span class="badge" [ngClass]="'bg-' + getStatusColor(order.status)">
-                      {{ order.status | titlecase }}
+                  <!-- <td>
+                    <span class="badge" [ngClass]="'bg-' + getStatusColor(order.orderStatus)">
+                      {{ order.orderStatus | titlecase }}
                     </span>
                     <div class="mt-1">
                       <select class="form-select form-select-sm" 
-                              [value]="order.status"
+                              [value]="order.orderStatus"
                               (change)="onOrderStatusChange(order.id, $event)">
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
@@ -245,25 +252,26 @@
                         <option value="cancelled">Cancelled</option>
                       </select>
                     </div>
-                  </td>
+                  </td> -->
                   <td>
-                    <span class="badge" [ngClass]="'bg-' + getDeliveryStatusColor(order.deliveryStatus)">
-                      {{ order.deliveryStatus.replace('_', ' ') | titlecase }}
+                    <!-- [class]="'bg-' + getDeliveryStatusColor(order?.deliveryStatus)" -->
+                    <span class="badge text-bg-dark">
+                      {{ (selectedOrderStatus() || order?.orderStatus?.replace('_', ' ') || '') | titlecase }}
                     </span>
                     <div class="mt-1">
                       <select class="form-select form-select-sm" 
-                              [value]="order.deliveryStatus"
-                              (change)="onDeliveryStatusChange(order.id, $event)">
-                        <option value="pending">Pending</option>
-                        <option value="in_transit">In Transit</option>
-                        <option value="out_for_delivery">Out for Delivery</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="failed">Failed</option>
+                          [value]="order?.orderStatus "
+                          (change)="onOrderStatusChange(order.id, $event)">
+                          @for (item of orderStatuses; track item.value) {
+                            <option [value]="item.value">{{ item.label }}</option>
+                          }
                       </select>
                     </div>
-                    <div *ngIf="order.trackingNumber" class="text-muted small mt-1">
-                      Track: {{ order.trackingNumber }}
-                    </div>
+                    @if(order.trackingNumber){
+                      <div class="text-muted small mt-1">
+                        Track: {{ order.trackingNumber }}
+                      </div>
+                    }
                   </td>
                   <td>
                     <span class="badge" [ngClass]="'bg-' + getPaymentStatusColor(order.paymentStatus)">
@@ -273,18 +281,20 @@
                   </td>
                   <td>
                     <div>{{ order.createdAt | date:'short' }}</div>
-                    <div *ngIf="order.estimatedDelivery" class="text-muted small">
-                      Est: {{ order.estimatedDelivery | date:'short' }}
-                    </div>
+                    @if(order.estimatedDelivery) {
+                      <div class="text-muted small mt-1">
+                        Placed: {{ order.createdAt | date:'short' }}
+                      </div>
+                    }
                   </td>
                   <td>
                     <div class="btn-group btn-group-sm">
                       <button class="btn btn-outline-primary" (click)="viewOrderDetails(order)" title="View Details">
                         <i class="bi bi-eye"></i>
                       </button>
-                      <button class="btn btn-outline-danger" (click)="deleteOrder(order.id)" title="Delete Order">
+                      <!-- <button class="btn btn-outline-danger" (click)="deleteOrder(order.id)" title="Delete Order">
                         <i class="bi bi-trash"></i>
-                      </button>
+                      </button> -->
                     </div>
                   </td>
                 </tr>
@@ -309,7 +319,8 @@
             <p class="text-muted">Showing {{ filteredOrders().length }} of {{ totalItems() }} orders</p>
           </div>
           <div class="col-md-6">
-            <nav *ngIf="totalItems() > pageSize()">
+            @if(totalItems() > pageSize()) {
+            <nav aria-label="Page navigation">
               <ul class="pagination justify-content-end">
                 <li class="page-item" [class.disabled]="currentPage() === 1">
                   <a class="page-link" (click)="onPageChange(currentPage() - 1)">Previous</a>
@@ -328,9 +339,11 @@
                 </li>
               </ul>
             </nav>
+          }
           </div>
         </div>
       </div>
+    }
     </div>
   </div>
 </div>

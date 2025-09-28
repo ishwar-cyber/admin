@@ -163,17 +163,30 @@
                   {{item.updatedAt | date:'shortDate'}}
                 </td>
                 <td class="text-end">
-                  <div class="btn-group btn-group-sm" dropdown>
-                    <button class="btn btn-outline-light text-dark dropdown-toggle" dropdownToggle>
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><a class="dropdown-item" (click)="viewProduct(item.id)"><i class="bi bi-eye me-2"></i> View</a></li>
-                      <li><a class="dropdown-item" (click)="updateProduct(item.id)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item text-danger" (click)="confirmDelete(item.id)"><i class="bi bi-trash me-2"></i> Delete</a></li>
-                    </ul>
-                  </div>
+                 <div class="btn-group btn-group-sm">
+                  <button class="btn btn-outline-light text-dark dropdown-toggle" 
+                          data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <a class="dropdown-item" (click)="viewProduct(item._id)">
+                        <i class="bi bi-eye me-2"></i> View
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" (click)="openAddProductModal(item)">
+                        <i class="bi bi-pencil me-2"></i> Edit
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                      <a class="dropdown-item text-danger" (click)="confirmDelete(item._id)">
+                        <i class="bi bi-trash me-2"></i> Delete
+                      </a>
+                    </li>
+                  </ul>
+                </div>
                 </td>
               </tr>
             } @empty {

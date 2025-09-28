@@ -228,4 +228,9 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     const url = `${environment.BASE_URL}/products/images`;
     return this.httpClient.post(url, formData);
   }
+
+  searchProducts(term: string): Observable<Product[]> {
+    const params = new HttpParams().set('products', term.trim());
+    return this.http.get<Product[]>(`${environment.BASE_URL}/products/search`, { params });
+  }
 }

@@ -142,27 +142,26 @@
                 <div class="col-md-6">
                     <div class="d-flex align-items-center">
                         <label class="form-label d-block">Inventory Tracker</label>
-                        <div class="form-check form-switch">
+                        <!-- <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="stockStatus" formControlName="stockStatus">
                             <label class="form-check-label" for="stockStatus">
                                 {{ productForm.get('stockStatus')?.value ? 'Active' : 'Inactive' }}
                             </label>
-                        </div>
+                        </div> -->
                     </div>
-                    @if(!productForm.get('stockStatus')?.value) {
+                    <!-- @if(!productForm.get('stockStatus')?.value) {
                         <div class="">
                             <input type="number" class="form-control" min="1" id="stock" formControlName="stock" required>
                         </div>  
-                    } @else {
+                    } @else { -->
                         <div>
                             <select class="form-select" id="stock" formControlName="stock" required>
-                                <option>Select stock status</option>
                                 @for(stock of productStock(); track stock){
-                                    <option [value]="stock.value">{{ stock.label }}</option>
+                                    <option [value]="stock.value" [defaultSelected]="stock.value === productForm.get('stock')?.value">{{ stock.label }}</option>
                                 }
                             </select>
                         </div>
-                    }
+                    <!-- } -->
                     @if(submitted && f['stock'].errors) {
                         <div class="text-danger">
                             @if(f['stock'].errors['required']) {

@@ -16,8 +16,8 @@ interface Product {
 }
 
 interface Customer {
-  id: string;
-  name: string;
+  _id: string;
+  username: string;
   email: string;
 }
 
@@ -30,7 +30,7 @@ interface Customer {
 })
 export class Sell implements OnInit{
 
-    orderForm!: FormGroup;
+  orderForm!: FormGroup;
   
   // Signals for reactive state management
   customers = signal<any[]>([]);
@@ -43,10 +43,11 @@ export class Sell implements OnInit{
   showCustomerDropdown = signal<boolean>(false);
   showProductDropdowns = signal<{[key: number]: boolean}>({});
   selectedCustomerName = signal<string>('');
-  
+  showProductList = signal<boolean>(false);
+  showCustomerList = signal<boolean>(false);
   // Calculation trigger
   calculationTrigger = signal<number>(0);
-  
+  activeDropdownIndex: number | null = null;
   submissionError = signal<string>('');
   isSubmitting = signal<boolean>(false);
   
@@ -149,21 +150,43 @@ export class Sell implements OnInit{
   // Customer search methods
   onCustomerSearch(event: any) {
     const term = event.target.value;
-    this.customerSearchTerm.set(term);
-    this.showCustomerDropdown.set(term.length > 0);
+    this.customerService.getCustomers().subscribe({
+      next: (customers:any) => {
+        this.customers.set(customers.data);
+        this.customers().length > 0 ? this.showCustomerList.set(true) : this.showCustomerList.set(false);
+      },
+      error: (err) => {
+        this.submissionError.set('Failed to load customers');
+      }
+    });
   }
 
   selectCustomer(customer: Customer) {
-    this.orderForm.patchValue({ customerId: customer.id });
-    this.selectedCustomerName.set(customer.name);
-    this.showCustomerDropdown.set(false);
+    console.log('customereee', customer);
+    
+    this.selectedCustomerName.set(customer.username);
+    this.orderForm.patchValue({ customerId: customer._id });
+    console.log('selected name', this.selectedCustomerName());
+    
+    this.showCustomerList.set(false);
     this.customerSearchTerm.set('');
   }
 
   // Product search methods
   onProductSearch(event: any, index: number) {
     const term = event.target.value;
-    this.loadProducts(term);
+    this.activeDropdownIndex = index;
+    this.productService.searchProducts(term).subscribe({
+      next: (products:any) => {
+        this.products.set(products.data);
+        this.products().length > 0 ? this.showProductList.set(true) : this.showProductList.set(false);
+        console.log('searched products', products);
+        
+      },
+      error: (err) => {
+        this.submissionError.set('Failed to load products');
+      }
+    });
   }
 
   getFilteredProducts(index: number): ProductM[] {
@@ -175,6 +198,7 @@ export class Sell implements OnInit{
   }
 
   selectProduct(product: ProductM, index: number) {
+    this.showProductList.set(false);
     const item = this.items.at(index);
     item.patchValue({
       productId: product.id,
@@ -264,28 +288,11 @@ export class Sell implements OnInit{
     });
   }
   loadCustomers(): void {
-    this.customerService.getCustomers().subscribe({
-      next: (customers:any) => {
-        this.customers.set(customers.data);
-      },
-      error: (err) => {
-        this.submissionError.set('Failed to load customers');
-      }
-    });
+    
   }
 
   loadProducts(search?:string): void {
-    this.productService.getProducts( {page: 1,
-      limit: 10,
-      search: search}).subscribe({
-      next: (products:any) => {
-       return this.products.set(products.data);
-       
-      },
-      error: (err) => {
-        this.submissionError.set('Failed to load products');
-      }
-    });
+   
   }
     
   // private fb = inject(FormBuilder);

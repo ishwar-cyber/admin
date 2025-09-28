@@ -1,6 +1,6 @@
 export interface OrderItem {
   productId: string;
-  productName: string;
+  name: string;
   quantity: number;
   price: number;
   total: number;
@@ -30,8 +30,8 @@ export interface Order {
   tax: number;
   shipping: number;
   discount: number;
-  total: number;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  totalAmount: number;
+  orderStatus: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   deliveryStatus: 'pending' | 'in_transit' | 'out_for_delivery' | 'delivered' | 'failed';
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethod: 'cod' | 'online' | 'card' | 'upi';

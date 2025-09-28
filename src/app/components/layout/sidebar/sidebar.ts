@@ -80,37 +80,42 @@ export class Sidebar {
       ]
     },
     {
-      title: 'Sales',
-      icon: 'bi bi-amd',
-      children: [
-        {
-          title: 'All Sales',
-          route: '/admin/order',
-          icon: 'bi bi-amd'
-        },
-        {
-          title: 'Create Sale',
-          route: '/admin/sell',
-          icon: 'bi bi-amd'
-        }
-      ]
+      title: 'Orders',
+      route: '/admin/order',
+      icon: 'bi bi-house'
     },
-    {
-      title: 'Purchase',
-      icon: 'bi bi-amd',
-      children: [
-        {
-          title: 'All Purchase',
-          route: '/admin/purchase-orders',
-          icon: 'bi bi-amd'
-        },
-        {
-          title: 'Create Purchase',
-          route: '/admin/create-purchase-order',
-          icon: 'bi bi-amd'
-        }
-      ]
-    }
+    // {
+    //   title: 'Sales',
+    //   icon: 'bi bi-amd',
+    //   children: [
+    //     {
+    //       title: 'All Sales',
+    //       route: '/admin/order',
+    //       icon: 'bi bi-amd'
+    //     },
+    //     {
+    //       title: 'Create Sale',
+    //       route: '/admin/sell',
+    //       icon: 'bi bi-amd'
+    //     }
+    //   ]
+    // },
+    // {
+    //   title: 'Purchase',
+    //   icon: 'bi bi-amd',
+    //   children: [
+    //     {
+    //       title: 'All Purchase',
+    //       route: '/admin/purchase-orders',
+    //       icon: 'bi bi-amd'
+    //     },
+    //     {
+    //       title: 'Create Purchase',
+    //       route: '/admin/create-purchase-order',
+    //       icon: 'bi bi-amd'
+    //     }
+    //   ]
+    // }
   ]);
 
 

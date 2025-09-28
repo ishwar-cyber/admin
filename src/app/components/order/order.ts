@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { OrderService } from '../../services/order';
 import { Order, OrderQueryParams } from '../../models/order';
+import { CommonConstants } from '../../common/common-constant';
 
 @Component({
   selector: 'app-order',
@@ -19,7 +20,7 @@ export class OrderComponent implements OnInit {
   Math = Math;
 
   // State signals
-  orders = signal<Order[]>([]);
+  orders = signal<any[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   totalItems = signal(0);
@@ -31,7 +32,8 @@ export class OrderComponent implements OnInit {
   paymentStatusFilter = signal<string>('');
   dateFromFilter = signal<string>('');
   dateToFilter = signal<string>('');
-
+  orderStatuses = CommonConstants.OrderStatus;
+  selectedOrderStatus = signal<string>('');
   // Sort signals
   sortField = signal<'orderNumber' | 'customer' | 'total' | 'status' | 'deliveryStatus' | 'createdAt'>('createdAt');
   sortDirection = signal<'asc' | 'desc'>('desc');
@@ -82,12 +84,12 @@ export class OrderComponent implements OnInit {
   orderStats = computed(() => {
     const orders = this.orders();
     return {
-      total: orders.length,
-      pending: orders.filter(o => o.status === 'pending').length,
-      processing: orders.filter(o => o.status === 'processing').length,
-      shipped: orders.filter(o => o.status === 'shipped').length,
-      delivered: orders.filter(o => o.status === 'delivered').length,
-      cancelled: orders.filter(o => o.status === 'cancelled').length,
+      total: orders?.length,
+      pending: orders?.filter(o => o.status === 'pending').length,
+      processing: orders?.filter(o => o.status === 'processing').length,
+      shipped: orders?.filter(o => o.status === 'shipped').length,
+      delivered: orders?.filter(o => o.status === 'delivered').length,
+      cancelled: orders?.filter(o => o.status === 'cancelled').length,
       totalRevenue: orders.reduce((sum, order) => sum + order.total, 0)
     };
   });
@@ -112,9 +114,9 @@ export class OrderComponent implements OnInit {
     };
 
     this.orderService.getOrders(params).subscribe({
-      next: (response) => {
-        this.orders.set(response.orders || []);
-        this.totalItems.set(response.total || 0);
+      next: (response: any) => {
+        this.orders.set(response.data.orders);
+        this.totalItems.set(response.data.total || 0);
         this.loading.set(false);
       },
       error: (err) => {
@@ -141,12 +143,12 @@ export class OrderComponent implements OnInit {
           valueB = b.customer.name;
           break;
         case 'total':
-          valueA = a.total;
-          valueB = b.total;
+          valueA = a.totalAmount;
+          valueB = b.totalAmount;
           break;
         case 'status':
-          valueA = a.status;
-          valueB = b.status;
+          valueA = a.orderStatus;
+          valueB = b.orderStatus;
           break;
         case 'deliveryStatus':
           valueA = a.deliveryStatus;
@@ -188,9 +190,9 @@ export class OrderComponent implements OnInit {
   }
 
   updateDeliveryStatus(orderId: string, deliveryStatus: string) {
-    this.orderService.updateDeliveryStatus(orderId, deliveryStatus).subscribe({
+    this.orderService.updateOrderStatus(orderId, deliveryStatus).subscribe({
       next: (response) => {
-        if (response.success) {
+        if (response) {
           // Update local state
           this.orders.update(orders => 
             orders.map(order => 
@@ -200,7 +202,7 @@ export class OrderComponent implements OnInit {
             )
           );
         } else {
-          alert('Failed to update delivery status');
+         
         }
       },
       error: () => alert('Failed to update delivery status')
@@ -304,6 +306,9 @@ export class OrderComponent implements OnInit {
   onOrderStatusChange(orderId: string, event: Event) {
     const target = event.target as HTMLSelectElement;
     if (target) {
+      this.selectedOrderStatus.set(target.value);
+      console.log('Selected Order Status:', this.selectedOrderStatus());
+      
       this.updateOrderStatus(orderId, target.value);
     }
   }

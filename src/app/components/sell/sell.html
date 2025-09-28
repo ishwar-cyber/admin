@@ -23,9 +23,9 @@
                          [value]="selectedCustomerName()"
                          [ngClass]="{ 'is-invalid': f['customerId'].touched && f['customerId'].errors }">
                   
-                  @if (showCustomerDropdown() && filteredCustomers().length > 0) {
+                  @if (showCustomerList() && customers().length > 0) {
                     <div class="dropdown-menu show position-absolute w-100 mt-1" style="z-index: 1000;">
-                      @for (customer of filteredCustomers(); track customer.id) {
+                      @for (customer of customers(); track customer.id) {
                         <button type="button" class="dropdown-item" (click)="selectCustomer(customer)">
                           {{ customer.name }} - {{ customer.email }}
                         </button>
@@ -66,15 +66,16 @@
                       <div class="col-md-5">
                         <label [for]="'productId-' + i" class="form-label">Product</label>
                         <div class="position-relative">
-                          <input type="text" class="form-control rounded-pill" 
+                          <input type="text" class="form-control rounded-pill" [id]="'productId-' + i" 
+                                 formControlName="productName"
                                  [placeholder]="'Search products...'" 
                                  (input)="onProductSearch($event, i)"
                                  [value]="getSelectedProductName(i)"
                                  [ngClass]="{ 'is-invalid': item.get('productId')?.touched && item.get('productId')?.errors }">
                           
-                          @if (showProductDropdown(i) && getFilteredProducts(i).length > 0) {
+                          @if (activeDropdownIndex === i && products().length > 0 && showProductList()) {
                             <div class="dropdown-menu show position-absolute w-100 mt-1" style="z-index: 1000;">
-                              @for (product of getFilteredProducts(i); track product.id) {
+                              @for (product of products(); track product.id) {
                                 <button type="button" class="dropdown-item" (click)="selectProduct(product, i)">
                                   {{ product.name }} - ₹{{ product.price }} (Stock: {{ product.stock }})
                                 </button>

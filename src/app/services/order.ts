@@ -10,7 +10,7 @@ import { ApiResponse } from '../models/response';
 })
 export class OrderService {
   private httpClient = inject(HttpClient);
-  private baseUrl = `${environment.BASE_URL}/orders`;
+  private baseUrl = `${environment.BASE_URL}/order`;
 
   // State with Signals
   private _orders = signal<Order[]>([]);
@@ -86,6 +86,18 @@ export class OrderService {
     return this.httpClient.get<OrderApiResponse>(`${environment.BASE_URL}/order`, { params: httpParams });
   }
 
+  /**
+   * Update order status
+  */
+updateOrderStatus(id: string, status: string): Observable<ApiResponse> {
+  const params = new HttpParams().set('status', status);
+
+  return this.httpClient.put<ApiResponse>(
+    `${this.baseUrl}/${id}`,
+    {}, // empty body
+    { params }
+  );
+}
 /**
  * Create a new order
  */
@@ -136,22 +148,16 @@ createOrder(orderData: any): Observable<OrderApiResponse> {
     return this.httpClient.get<ApiResponse>(`${environment.BASE_URL}/order/${id}`);
   }
 
-  /**
-   * Update order status
-   */
-  updateOrderStatus(id: string, status: string): Observable<ApiResponse> {
-    return this.httpClient.patch<ApiResponse>(`${this.baseUrl}/${id}/status`, { status });
-  }
 
   /**
    * Update delivery status
    */
   updateDeliveryStatus(id: string, deliveryStatus: string, trackingNumber?: string): Observable<ApiResponse> {
-    const payload: any = { deliveryStatus };
+    let payload: any;
     if (trackingNumber) {
       payload.trackingNumber = trackingNumber;
     }
-    return this.httpClient.patch<ApiResponse>(`${this.baseUrl}/${id}/delivery`, payload);
+    return this.httpClient.patch<ApiResponse>(`${this.baseUrl}/${id}/status=${deliveryStatus}`, payload);
   }
 
   /**

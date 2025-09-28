@@ -84,61 +84,63 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of filteredItems(); track $index"
-          [class.table-warning]="item.stock <= 5"
-          class="align-middle border-bottom">
-        <td>
-          <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-box-seam text-primary"></i>
-            <span class="fw-semibold">{{ item.name }}</span>
-          </div>
-        </td>
-        <td>
-          <span class="badge bg-info-subtle text-info">
-            {{ joinCategory(item.category) }}
-          </span>
-        </td>
-        <td>
-          <span class="badge bg-secondary-subtle text-secondary">
-            {{ item.brand.name }}
-          </span>
-        </td>
-        <td class="text-end fw-bold">
-          {{ item?.price | currency:'INR' }}
-        </td>
-        <td class="text-center">
-          <span [ngClass]="{ 'text-danger fw-bold': item.stock <= 5 }">
-            {{ item.stock }}
-          </span>
-          <span *ngIf="item.stock <= 5" class="badge bg-danger ms-1">Low</span>
-        </td>
-        <td>{{ item?.model }}</td>
-        <td>
-          <span class="badge" [ngClass]="{
-            'bg-success': item.status === true,
-            'bg-secondary': item.status === false,
-            'bg-warning text-dark': item.status === 'draft'
-          }">
-            {{
-              item.status === true ? 'ACTIVE' :
-              item.status === false ? 'INACTIVE' :
-              item.status === 'draft' ? 'DRAFT' : 'UNKNOWN'
-            }}
-          </span>
-        </td>
-        <td>
-          <span class="text-muted small">
-            {{ item.updatedAt | date:'short' }}
-          </span>
-        </td>
-        <td class="text-center">
-          <button class="btn btn-sm btn-outline-danger rounded-circle"
-                  (click)="deleteItem(item.id)"
-                  [attr.aria-label]="'Delete ' + item.name">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
+      @for (item of filteredItems(); track $index) {
+        <tr
+            [class.table-warning]="item.stock <= 5"
+            class="align-middle border-bottom">
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-box-seam text-primary"></i>
+              <span class="fw-semibold text-truncate" data-bs-toggle="tooltip">{{ item.name }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="badge bg-info-subtle text-info">
+              {{ item.category }}
+            </span>
+          </td>
+          <td>
+            <span class="badge bg-secondary-subtle text-secondary">
+              {{ item.brand.name }}
+            </span>
+          </td>
+          <td class="text-end fw-bold">
+            {{ item?.price | currency:'INR' }}
+          </td>
+          <td class="text-center">
+            <span [ngClass]="{ 'text-danger fw-bold': item.stock <= 5 }">
+              {{ item.stock }}
+            </span>
+            <span *ngIf="item.stock <= 5" class="badge bg-danger ms-1">Low</span>
+          </td>
+          <td>{{ item?.model }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'bg-success': item.status === true,
+              'bg-secondary': item.status === false,
+              'bg-warning text-dark': item.status === 'draft'
+            }">
+              {{
+                item.status === true ? 'ACTIVE' :
+                item.status === false ? 'INACTIVE' :
+                item.status === 'draft' ? 'DRAFT' : 'UNKNOWN'
+              }}
+            </span>
+          </td>
+          <td>
+            <span class="text-muted small">
+              {{ item.updatedAt | date:'short' }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-danger rounded-circle"
+                    (click)="deleteItem(item.id)"
+                    [attr.aria-label]="'Delete ' + item.name">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      }
       <tr *ngIf="filteredItems().length === 0">
         <td colspan="9" class="text-center py-5 text-muted">
           <div class="d-flex flex-column align-items-center">
