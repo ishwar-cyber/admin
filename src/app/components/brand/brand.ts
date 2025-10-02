@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { BrandM } from '../../models/brand';
 import { BrandService } from '../../services/brand';
 import { BrandForm } from './brand-form/brand-form';
@@ -18,17 +18,25 @@ export class Brand implements OnInit{
   brands = signal<BrandM[]>([]);
   private modalService = inject(NgbModal);
   private brandService = inject(BrandService)
-
+    // Search control with debounce
+  searchControl = new FormControl('');
   ngOnInit(): void {
     this.loadBrands();
+  }
+
+
+  // Additional helper methods
+  get totalBrands(): number {
+    return this.brands().length;
+  }
+
+  get activeBrands(): number {
+    return this.brands().filter(c => c.isActive === true).length;
   }
   loadBrands(){
     this.brandService.getBrands().subscribe({
       next: (brand : any) => {
-        console.log('brand', brand);
         this.brands.set(brand.data)
-        console.log('this', this.brands);
-        
       }
     })
   }
@@ -53,5 +61,16 @@ export class Brand implements OnInit{
       },
      })
     // }
+  }
+
+  searchBrand() {
+    const query = this.searchControl.value?.toLowerCase() || '';
+    let tempBrands = this.brands();
+    if (!query) {
+      this.loadBrands(); // Reload all brands if search query is empty
+      return;
+    }
+    let filteredBrands = tempBrands.filter(brand => brand?.name?.toLowerCase().includes(query));
+    this.brands.set(filteredBrands);
   }
 }

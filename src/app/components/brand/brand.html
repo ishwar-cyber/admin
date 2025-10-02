@@ -10,7 +10,54 @@
         <i class="bi bi-plus-lg me-2"></i>Add Brand
       </button>
     </div>
-  
+    <!-- Search and Stats Row -->
+    <div class="row mb-4 g-3">
+      <div class="col-md-6 col-lg-4">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Search categories..." 
+            (input)="searchBrand()"
+            [formControl]="searchControl"
+            aria-label="Search categories">
+          @if (searchControl.value) {
+            <button class="btn btn-outline-secondary" type="button" (click)="searchControl.setValue('')">
+              <i class="bi bi-x"></i>
+            </button>
+          }
+        </div>
+      </div>
+      
+      <div class="col-md-6 col-lg-8">
+        <div class="d-flex flex-wrap gap-3 justify-content-md-end">
+          <div class="border rounded p-2 px-3 d-flex align-items-center">
+            <i class="bi bi-grid-3x3-gap text-primary me-2"></i>
+            <div>
+              <div class="text-muted small">Total</div>
+              <div class="fw-bold">{{ totalBrands }}</div>
+            </div>
+          </div>
+          
+          <div class="border rounded p-2 px-3 d-flex align-items-center">
+            <i class="bi bi-check-circle text-success me-2"></i>
+            <div>
+              <div class="text-muted small">Active</div>
+              <div class="fw-bold">{{ activeBrands }}</div>
+            </div>
+          </div>
+          
+          <div class="border rounded p-2 px-3 d-flex align-items-center">
+            <i class="bi bi-exclamation-circle text-secondary me-2"></i>
+            <div>
+              <div class="text-muted small">Inactive</div>
+              <div class="fw-bold">{{ totalBrands - activeBrands }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Categories Table -->
     <div class="card shadow-sm">
       <div class="card-body">

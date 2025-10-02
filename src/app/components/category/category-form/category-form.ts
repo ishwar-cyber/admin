@@ -44,7 +44,6 @@ export class CategoryForm implements OnInit{
   public buildForm(){
     this.categoryForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-
       isActive: [true, Validators.required],
     })
   }

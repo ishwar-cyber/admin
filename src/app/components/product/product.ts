@@ -86,9 +86,6 @@ export class Product implements OnInit {
     console.log('qwertyuio',this.searchTerm());
     this.loadProduct();
   }
-  selectCategory(id: string){
-    
-  }
   openAddProductModal(item?: any){
     const modalRef = this.modalService.open(ProductForm, { size: 'lg', backdrop: false, keyboard: true });
     if (modalRef && modalRef.componentInstance) {
@@ -112,25 +109,18 @@ export class Product implements OnInit {
 
   updateProduct(id: string) {
     this.openAddProductModal(id);
-    // Implementation for updating product
-    // this.productService.updateProduct(id).subscribe({
-    //   next: (res: any) => {
-    //     console.log('Product updated:', res);
-    //     this.loadProduct();
-    //   },
-    //   error: (err: any) => {
-    //     console.error('Error updating product:', err);
-    //   }
-    // });
   }
-
-  duplicateProduct(id: string) {
-    // Implementation for duplicating product
-    console.log('Duplicate product:', id);
-  }
-    confirmDelete(id: string) {
+  confirmDelete(id: string) {
     // Implementation for delete confirmation
-    console.log('Delete product:', id);
+    this.productService.deleteProduct(id).subscribe({
+      next: (res: any) => {
+        this.loadProduct();
+        console.log('Product deleted:', res);
+      },
+      error: (err: any) => {
+        console.error('Error deleting product:', err);
+      }
+    });
   }
 
 

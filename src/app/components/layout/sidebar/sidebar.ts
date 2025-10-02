@@ -42,11 +42,11 @@ export class Sidebar {
       route: '/admin/coupons',
       icon: 'bi bi-amd'
     },
-      {
-      title: 'Inventory',
-      route: '/admin/inventroy',
-      icon: 'bi bi-receipt'
-    },
+    //   {
+    //   title: 'Inventory',
+    //   route: '/admin/inventroy',
+    //   icon: 'bi bi-receipt'
+    // },
     {
       title: 'Category',
       icon: 'bi bi-box',

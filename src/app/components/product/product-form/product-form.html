@@ -11,6 +11,7 @@
                 <upload-image 
                     [maxFileSizeMB]="maxFileSize()"
                     [allowedTypes]="allowedFileTypes()"
+                    [imageUrl]=" uploadedImages()"
                     (filesSelected)="onFilesSelected($event)"
                     (filesSelected)="onUploadComplete($event)"
                 />
@@ -31,12 +32,17 @@
                 
                 <div class="col-md-6">
                     <label for="brand" class="form-label">Brand</label>
-                    <select class="form-select" id="brand" formControlName="brand" required>
-                        <option value="">Select a brand</option>
+                    <app-single-select
+                        formControlName="brand"
+                        [options]="brands()" (selectionChange)="selectedBrand($event)"
+                        placeholder="Select Brand"
+                    />
+                    <!-- <select class="form-select" id="brand" formControlName="brand" required>
+                        <option>Select a brand</option>
                         @for(brand of brands(); track brand.name){
-                            <option [value]="brand.id">{{ brand.name }}</option>
+                            <option [value]="brand.id" >{{ brand.name }}</option>
                         }
-                    </select>
+                    </select> -->
                     @if(submitted && f['brand'].errors) {
                         <div class="text-danger">
                             @if(f['brand'].errors['required']) {
@@ -154,13 +160,13 @@
                             <input type="number" class="form-control" min="1" id="stock" formControlName="stock" required>
                         </div>  
                     } @else { -->
-                        <div>
-                            <select class="form-select" id="stock" formControlName="stock" required>
-                                @for(stock of productStock(); track stock){
-                                    <option [value]="stock.value" [defaultSelected]="stock.value === productForm.get('stock')?.value">{{ stock.label }}</option>
-                                }
-                            </select>
-                        </div>
+                    <div>
+                        <select class="form-select" id="stock" formControlName="stock" required>
+                            @for(stock of productStock(); track stock){
+                                <option [value]="stock.value" [defaultSelected]="stock.value === productForm.get('stock')?.value">{{ stock.label }}</option>
+                            }
+                        </select>
+                    </div>
                     <!-- } -->
                     @if(submitted && f['stock'].errors) {
                         <div class="text-danger">
@@ -405,7 +411,7 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Warranty Period (months)</label>
-                        <input type="number" class="form-control" formControlName="period" required>
+                        <input type="number" class="form-control" formControlName="period">
                         @if(submitted && f['warranty'].get('period')?.errors) {
                             <div class="text-danger">
                                 @if(f['warranty'].get('period')?.errors?.['required']) {
@@ -417,23 +423,11 @@
                     
                     <div class="col-md-6">
                         <label class="form-label">Warranty Type</label>
-                        <input type="text" class="form-control" formControlName="type" required>
+                        <input type="text" class="form-control" formControlName="type">
                         @if(submitted && f['warranty'].get('type')?.errors) {
                             <div class="text-danger">
                                 @if(f['warranty'].get('type')?.errors?.['required']) {
                                     <div>Warranty type is required</div>
-                                }
-                            </div>
-                        }
-                    </div>
-                    
-                    <div class="col-12">
-                        <label class="form-label">Warranty Details</label>
-                        <textarea class="form-control" rows="2" formControlName="details" required></textarea>
-                        @if(submitted && f['warranty'].get('details')?.errors) {
-                            <div class="text-danger">
-                                @if(f['warranty'].get('details')?.errors?.['required']) {
-                                    <div>Warranty details are required</div>
                                 }
                             </div>
                         }

@@ -99,12 +99,15 @@ export class ProductForm implements OnInit {
 
 
       if(this.item !== null) {
+        this.editProduct.set(true);
       // this.editMode.set(true);
+      this.productId.set(this.item._id);
+      console.log('edit item brand', this.item.brand);
       this.productForm.patchValue({
         name: this.item.name,
-        brand: this.item.brand,
-        category: this.item.category,
-        subCategory: this.item.subCategory,
+        brand: this.item.brand.name ? this.item.brand : '',
+        category: this.item.category.name ? this.item.category : '',
+        subCategory: this.item.subCategory.name ? this.item.subCategory : '',
         model: this.item.sku,
         status: this.item.status,
         price: this.item.price,
@@ -116,13 +119,16 @@ export class ProductForm implements OnInit {
         warranty: {
           period: this.item.warranty?.[0]?.period || 0,
           type: this.item.warranty?.[0]?.type || '',  
-          details: this.item.warranty?.[0]?.details || '',
         },
         description: this.item.description,
         pincode: this.item.pincode?.map((pincodeId: any) => {
           return { id: pincodeId, name: pincodeId };
         }),
-
+        // if(this.item.variants?.length) {
+        //   this.item.variants.forEach((variant: any) => {
+        //     this.variantImages().push(variant?.thumbnail);
+        //   });
+        // }
         variants: this.item.variants?.length ? this.item.variants.map((variant: any) => this.formBuilder.group({
           variantName: variant.name || '',
           sku: variant.sku || '',
@@ -131,9 +137,18 @@ export class ProductForm implements OnInit {
         stockStatus: this.item.stock === 'in' || this.item.stock === 'out' ? true : false,
 
       });
-    
-      this.uploadedImages.set(this.item?.image?.url || '');
-    } 
+      this.item.images?.forEach((image: any) => {
+        this.uploadedImages().push(image?.url);
+      }); 
+      if(this.item.variants?.length) {
+        this.item.variants.forEach((variant: any) => {
+          
+          // this.varinatImages().push(variant?.thumbnail);
+          this.addVariant(variant);
+        });
+      }
+      // this.uploadedImages.set(this.item?.images[0]?.url || '');
+    }
   }
 
   selectedCategoryId(event: any){
@@ -146,7 +161,9 @@ export class ProductForm implements OnInit {
   selectedCategory(event: any){
     console.log('categoryId', event);
   }
-
+  selectedBrand(event: any){
+    console.log('brandId', event);
+  }
   onFilesSelected(files: File[]): void {
     this.imageUploaded.set(true);
     this.selectedFiles.set(files);
@@ -172,7 +189,7 @@ export class ProductForm implements OnInit {
 
   public loadProductData(){
     this.activatedRoute.params.subscribe(params => {
-      this.productId.set(params['id']);
+      // this.productId.set(params['id']);
       if (this.productId()) {
         this.editProduct.set(true);
         this.productService.getProductById(params['id']).subscribe((response: any) => {
@@ -192,14 +209,10 @@ export class ProductForm implements OnInit {
          if (product.warranty) {
          this.warranty.patchValue({
             period: product.warranty[0].period || 0,
-            type: product.warranty[0].type || '',
-            details: product.warranty[0].details || ''
+            type: product.warranty[0].type || ''
           });
         }
-
-        console.log('specifications', product.specifications);
-        
-           // Populate specifications
+        // Populate specifications
         if (product.specifications && product.specifications.length > 0) {
           // Clear existing specifications
           while (this.specifications.length) {
@@ -243,17 +256,65 @@ export class ProductForm implements OnInit {
     });
   }
   private updateBrand(brandId: string): void {
-    const brandValue =  this.brands().filter((brand: BrandM) => {
-      return brand?.id === brandId;  
-    });
-    this.productForm.patchValue({ brand: brandValue[0]._id });
+    const brandValue = this.brands().find((brand: any) => brand?.id === brandId || brand?._id === brandId);
+    if (brandValue) {
+      // patch the full object so createPayload can read brand._id
+      this.productForm.patchValue({ brand: brandValue });
+    }
   }
 
   public updateCategory(categoryId: string): void {
-    const categoryValue = this.categories().filter((category: CategoryM) => {
-        return category?.id === categoryId;
-    });
-    this.productForm.patchValue({ category: categoryValue[0].id });
+    const categoryValue = this.categories().find((category: any) => category?.id === categoryId || category?._id === categoryId);
+    if (categoryValue) {
+      this.productForm.patchValue({ category: categoryValue });
+    }
+  }
+
+  public updateSubCategory(subCategoryId: string): void {
+    const subValue = this.subCategories().find((s: any) => s?.id === subCategoryId || s?._id === subCategoryId);
+    if (subValue) {
+      this.productForm.patchValue({ subCategory: subValue });
+    }
+  }
+
+  // Reload lookup lists (brands/categories/subcategories) -- call after an edit elsewhere
+  public loadBrands(): void {
+    this.brandsService.getBrands().subscribe({ next: (res: any) => this.brands.set(res.data), error: () => {} });
+  }
+
+  public loadCategories(): void {
+    this.categoryService.getCategories().subscribe({ next: (res: any) => this.categories.set(res.data), error: () => {} });
+  }
+
+  public loadSubCategories(): void {
+    this.subCategoryService.getSubCategories().subscribe({ next: (res: any) => this.subCategories.set(res.data), error: () => {} });
+  }
+
+  // Convenience: refresh all lookup lists
+  public refreshLookups(): void {
+    this.loadBrands();
+    this.loadCategories();
+    this.loadSubCategories();
+  }
+
+  // Helpers to set control after an edit (call these with the id returned from the modal)
+  public setBrandById(brandId: string): void {
+    this.loadBrands();
+    // small delay not required, consumer can call refreshLookups then call this if needed
+    const b = this.brands().find((x: any) => x?.id === brandId || x?._id === brandId);
+    if (b) this.productForm.patchValue({ brand: b });
+  }
+
+  public setCategoryById(categoryId: string): void {
+    this.loadCategories();
+    const c = this.categories().find((x: any) => x?.id === categoryId || x?._id === categoryId);
+    if (c) this.productForm.patchValue({ category: c });
+  }
+
+  public setSubCategoryById(subCategoryId: string): void {
+    this.loadSubCategories();
+    const s = this.subCategories().find((x: any) => x?.id === subCategoryId || x?._id === subCategoryId);
+    if (s) this.productForm.patchValue({ subCategory: s });
   }
 
   public buildForm(){
@@ -267,7 +328,7 @@ export class ProductForm implements OnInit {
       status: [true],
       stockStatus: [false],
       price: [0, [Validators.required, Validators.min(0)]],
-      stock: [0, [Validators.required, Validators.min(0)]],
+      stock: ['in stock', [Validators.required]],
       weight: [0.5, [Validators.required, Validators.min(0)]],
       length: [5, [Validators.required, Validators.min(0)]],
       height: [5, [Validators.required, Validators.min(0)]],
@@ -277,10 +338,9 @@ export class ProductForm implements OnInit {
       variants: this.formBuilder.array([]),
       specifications: this.formBuilder.array([]),
       warranty: this.formBuilder.group({
-        period: ['', Validators.required],
-        type: ['Years', Validators.required],
-        details: ['', Validators.required]
-      })
+        period: [''],
+        type: ['Years'],
+      }),
     });    
   }
   
@@ -291,15 +351,14 @@ export class ProductForm implements OnInit {
   // get specification(): FormArray { return this.productForm.get('specifications') as FormArray; }
   get warranty(): FormGroup { return this.productForm.get('warranty') as FormGroup; }
 
-  addVariant(): void {
-    this.variants.push(this.formBuilder.group({
-      variantName: ['', Validators.required],
-      sku: ['', Validators.required],
-      price: [0, [Validators.required, Validators.min(0),this.numberOnlyValidator()]],
-      stock: [0, [Validators.required, Validators.min(0),this.numberOnlyValidator()]],
-      image: [null],
-    }));
-  }
+addVariant(data?: any): void {
+  this.variants.push(this.formBuilder.group({
+    variantName: [data?.name || '', Validators.required],
+    sku: [data?.sku || '', Validators.required],
+    price: [data?.price ?? 0, [Validators.required, Validators.min(0), this.numberOnlyValidator()]],
+    stock: [data?.stock ?? 0, [Validators.required, Validators.min(0), this.numberOnlyValidator()]]
+  }));
+}
   removeVariant(index: number): void {
     this.variants.removeAt(index);
   }
@@ -347,17 +406,19 @@ export class ProductForm implements OnInit {
       const image = this.variants.controls.map((control) => control.get('image')?.value).filter((image: any) => image !== null);
       const payload = this.createPayload();
       let callApi: any;
-      // if(!this.editProduct()){
+      console.log(this.editProduct());
+      
+      if(!this.editProduct()){
         callApi = this.productService.createProduct(payload, image);
-      // } else {
-        // callApi = this.productService.updateProduct(this.productId(), payload, mainImageFile, variantsImages);
-      // }
+      } else {
+        callApi = this.productService.updateProduct(this.productId(), payload, image);
+      }
       callApi.subscribe({
         next: (response:any) => {
           console.log('Product created:', response);
            this.activeModal.close(true);
           this.resetForm();
-          this.router.navigate(['/admin/products']);
+          this.router.navigate(['/admin/product']);
         },
         error: (error:any) => {
           console.error('Error creating product:', error);
@@ -388,20 +449,20 @@ export class ProductForm implements OnInit {
       sku: control.get('sku')?.value || '',
       price: control.get('price')?.value || 0,
       stock: control.get('stock')?.value || 0,
+      image: this.varinatImages() || null
     }));
   
     const warranty = {
       period: this.productForm.get('warranty.period')?.value || 0,
-      type: this.productForm.get('warranty.type')?.value || '',
-      details: this.productForm.get('warranty.details')?.value || ''
+      type: this.productForm.get('warranty.type')?.value || ''
     };
     const payload: ProductModal = {
       name: this.productForm.value.name,
-      brand: this.productForm.value.brand,
-      category: this.productForm.value.category.id,
+      brand: this.productForm.value.brand.id || this.productForm.value.brand._id,
+      category: this.productForm.value.category._id || this.productForm.value.category.id,
       pincode: pincode,
       productImages: this.uploadedImages(),
-      subCategory: this.productForm.value.subCategory.id,
+      subCategory: this.productForm.value.subCategory._id || this.productForm.value.subCategory.id,
       stock: this.productForm.value.stock,
       price: this.productForm.value.price,
       model: this.productForm.value.model,

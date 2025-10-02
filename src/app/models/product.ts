@@ -84,8 +84,7 @@ export interface ProductModal {
 
 interface Warranty {
   period: number,
-  type: string,
-  details: string 
+  type: string
 }
 export interface ProductOfferPrice {
   quantity?: number,

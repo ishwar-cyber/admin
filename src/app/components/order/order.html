@@ -42,8 +42,8 @@
       <div class="card bg-info text-white">
         <div class="card-body text-center">
           <i class="bi bi-gear fs-1"></i>
-          <h4 class="mt-2">{{ orderStats().processing }}</h4>
-          <p class="mb-0">Processing</p>
+          <h4 class="mt-2">{{ orderStats().confirmed || 0 }}</h4>
+          <p class="mb-0">Confirmed</p>
         </div>
       </div>
     </div>
@@ -65,7 +65,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3 col-sm-6 mb-3">
+    <!-- <div class="col-md-3 col-sm-6 mb-3">
       <div class="card bg-secondary text-white">
         <div class="card-body text-center">
           <i class="bi bi-currency-dollar fs-1"></i>
@@ -73,7 +73,7 @@
           <p class="mb-0">Revenue</p>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <!-- Main Content -->
@@ -256,7 +256,7 @@
                   <td>
                     <!-- [class]="'bg-' + getDeliveryStatusColor(order?.deliveryStatus)" -->
                     <span class="badge text-bg-dark">
-                      {{ (selectedOrderStatus() || order?.orderStatus?.replace('_', ' ') || '') | titlecase }}
+                      {{ selectedOrderId() === order.id ? selectedOrderStatus() : order?.orderStatus?.replace('_', ' ') || '' | titlecase }}
                     </span>
                     <div class="mt-1">
                       <select class="form-select form-select-sm" 

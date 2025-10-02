@@ -21,6 +21,7 @@ export class OrderComponent implements OnInit {
 
   // State signals
   orders = signal<any[]>([]);
+  statistics = signal<any>({});
   loading = signal(false);
   error = signal<string | null>(null);
   totalItems = signal(0);
@@ -34,6 +35,7 @@ export class OrderComponent implements OnInit {
   dateToFilter = signal<string>('');
   orderStatuses = CommonConstants.OrderStatus;
   selectedOrderStatus = signal<string>('');
+  selectedOrderId = signal<string>('');
   // Sort signals
   sortField = signal<'orderNumber' | 'customer' | 'total' | 'status' | 'deliveryStatus' | 'createdAt'>('createdAt');
   sortDirection = signal<'asc' | 'desc'>('desc');
@@ -49,10 +51,10 @@ export class OrderComponent implements OnInit {
     // Apply search filter
     const search = this.searchTerm().toLowerCase();
     if (search) {
-      orders = orders.filter(order => 
-        order.orderNumber.toLowerCase().includes(search) ||
-        order.customer.name.toLowerCase().includes(search) ||
-        order.customer.email.toLowerCase().includes(search)
+      orders = orders?.filter(order => 
+        order.orderNumber?.toLowerCase().includes(search) ||
+        order.customer?.name?.toLowerCase().includes(search) ||
+        order.customer?.email?.toLowerCase().includes(search)
       );
     }
 
@@ -82,15 +84,15 @@ export class OrderComponent implements OnInit {
 
   // Statistics
   orderStats = computed(() => {
-    const orders = this.orders();
+    const orders = this.statistics();
+    console.log('orders:', orders);
     return {
       total: orders?.length,
-      pending: orders?.filter(o => o.status === 'pending').length,
-      processing: orders?.filter(o => o.status === 'processing').length,
-      shipped: orders?.filter(o => o.status === 'shipped').length,
-      delivered: orders?.filter(o => o.status === 'delivered').length,
-      cancelled: orders?.filter(o => o.status === 'cancelled').length,
-      totalRevenue: orders.reduce((sum, order) => sum + order.total, 0)
+      pending: orders?.filter((o:any) => o.status === 'pending'),
+      confirmed: orders?.filter((o:any) => o.status === 'Confirmed'),
+      shipped: orders?.filter((o:any) => o.status === 'shipped'),
+      delivered: orders?.filter((o:any) => o.status === 'delivered'),
+      cancelled: orders?.filter((o:any) => o.status === 'cancelled'),
     };
   });
 
@@ -115,6 +117,7 @@ export class OrderComponent implements OnInit {
 
     this.orderService.getOrders(params).subscribe({
       next: (response: any) => {
+        this.statistics.set(response.data?.statistics?.orderStatusStats);
         this.orders.set(response.data.orders);
         this.totalItems.set(response.data.total || 0);
         this.loading.set(false);
@@ -307,8 +310,7 @@ export class OrderComponent implements OnInit {
     const target = event.target as HTMLSelectElement;
     if (target) {
       this.selectedOrderStatus.set(target.value);
-      console.log('Selected Order Status:', this.selectedOrderStatus());
-      
+      this.selectedOrderId.set(orderId);
       this.updateOrderStatus(orderId, target.value);
     }
   }
@@ -320,3 +322,4 @@ export class OrderComponent implements OnInit {
     }
   }
 }
+

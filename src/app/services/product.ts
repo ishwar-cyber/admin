@@ -123,15 +123,19 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
   }
 
   public updateProduct(id: string, payload: any, image?: File[]) {
+    console.log('update payload', payload);
+    
     const formData = this.createFormData(payload, image);
     const url = `${environment.BASE_URL}/products/${id}`;
+    console.log('url for update', url);
+    
     return this.httpClient.put(url, formData);
   }
-  deleteProduct(id: string): Observable<boolean> {
-    return this.http.delete<{ success: boolean }>(`${environment.BASE_URL}/products/${id}`).pipe(
-      map(response => response.success),
-      catchError(() => of(false))
-    );
+  deleteProduct(id: string){
+    const url = `${environment.BASE_URL}/products/${id}`;
+    console.log('url for delete', url);
+
+    return this.httpClient.delete(url);
   }
 
   resetState() {
@@ -192,7 +196,6 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     if (payload.warranty) {
       formData.append('warranty[period]', payload.warranty.period?.toString() || '');
       formData.append('warranty[type]', payload.warranty.type || '');
-      formData.append('warranty[details]', payload.warranty.details || '');
     }
     payload.productImages.forEach((productImage: any, index:number)=>{
       formData.append(`images[url][${index}]`, productImage.url)
@@ -207,8 +210,14 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
         formData.append(`variants[${index}][price]`, variant.price?.toString() || '');
         formData.append(`variants[${index}][stock]`, variant.stock?.toString() || '');
         // Handle variant image if exists
-        if ( variant.image) {
-          formData.append(`variants[${index}][image][url]`,  variant.image.url);
+        console.log('variant image', variant.image);
+        if (variant.image.length > 1) {
+          variant.image.forEach((variant: any, index:number)=>{
+            formData.append(`variants[${index}][image][url]`,  variant.image.url);
+            formData.append(`variants[${index}][image][public_id]`, variant.image.public_id)
+          });
+        } else if (variant.image.url) {
+          formData.append(`variants[${index}][image][url]`, variant.image.url);
           formData.append(`variants[${index}][image][public_id]`, variant.image.public_id)
         }
       });
