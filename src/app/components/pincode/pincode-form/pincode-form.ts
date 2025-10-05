@@ -33,12 +33,10 @@ export class PincodeForm implements OnInit{
         pincode: this.pincodeForm.value.pincode,
         status: status
       }
-      console.log('payload', payload);
       if(this.pincodeForm.valid){
         this.productService.addPincode(payload).subscribe({
           next:(response) => {
             this.activeModal.close(true);
-            console.log('res pincode', response);
           },
           error:(err) => {
             this.activeModal.close(true);

@@ -97,13 +97,11 @@ export class BrandForm implements OnInit {
 
 
   onFilesSelected(files: File[]): void {
-    console.log('Files selected:', files);
     this.selectedFiles.set(files);
   }
 
   onUploadComplete(imageUrls: string[]): void {
-    this.uploadedImages.update(current => [...current, ...imageUrls]);
-    console.log('Upload complete. Total images:', this.uploadedImages().length);
+      this.uploadedImages.update(current => [...current, ...imageUrls]);
   }
   
 }

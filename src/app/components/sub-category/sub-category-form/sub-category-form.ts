@@ -40,12 +40,10 @@ export class SubCategoryForm implements OnInit {
   ngOnInit(): void {
     this.formBuild();
     this.loadCategory();
-    console.log('SubCategoryForm ngOnInit called with item:', this.item);
     
     if (this.item !== null) {
       this.editMode.set(true);
       let categoryFind = this.categories().filter(cat => cat.id === this.item.category?.id);
-      console.log('Category found:', categoryFind);
       
       this.subCategoryForm.patchValue({
         name: this.item.name,
@@ -102,6 +100,5 @@ export class SubCategoryForm implements OnInit {
 
   onUploadComplete(imageUrls: string[]): void {
     this.uploadedImages.update(current => [...current, ...imageUrls]);
-    console.log('Upload complete. Total images:', this.uploadedImages().length);
   }
 }

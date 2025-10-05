@@ -33,8 +33,6 @@ export class SubCategoryS {
   }
 
   createPayload(payload: any, selectedFile: File[]): FormData {
-    console.log('Creating payload with:', payload, selectedFile);
-    
     const formData = new FormData();
     formData.append('name', payload.name);
     formData.append('category', payload.category);

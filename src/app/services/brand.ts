@@ -18,8 +18,6 @@ export class BrandService {
     return this.httpClient.delete(`${environment.BASE_URL}/brands/${id}`)
   }
   public createBrand(payload: any, file: any): Observable<any> {
-    console.log('uploaded file', file[0]);
-    
     const formData = new FormData();
     formData.append('name', payload.name);
     formData.append('description', payload.description);

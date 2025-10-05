@@ -50,8 +50,6 @@ export class Category implements OnInit{
       this.loadCategories();
   } 
   openModal(item?: CategoryM): void {
-    console.log('openModal called with item:', item);
-    
     const modalRef = this.modalService.open(CategoryForm, { size: 'lg', backdrop: false });
     if (modalRef && modalRef.componentInstance) {
       modalRef.componentInstance.item = item ? { ...item } : null;

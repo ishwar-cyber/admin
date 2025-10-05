@@ -162,12 +162,9 @@ export class Sell implements OnInit{
   }
 
   selectCustomer(customer: Customer) {
-    console.log('customereee', customer);
     
     this.selectedCustomerName.set(customer.username);
     this.orderForm.patchValue({ customerId: customer._id });
-    console.log('selected name', this.selectedCustomerName());
-    
     this.showCustomerList.set(false);
     this.customerSearchTerm.set('');
   }
@@ -179,9 +176,7 @@ export class Sell implements OnInit{
     this.productService.searchProducts(term).subscribe({
       next: (products:any) => {
         this.products.set(products.data);
-        this.products().length > 0 ? this.showProductList.set(true) : this.showProductList.set(false);
-        console.log('searched products', products);
-        
+        this.products().length > 0 ? this.showProductList.set(true) : this.showProductList.set(false);     
       },
       error: (err) => {
         this.submissionError.set('Failed to load products');
@@ -264,7 +259,6 @@ export class Sell implements OnInit{
       };
       
       setTimeout(() => {
-        console.log('Order submitted:', orderData);
         this.isSubmitting.set(false);
         alert(`Order created successfully! Total: ₹${this.currentTotalAmount()}`);
       }, 2000);

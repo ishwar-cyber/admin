@@ -26,9 +26,6 @@ export class CategoryS {
      * @returns Observable of Category
      */
     public getCategoryById(id: string, payload: any, selectedFile: any): Observable<Response> {
-      console.log('payload', payload);
-      console.log('selectedFile', selectedFile);
-      
       const formData = this.createPayload(payload, selectedFile);
       return this.httpClient.put<Response>(`${this.baseUrl}/${id}`, formData);
     }

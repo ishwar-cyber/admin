@@ -133,8 +133,6 @@ export class Inventroy implements OnInit{
 
   // Helper for template to join category array
   joinCategory(category: any): string {
-    console.log('categpry array', category);
-    
     return Array.isArray([...category]) ? category.join(', ') : String(category);
   }
 

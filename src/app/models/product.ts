@@ -77,6 +77,7 @@ export interface ProductModal {
   height: number;
   status: 'active' | 'inactive' | 'draft';
   slug?: string;
+  serviceCharge: number;
   productImages: any[];
   createdAt?: Date;
   updatedAt?: Date;

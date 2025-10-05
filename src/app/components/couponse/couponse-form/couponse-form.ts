@@ -113,7 +113,6 @@ export class CouponseForm implements OnInit{
     this.productService.getProducts().subscribe({
         next: (response: any) => {
             this.products.set(response.data);
-            console.log('products', this.products());
         },
         error: (err) => {
             console.error('Error fetching products:', err);

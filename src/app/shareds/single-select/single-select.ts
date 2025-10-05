@@ -56,7 +56,6 @@ export class SingleSelect implements OnInit, OnChanges, ControlValueAccessor {
   selectOption(option: CategoryM) {
     // ✅ Update internal state
     this.selectedOption.set(option);
-    console.log('Selected option:', this.selectedOption());
     this.isOpen.set(false);
     // ✅ Notify parent form (ControlValueAccessor)
     this.onChange(option);

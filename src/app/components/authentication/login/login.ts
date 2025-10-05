@@ -54,8 +54,6 @@ loginForm: FormGroup;
       }
       this.authService.login(payload).subscribe({
         next: (response:LoginResponse) => {
-          console.log('response',response?.token);
-          
             if(response?.token) {
                 this.storageHandlerService.setCookie(CookiesKeys.authToken, response.token, 1);
                 this.storageHandlerService.setSessionStorage(StorageKeys.currentUser, response.user);

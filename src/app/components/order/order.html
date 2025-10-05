@@ -24,7 +24,7 @@
       <div class="card bg-primary text-white">
         <div class="card-body text-center">
           <i class="bi bi-cart-check fs-1"></i>
-          <h4 class="mt-2">{{ orderStats().total }}</h4>
+          <h4 class="mt-2">{{ totalItems() }}</h4>
           <p class="mb-0">Total Orders</p>
         </div>
       </div>
@@ -33,7 +33,7 @@
       <div class="card bg-warning text-white">
         <div class="card-body text-center">
           <i class="bi bi-clock fs-1"></i>
-          <h4 class="mt-2">{{ orderStats().pending }}</h4>
+          <h4 class="mt-2">{{ pending}}</h4>
           <p class="mb-0">Pending</p>
         </div>
       </div>
@@ -42,7 +42,7 @@
       <div class="card bg-info text-white">
         <div class="card-body text-center">
           <i class="bi bi-gear fs-1"></i>
-          <h4 class="mt-2">{{ orderStats().confirmed || 0 }}</h4>
+          <h4 class="mt-2">{{ confirmed }}</h4>
           <p class="mb-0">Confirmed</p>
         </div>
       </div>
@@ -51,7 +51,7 @@
       <div class="card bg-success text-white">
         <div class="card-body text-center">
           <i class="bi bi-check-circle fs-1"></i>
-          <h4 class="mt-2">{{ orderStats().delivered }}</h4>
+          <h4 class="mt-2">{{ delivered }}</h4>
           <p class="mb-0">Delivered</p>
         </div>
       </div>
@@ -60,7 +60,7 @@
       <div class="card bg-danger text-white">
         <div class="card-body text-center">
           <i class="bi bi-x-circle fs-1"></i>
-          <h4 class="mt-2">{{ orderStats().cancelled }}</h4>
+          <h4 class="mt-2">{{ cancelled }}</h4>
           <p class="mb-0">Cancelled</p>
         </div>
       </div>
@@ -213,9 +213,9 @@
                     <div class="text-muted small">{{ order.paymentMethod | uppercase }}</div>
                   </td>
                   <td>
-                    <div class="fw-bold">{{ order?.customer?.name }}</div>
-                    <div class="text-muted small">{{ order?.customer?.email }}</div>
-                    <div class="text-muted small">{{ order?.customer?.phone }}</div>
+                    <div class="fw-bold">{{ order?.user?.username }}</div>
+                    <div class="text-muted small">{{ order?.user?.email }}</div>
+                    <div class="text-muted small">{{ order?.user?.phone }}</div>
                   </td>
                   <td>
                     <span class="badge bg-secondary">{{ order.items.length }} items</span>

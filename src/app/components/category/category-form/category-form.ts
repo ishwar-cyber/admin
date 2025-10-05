@@ -59,8 +59,6 @@ export class CategoryForm implements OnInit{
       return;
     }
     const payload = this.createPayload();
-    console.log('payload', this.item);
-
     this.categoryService.updateCategory(this.item.id, payload, this.selectedFiles()).subscribe({
       next: (response) => {
         this.activeModal.close(true);

@@ -6,9 +6,6 @@ import { BrandService } from '../../services/brand';
 import { CategoryS } from '../../services/category';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProductForm } from './product-form/product-form';
-import { ProductEdit } from './product-edit/product-edit';
-
-
 @Component({
   selector: 'app-product',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
@@ -83,13 +80,11 @@ export class Product implements OnInit {
   }
 
   applyFilter(){
-    console.log('qwertyuio',this.searchTerm());
     this.loadProduct();
   }
   openAddProductModal(item?: any){
     const modalRef = this.modalService.open(ProductForm, { size: 'lg', backdrop: false, keyboard: true });
     if (modalRef && modalRef.componentInstance) {
-      console.log('item',item);
       modalRef.componentInstance.item = item ? { ...item } : null;
       if (modalRef.result) {
         modalRef.result.then((result: any) => {
@@ -115,7 +110,6 @@ export class Product implements OnInit {
     this.productService.deleteProduct(id).subscribe({
       next: (res: any) => {
         this.loadProduct();
-        console.log('Product deleted:', res);
       },
       error: (err: any) => {
         console.error('Error deleting product:', err);

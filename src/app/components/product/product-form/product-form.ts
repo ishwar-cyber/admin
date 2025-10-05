@@ -57,9 +57,10 @@ export class ProductForm implements OnInit {
   maxFileSize = signal(10);
   allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
   uploadedImages = signal<any[]>([]);
-  varinatImages = signal<any[]>([]);
+  variantImages = signal<any[]>([]);
   selectedFiles = signal<File[]>([]);
   imageUploaded = signal<boolean>(false);
+  serviceChargeFlag = signal<boolean>(false);
   constructor() {}
 
  public productStock = signal<any[]>([
@@ -93,7 +94,6 @@ export class ProductForm implements OnInit {
       }
     });
     this.productForm?.get('stockStatus')?.valueChanges.subscribe(stockStatus => { 
-        console.log('stockStatus', stockStatus);
     }); 
 
 
@@ -102,7 +102,8 @@ export class ProductForm implements OnInit {
         this.editProduct.set(true);
       // this.editMode.set(true);
       this.productId.set(this.item._id);
-      console.log('edit item brand', this.item.brand);
+      console.log('this.item', this.item);
+      
       this.productForm.patchValue({
         name: this.item.name,
         brand: this.item.brand.name ? this.item.brand : '',
@@ -124,35 +125,35 @@ export class ProductForm implements OnInit {
         pincode: this.item.pincode?.map((pincodeId: any) => {
           return { id: pincodeId, name: pincodeId };
         }),
-        // if(this.item.variants?.length) {
-        //   this.item.variants.forEach((variant: any) => {
-        //     this.variantImages().push(variant?.thumbnail);
-        //   });
-        // }
         variants: this.item.variants?.length ? this.item.variants.map((variant: any) => this.formBuilder.group({
           variantName: variant.name || '',
           sku: variant.sku || '',
-          thumbnail: this.item.thumbnail,
+          thumbnail: variant.images?.length ? variant.images[0].url : '',
         })) : [],
         stockStatus: this.item.stock === 'in' || this.item.stock === 'out' ? true : false,
 
       });
       this.item.images?.forEach((image: any) => {
-        this.uploadedImages().push(image?.url);
-      }); 
+        this.uploadedImages.update(value => [...value, image]);
+      });
+      console.log('this.uploadedImages()', this.uploadedImages());
       if(this.item.variants?.length) {
         this.item.variants.forEach((variant: any) => {
-          
-          // this.varinatImages().push(variant?.thumbnail);
           this.addVariant(variant);
         });
       }
-      // this.uploadedImages.set(this.item?.images[0]?.url || '');
+      // this.uploadedImages.set(this.item?.image);
     }
   }
 
   selectedCategoryId(event: any){
     console.log('pincode', event);
+    if(event && event.length > 0){
+      this.serviceChargeFlag.set(true);
+    } else {
+      this.serviceChargeFlag.set(false);
+      this.productForm.controls['serviceCharge'].setValue(0);
+    }
   }
 
   selectedSubCategory(event: any){
@@ -172,17 +173,17 @@ export class ProductForm implements OnInit {
   onUploadComplete(files: File[], productImages = true): void {
     this.productService.uploadImage(files).subscribe({
       next: (res:any) => {
+        console.log('res', res);
+        this.uploadedImages.set([]);
         if(productImages){
           for(const image of res.data){
-          console.log('image response', image);
-          this.uploadedImages().push(image); 
+          this.uploadedImages.update(value => [...value, image]);
         }
         } else {
-          this.varinatImages.update(value => [...value, res.data[0]]);
-          console.log('variant image', this.varinatImages());
-          
+          this.variantImages.update(value => [...value, res.data[0]]);
         }
-        console.log('Upload complete. Total images:', this.uploadedImages());
+        console.log('this.uploadedImages()', this.uploadedImages());
+        
       },error : (err)=>{}
     })
   }
@@ -203,7 +204,6 @@ export class ProductForm implements OnInit {
           this.updateBrand(product.brand);
           this.prepopulate.set(product.category)
           this.productForm.controls['thumbnail'].patchValue(product.thumbnail);
-          console.log('product image', product.thumbnail);
           
          // Populate warranty
          if (product.warranty) {
@@ -221,7 +221,6 @@ export class ProductForm implements OnInit {
           
           // Add new specifications
           product.specifications.forEach((spec: any) => {
-            console.log('spec', spec);
             this.specifications.push(
               this.formBuilder.group({
                 name: [spec.name || ''],
@@ -335,6 +334,7 @@ export class ProductForm implements OnInit {
       width: [5, [Validators.required, Validators.min(0)]],
       description: ['', Validators.required],
       offerPrice: this.formBuilder.array([]),
+      serviceCharge: [0, [Validators.min(0)]],
       variants: this.formBuilder.array([]),
       specifications: this.formBuilder.array([]),
       warranty: this.formBuilder.group({
@@ -406,17 +406,14 @@ addVariant(data?: any): void {
       const image = this.variants.controls.map((control) => control.get('image')?.value).filter((image: any) => image !== null);
       const payload = this.createPayload();
       let callApi: any;
-      console.log(this.editProduct());
-      
       if(!this.editProduct()){
-        callApi = this.productService.createProduct(payload, image);
+        callApi = this.productService.createProduct(payload);
       } else {
-        callApi = this.productService.updateProduct(this.productId(), payload, image);
+        callApi = this.productService.updateProduct(this.productId(), payload);
       }
       callApi.subscribe({
         next: (response:any) => {
-          console.log('Product created:', response);
-           this.activeModal.close(true);
+          this.activeModal.close(true);
           this.resetForm();
           this.router.navigate(['/admin/product']);
         },
@@ -431,8 +428,6 @@ addVariant(data?: any): void {
   }
 
   public createPayload() {
-    console.log('Creating payload with form values:', this.productForm.value);
-
     const specificationsArray = this.specifications.controls.map(control => ({
       name: control.get('name')?.value || '',
       value: control.get('value')?.value || ''
@@ -449,7 +444,7 @@ addVariant(data?: any): void {
       sku: control.get('sku')?.value || '',
       price: control.get('price')?.value || 0,
       stock: control.get('stock')?.value || 0,
-      image: this.varinatImages() || null
+      image: this.variantImages() || null
     }));
   
     const warranty = {
@@ -469,6 +464,7 @@ addVariant(data?: any): void {
       width: this.productForm.value.width,
       height: this.productForm.value.height,
       length: this.productForm.value.length,
+      serviceCharge: this.productForm.value.serviceCharge || 0,
       variants: variantsArray,
       description: this.productForm.value.description,
       weight: this.productForm.value.weight,

@@ -76,6 +76,13 @@
                         placeholder="Select Pincode"
                     />
                 </div>
+                @if(serviceChargeFlag()) {
+                    <div class="col-md-6">
+                        <label for="model" class="form-label">Product install Charges</label>
+                        <input type="text" class="form-control" id="model" formControlName="serviceCharge">
+                    </div>
+                }
+                
                 
                 <div class="col-md-6">
                     <label for="subCategory" class="form-label">Sub Category</label>
@@ -332,6 +339,7 @@
                                 <upload-image 
                                     [maxFileSizeMB]="maxFileSize()"
                                     [allowedTypes]="allowedFileTypes()"
+                                    [imageUrl]=" variantImages()"
                                     (filesSelected)="onFilesSelected($event)"
                                     (filesSelected)="onUploadComplete($event, false)"
                                 />

@@ -31,8 +31,6 @@ export class MultipleSelect {
   @ViewChild('dropdownContainer') dropdownContainer!: ElementRef;
   
   ngAfterViewInit(): void {
-    console.log('Dropdown container:', this.options);
-    
     if (this.prepopulate && this.prepopulate?.length > 0) {
       this.prepopulate?.forEach((itemId: any) => {
         const foundOption = this.options?.find((option: any) => option.id === itemId);

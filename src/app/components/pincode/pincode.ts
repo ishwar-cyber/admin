@@ -39,7 +39,6 @@ export class Pincode implements OnInit{
   public getPincode(){
     this.pincodeService.getPincode().subscribe({
       next:(response:any)=>{
-        console.log('pincode',response?.data);
         this.pincodes.set(response.data)
         // Update filteredPincodes initially
         this.filteredPincodes.set(response.data);
@@ -51,7 +50,6 @@ export class Pincode implements OnInit{
   }
 
   deletedPincode(id: string){
-    console.log('pincode id', id);
     this.pincodeService.deletePincode(id).subscribe({
       next :(res)=>{
         this.getPincode();
@@ -85,9 +83,6 @@ export class Pincode implements OnInit{
       this.pincodes().filter(pincode =>
         (pincode.pincode && pincode.pincode.includes(term)))
     );
-
-    console.log('this.fil', this.filteredPincodes());
-   
   }
 
 

@@ -9,7 +9,7 @@ export interface OrderItem {
 
 export interface Customer {
   id: string;
-  name: string;
+  username: string;
   email: string;
   phone: string;
   address: {
@@ -24,7 +24,7 @@ export interface Customer {
 export interface Order {
   id: string;
   orderNumber: string;
-  customer: Customer;
+  user: Customer;
   items: OrderItem[];
   subtotal: number;
   tax: number;

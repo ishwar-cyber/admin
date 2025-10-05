@@ -93,7 +93,7 @@
               <tr>
                 <td>
                   <div class="d-flex align-items-center">
-                    <img [src]="item.images[0].url || 'assets/images/product-placeholder.jpg'" 
+                    <img [src]="item?.images[0]?.url || 'assets/images/product-placeholder.jpg'" 
                          class="rounded me-3 object-fit-cover" alt="Product" width="60" height="60">
                     <div class="w-100">
                       <h6 class="mb-0 fw-semibold product__name text-truncate"

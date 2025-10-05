@@ -117,24 +117,21 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
   }
 
   public createProduct(payload: any, image?: File[]) {
-   const formData = this.createFormData(payload, image);
+   const formData = this.createFormData(payload);
     const url = `${environment.BASE_URL}/products`;
     return this.httpClient.post(url, formData);
   }
 
-  public updateProduct(id: string, payload: any, image?: File[]) {
-    console.log('update payload', payload);
-    
-    const formData = this.createFormData(payload, image);
-    const url = `${environment.BASE_URL}/products/${id}`;
-    console.log('url for update', url);
-    
-    return this.httpClient.put(url, formData);
-  }
+  public updateProduct(id: string, payload: any) {
+  const formData = this.createFormData(payload);
+  const url = `${environment.BASE_URL}/products/${id}`;
+
+  // ✅ Use PATCH instead of PUT
+  return this.httpClient.patch(url, formData);
+}
+
   deleteProduct(id: string){
     const url = `${environment.BASE_URL}/products/${id}`;
-    console.log('url for delete', url);
-
     return this.httpClient.delete(url);
   }
 
@@ -146,84 +143,86 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     this._totalItems.set(0);
   }
 
-  private createFormData(payload: any, image?: File[] ): FormData {
-    const formData = new FormData();
-    formData.append('name', payload.name);
-    formData.append('sku', payload.model);
-    formData.append('status', payload.status);
-    formData.append('brand', payload.brand);
-    formData.append('subCategory', payload.subCategory);
-    formData.append('description', payload.description);
-    formData.append('price', payload.price);
-    formData.append('stock', payload.stock);
-    formData.append('width', payload.width);
-    formData.append('height', payload.height);
-    formData.append('length', payload.length);
-    formData.append('weight', payload.weight || null);
-    formData.append('category', payload.category || null);
+  private createFormData(payload: any): FormData {
+  const formData = new FormData();
 
-    if (payload.discount) {
-      formData.append('discount', payload.discount.toString());
-    }
-     // Handle optional discount field
-     if (payload.discount) {
-      formData.append('discount', payload.discount.toString());
-    }
+  formData.append('name', payload.name);
+  formData.append('sku', payload.model);
+  formData.append('status', payload.status);
+  formData.append('brand', payload.brand);
+  formData.append('subCategory', payload.subCategory);
+  formData.append('description', payload.description);
+  formData.append('price', payload.price);
+  formData.append('stock', payload.stock);
+  formData.append('width', payload.width);
+  formData.append('height', payload.height);
+  formData.append('length', payload.length);
+  formData.append('weight', payload.weight || '');
+  formData.append('category', payload.category || '');
+  formData.append('serviceCharges', payload.serviceCharge || '');
 
-    if(payload.pincode){
-       payload.pincode.forEach((pincode: any, index: number) => {
-        formData.append(`pincode[${index}]`, pincode || '');
-      });
-    }
-    // Handle specifications array
-    if (payload.specifications && payload.specifications.length > 0) {
-      // Append each specification as separate form data entries
-      payload.specifications.forEach((spec: any, index: number) => {
-        formData.append(`specifications[${index}][name]`, spec.name);
-        formData.append(`specifications[${index}][value]`, spec.value);
-      });
-    }
-       // Handle specifications array
-    if (payload.offerPrice && payload.offerPrice.length > 0) {
-      // Append each specification as separate form data entries
-      payload.offerPrice.forEach((item: any, index: number) => {
-        formData.append(`offerPrice[${index}][quantity]`, item.quantity);
-        formData.append(`offerPrice[${index}][price]`, item.price);
-      });
-    }
-
-    // Handle warranty object
-    if (payload.warranty) {
-      formData.append('warranty[period]', payload.warranty.period?.toString() || '');
-      formData.append('warranty[type]', payload.warranty.type || '');
-    }
-    payload.productImages.forEach((productImage: any, index:number)=>{
-      formData.append(`images[url][${index}]`, productImage.url)
-      formData.append(`images[public_id][${index}]`, productImage.public_id)
-    })
-
-    // Handle variants array if exists
-    if (payload.variants && payload.variants.length > 0) {
-      payload.variants.forEach((variant: any, index: number) => {
-        formData.append(`variants[${index}][name]`, variant.name || '');
-        formData.append(`variants[${index}][sku]`, variant.sku || '');
-        formData.append(`variants[${index}][price]`, variant.price?.toString() || '');
-        formData.append(`variants[${index}][stock]`, variant.stock?.toString() || '');
-        // Handle variant image if exists
-        console.log('variant image', variant.image);
-        if (variant.image.length > 1) {
-          variant.image.forEach((variant: any, index:number)=>{
-            formData.append(`variants[${index}][image][url]`,  variant.image.url);
-            formData.append(`variants[${index}][image][public_id]`, variant.image.public_id)
-          });
-        } else if (variant.image.url) {
-          formData.append(`variants[${index}][image][url]`, variant.image.url);
-          formData.append(`variants[${index}][image][public_id]`, variant.image.public_id)
-        }
-      });
-    }
-    return formData;
+  if (payload.discount) {
+    formData.append('discount', payload.discount.toString());
   }
+
+  // Pincode
+  if (payload.pincode) {
+    payload.pincode.forEach((pincode: any, index: number) => {
+      formData.append(`pincode[${index}]`, pincode);
+    });
+  }
+
+  // Specifications
+  if (payload.specifications?.length) {
+    payload.specifications.forEach((spec: any, index: number) => {
+      formData.append(`specifications[${index}][name]`, spec.name);
+      formData.append(`specifications[${index}][value]`, spec.value);
+    });
+  }
+
+  // Offer Price
+  if (payload.offerPrice?.length) {
+    payload.offerPrice.forEach((item: any, index: number) => {
+      formData.append(`offerPrice[${index}][quantity]`, item.quantity);
+      formData.append(`offerPrice[${index}][price]`, item.price);
+    });
+  }
+
+  // Warranty
+  if (payload.warranty) {
+    formData.append('warranty[period]', payload.warranty.period || '');
+    formData.append('warranty[type]', payload.warranty.type || '');
+  }
+
+  // Product images
+  if (payload.productImages && Array.isArray(payload.productImages)) {
+    payload.productImages.forEach((productImage: any, index: number) => {
+      formData.append(`images[${index}][url]`, productImage.url);
+      formData.append(`images[${index}][public_id]`, productImage.public_id);
+    });
+  } else {
+    formData.append('images[0][url]',  payload.productImages[0]?.url || '');
+    formData.append('images[0][public_id]',  payload.productImages[0]?.public_id || '');
+  }
+  // Variants
+  if (payload.variants?.length) {
+    payload.variants.forEach((variant: any, index: number) => {
+      formData.append(`variants[${index}][name]`, variant.name || '');
+      formData.append(`variants[${index}][sku]`, variant.sku || '');
+      formData.append(`variants[${index}][price]`, variant.price?.toString() || '0');
+      formData.append(`variants[${index}][stock]`, variant.stock?.toString() || '0');
+
+      if (variant.image?.length) {
+        variant.image.forEach((img: any, imgIndex: number) => {
+          formData.append(`variants[${index}][image][${imgIndex}][url]`, img.url);
+          formData.append(`variants[${index}][image][${imgIndex}][public_id]`, img.public_id);
+        });
+      }
+    });
+  }
+
+  return formData;
+}
 
   uploadImage(files: File[]) {
     const formData = new FormData();

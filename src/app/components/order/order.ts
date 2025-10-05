@@ -36,6 +36,13 @@ export class OrderComponent implements OnInit {
   orderStatuses = CommonConstants.OrderStatus;
   selectedOrderStatus = signal<string>('');
   selectedOrderId = signal<string>('');
+
+  confirmed = 0;
+  delivered = 0;
+  pending = 0;
+  cancelled = 0;
+  processing = 0;
+  shipped = 0;
   // Sort signals
   sortField = signal<'orderNumber' | 'customer' | 'total' | 'status' | 'deliveryStatus' | 'createdAt'>('createdAt');
   sortDirection = signal<'asc' | 'desc'>('desc');
@@ -82,19 +89,7 @@ export class OrderComponent implements OnInit {
     return this.sortOrders(orders);
   });
 
-  // Statistics
-  orderStats = computed(() => {
-    const orders = this.statistics();
-    console.log('orders:', orders);
-    return {
-      total: orders?.length,
-      pending: orders?.filter((o:any) => o.status === 'pending'),
-      confirmed: orders?.filter((o:any) => o.status === 'Confirmed'),
-      shipped: orders?.filter((o:any) => o.status === 'shipped'),
-      delivered: orders?.filter((o:any) => o.status === 'delivered'),
-      cancelled: orders?.filter((o:any) => o.status === 'cancelled'),
-    };
-  });
+
 
   ngOnInit(): void {
     this.loadOrders();
@@ -119,7 +114,15 @@ export class OrderComponent implements OnInit {
       next: (response: any) => {
         this.statistics.set(response.data?.statistics?.orderStatusStats);
         this.orders.set(response.data.orders);
-        this.totalItems.set(response.data.total || 0);
+        this.totalItems.set(response.data.statistics?.totalOrders || 0);
+
+      const stats =  response.data.statistics.orderStatusStats || [];
+      this.confirmed = stats.find((s: any) => s._id === 'Confirmed')?.count || 0;
+      this.delivered = stats.find((s: any) => s._id === 'Delivered')?.count || 0;
+      this.pending = stats.find((s: any) => s._id === 'pending')?.count || 0;
+      this.cancelled = stats.find((s: any) => s._id === 'Cancelled')?.count || 0;
+      this.processing = stats.find((s: any) => s._id === 'Processing')?.count || 0;
+      this.shipped = stats.find((s: any) => s._id === 'Shipped')?.count || 0;
         this.loading.set(false);
       },
       error: (err) => {
@@ -142,8 +145,8 @@ export class OrderComponent implements OnInit {
           valueB = b.orderNumber;
           break;
         case 'customer':
-          valueA = a.customer.name;
-          valueB = b.customer.name;
+          valueA = a.user.username;
+          valueB = b.user.username;
           break;
         case 'total':
           valueA = a.totalAmount;
