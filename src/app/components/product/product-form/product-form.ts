@@ -102,8 +102,10 @@ export class ProductForm implements OnInit {
         this.editProduct.set(true);
       // this.editMode.set(true);
       this.productId.set(this.item._id);
-      console.log('this.item', this.item);
-      
+      if (this.item.pincode && this.item.pincode.length > 0) {
+        this.serviceChargeFlag.set(true);
+        this.productForm.controls['serviceCharge'].setValue(this.item.serviceCharges || 0);
+       }
       this.productForm.patchValue({
         name: this.item.name,
         brand: this.item.brand.name ? this.item.brand : '',
@@ -125,6 +127,7 @@ export class ProductForm implements OnInit {
         pincode: this.item.pincode?.map((pincodeId: any) => {
           return { id: pincodeId, name: pincodeId };
         }),
+    
         variants: this.item.variants?.length ? this.item.variants.map((variant: any) => this.formBuilder.group({
           variantName: variant.name || '',
           sku: variant.sku || '',
