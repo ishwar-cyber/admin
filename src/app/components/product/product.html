@@ -98,24 +98,24 @@
                     <div class="w-100">
                       <h6 class="mb-0 fw-semibold product__name text-truncate"
                           data-bs-toggle="tooltip"
-                          [attr.title]="item.name">{{item.name}}</h6>
-                      <small class="text-muted">ID: {{item.id | slice:0:8}}</small>
+                          [attr.title]="item?.name">{{item?.name}}</h6>
+                      <small class="text-muted">ID: {{item?.id | slice:0:8}}</small>
                     </div>
                   </div>
                 </td>
-                <td class="text-muted">{{item.sku || '--'}}</td>
+                <td class="text-muted">{{item?.sku || '--'}}</td>
                 <td>
                   <!-- @for (item of item.category; track $index) { -->
-                     <span> {{item.category.name}}</span>
+                     <span> {{item?.category?.name}}</span>
                   <!-- } -->
                 </td>
                 <td>
-                    {{item.brand.name}}
+                    {{item?.brand?.name}}
                 </td>
                 <td class="fw-semibold">
-                  ₹{{item.price | number}}
-                  @if(item.originalPrice) {
-                    <small class="text-danger text-decoration-line-through ms-1">₹{{item.originalPrice | number}}</small>
+                  ₹{{item?.price | number}}
+                  @if(item?.originalPrice) {
+                    <small class="text-danger text-decoration-line-through ms-1">₹{{item?.originalPrice | number}}</small>
                   }
                 </td>
                 <td>
@@ -130,19 +130,19 @@
                            [style.width]="(item.stock / item.maxStock * 100) + '%'">
                       </div>
                     </div> -->
-                   
-                    @if(isNumeric(item.stock)){
+
+                    @if(isNumeric(item?.stock)){
                        <span class="stock" [ngClass]="{
-                          'text-success': item.stock > 20,
-                          'text-warning': item.stock <= 20 && item.stock > 0,
-                          'text-danger': item.stock === 0
+                          'text-success': item?.stock > 20,
+                          'text-warning': item?.stock <= 20 && item?.stock > 0,
+                          'text-danger': item?.stock === 0
                         }">
-                      {{item.stock }} left </span>
-          
+                      {{item?.stock }} left </span>
+
                     } @else {
                       <span class="stock" [ngClass]="{
-                          'text-success': item.stock === 'in',
-                          'text-danger': item.stock === 'out'
+                          'text-success': item?.stock === 'in',
+                          'text-danger': item?.stock === 'out'
                         }">
                       In Stock
                       </span>
@@ -152,15 +152,15 @@
                 <td>
                   <span class="badge text-dark" 
                         [ngClass]="{
-                          'bg-success text-light': item.status === true,
-                          'bg-secondary': item.status === false,
-                          'bg-dark text-dark': item.status === 'draft'
+                          'bg-success text-light': item?.status === true,
+                          'bg-secondary': item?.status === false,
+                          'bg-dark text-dark': item?.status === 'draft'
                         }">
-                    {{item.status === true ? 'Active' : 'Inactive'}}
+                    {{item?.status === true ? 'Active' : 'Inactive'}}
                   </span>
                 </td>
                 <td class="text-muted small">
-                  {{item.updatedAt | date:'shortDate'}}
+                  {{item?.updatedAt | date:'shortDate'}}
                 </td>
                 <td class="text-end">
                  <div class="btn-group btn-group-sm">

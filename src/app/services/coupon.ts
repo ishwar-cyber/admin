@@ -49,8 +49,7 @@ export class Coupon {
 
   // Delete coupon
   deleteCoupon(id: string): Observable<ApiResponse> {
-    return this.httpClient.delete<ApiResponse>(`${this.apiUrl}/${id}`)
-
+    return this.httpClient.delete<ApiResponse>(`${this.apiUrl}/delete/${id}`);
   }
 
   // Validate coupon code
