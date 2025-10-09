@@ -35,7 +35,9 @@ export class Pincode implements OnInit{
       this.filterPincode(value);
     });
   }
-  
+  get activePincodes() {
+    return this.pincodes().filter(pincode => pincode.status === true).length;
+  }
   public getPincode(){
     this.pincodeService.getPincode().subscribe({
       next:(response:any)=>{

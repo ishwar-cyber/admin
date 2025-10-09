@@ -89,7 +89,7 @@ export class SubCategory {
   }
 
   get activeSubCategories(): number {
-    return this.subCategories().filter(c => c.status === 'active').length;
+    return this.subCategories().filter(c => c.isActive === true).length;
   }
 
   // Add to the CategoriesComponent class
