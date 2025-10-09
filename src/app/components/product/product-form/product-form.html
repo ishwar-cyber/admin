@@ -353,7 +353,14 @@
         <!-- Description & Key Features -->
         <div class="mb-4 p-3 border rounded">
             <h4 class="mb-3">Description</h4>
-            <textarea class="form-control" rows="4" formControlName="description" required></textarea>
+            <!-- <textarea class="form-control" rows="4" formControlName="description" required></textarea> -->
+            <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+            <ngx-editor
+                [editor]="editor"
+                formControlName="description"
+                [placeholder]="'Write an engaging product description...'"
+                class="rounded p-2"
+            ></ngx-editor>
             @if(submitted && f['description'].errors) {
                 <div class="text-danger">
                     @if(f['description'].errors['required']) {
@@ -361,7 +368,8 @@
                     }
                 </div>
             }
-            
+        </div>
+
             <!-- Specification -->
             <div class="my-4 p-3 border rounded">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -410,7 +418,6 @@
                     }
                 </div>
             </div>
-        </div>
 
         <!-- Warranty -->
         <div class="mb-4 p-3 border rounded">

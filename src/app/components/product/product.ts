@@ -63,11 +63,11 @@ export class Product implements OnInit {
     };
     this.productService.getProducts(queryParams).subscribe({
       next : (res: any) =>{
-        let pegination = res.pagination;
-        this.productList.set(res.data);
-        this.currentPage.set(pegination.page);
-        this.totalItems.set(pegination.total);
-        this.totalPages.set(pegination.pages);
+        let pegination = res?.pagination;
+        this.productList.set(res?.data);
+        this.currentPage.set(pegination?.page);
+        this.totalItems.set(pegination?.total);
+        this.totalPages.set(pegination?.pages);
       }
     })
   }

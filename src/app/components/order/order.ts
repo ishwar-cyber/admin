@@ -5,6 +5,8 @@ import { NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { OrderService } from '../../services/order';
 import { Order, OrderQueryParams } from '../../models/order';
 import { CommonConstants } from '../../common/common-constant';
+import { routes } from '../../app.routes';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-order',
@@ -15,7 +17,7 @@ import { CommonConstants } from '../../common/common-constant';
 export class OrderComponent implements OnInit {
   private orderService = inject(OrderService);
   private modalService = inject(NgbModal);
-
+  private router = inject(Router);
   // Add Math to component scope
   Math = Math;
 
@@ -128,6 +130,7 @@ export class OrderComponent implements OnInit {
       error: (err) => {
         this.error.set('Failed to load orders');
         this.loading.set(false);
+        this.router.navigate(['/login']); // Redirect to login on error (e.g., unauthorized)
       }
     });
   }

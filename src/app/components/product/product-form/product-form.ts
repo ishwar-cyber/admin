@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrandService } from '../../../services/brand';
@@ -15,12 +15,12 @@ import { CategoryM } from '../../../models/category';
 import { BrandM } from '../../../models/brand';
 import { ProductModal } from '../../../models/product';
 import { SingleSelect } from '../../../shareds/single-select/single-select';
-
+import { Editor, Toolbar, NgxEditorMenuComponent, NgxEditorComponent } from 'ngx-editor';
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule,
-    MultipleSelect, UploadImage, RouterModule, NgbModule, SingleSelect],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, NgxEditorComponent,
+    MultipleSelect, UploadImage, RouterModule, NgbModule, SingleSelect, NgxEditorMenuComponent],
   templateUrl: './product-form.html',
   styleUrl: './product-form.scss'
 })
@@ -61,6 +61,14 @@ export class ProductForm implements OnInit {
   selectedFiles = signal<File[]>([]);
   imageUploaded = signal<boolean>(false);
   serviceChargeFlag = signal<boolean>(false);
+    // 🔹 Reactive editor state
+  editor = new Editor();
+  // 🔹 Toolbar configuration
+  toolbar: Toolbar = [
+    ['bold', 'italic', 'underline'],
+    ['ordered_list', 'bullet_list'],
+    ['align_left', 'align_center', 'align_right'],
+  ];
   constructor() {}
 
  public productStock = signal<any[]>([
@@ -93,11 +101,6 @@ export class ProductForm implements OnInit {
         this.activeModal.close(true);
       }
     });
-    this.productForm?.get('stockStatus')?.valueChanges.subscribe(stockStatus => { 
-    }); 
-
-
-
       if(this.item !== null) {
         this.editProduct.set(true);
       // this.editMode.set(true);
@@ -133,8 +136,6 @@ export class ProductForm implements OnInit {
           sku: variant.sku || '',
           thumbnail: variant.images?.length ? variant.images[0].url : '',
         })) : [],
-        stockStatus: this.item.stock === 'in' || this.item.stock === 'out' ? true : false,
-
       });
       this.item.images?.forEach((image: any) => {
         this.uploadedImages.update(value => [...value, image]);
@@ -200,7 +201,6 @@ export class ProductForm implements OnInit {
           const product = response.data;
           this.productForm.patchValue(product);
           if(product.stock === 'in' || product.stock === 'out'){
-            this.productForm.controls['stockStatus'].setValue(true)
             this.productForm.controls['stock'].setValue(product.stock);
           }
           this.mainImagePreview = product.thumbnail;
@@ -328,7 +328,6 @@ export class ProductForm implements OnInit {
       subCategory: ['', Validators.required],
       model: ['', Validators.required],
       status: [true],
-      stockStatus: [false],
       price: [0, [Validators.required, Validators.min(0)]],
       stock: ['in stock', [Validators.required]],
       weight: [0.5, [Validators.required, Validators.min(0)]],

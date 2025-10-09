@@ -82,7 +82,6 @@ export class OrderService {
     if (params?.dateTo) {
       httpParams = httpParams.set('dateTo', params.dateTo);
     }
-
     return this.httpClient.get<OrderApiResponse>(`${environment.BASE_URL}/order`, { params: httpParams });
   }
 
