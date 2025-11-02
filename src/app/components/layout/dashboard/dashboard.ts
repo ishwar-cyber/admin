@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Sidebar } from '../../../services/sidebar';
 import { Chart } from 'chart.js/auto';
+import { RouterLink } from '@angular/router';
 
 interface DashboardStats {
   totalSales: number;
@@ -15,7 +16,7 @@ interface DashboardStats {
 }
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })

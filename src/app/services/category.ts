@@ -76,7 +76,7 @@ export class CategoryS {
      */
     public searchCategories(query: string): Observable<Response[]> {
       return this.httpClient.get<Response[]>(`${this.baseUrl}/search`, {
-        params: { q: query }
+        params: { query: query }
       });
     }
 }

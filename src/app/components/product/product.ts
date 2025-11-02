@@ -95,10 +95,14 @@ export class Product implements OnInit {
       }
     }
   }
-  resetFilters(){}
-   // Product actions
+  resetFilters() {
+    this.selectedCategory.set('');
+    this.selectedBrand.set('');
+    this.selectedStatus.set('');
+    this.searchTerm.set('');
+    this.loadProduct();
+  }
   viewProduct(id: string) {
-    // Implementation for viewing product
     console.log('View product:', id);
   }
 
@@ -106,7 +110,6 @@ export class Product implements OnInit {
     this.openAddProductModal(id);
   }
   confirmDelete(id: string) {
-    // Implementation for delete confirmation
     this.productService.deleteProduct(id).subscribe({
       next: (res: any) => {
         this.loadProduct();

@@ -3,6 +3,6 @@ export const StorageKeys = {
     currentUserRole: "currentUserRole",
     currentUserPermissions: "currentUserPermissions",
 }
-export const CookiesKeys ={
+export const CookiesKeys = {
     authToken : "authToken",
 }

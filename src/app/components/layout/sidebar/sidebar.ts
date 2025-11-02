@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Inject, input, output, PLATFORM_ID, signal } from '@angular/core';
+import { Component, inject, Inject, input, OnInit, output, PLATFORM_ID, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Auth } from '../../../services/auth';
+import { StorageHandler } from '../../../services/storage-handler';
+import { StorageKeys } from '../../../common/commonConstant';
 interface NavItem {
   title: string;
   icon?: string;
@@ -10,21 +12,37 @@ interface NavItem {
   expanded?: boolean;
   roles?: string[]; // Define roles for each menu item
 }
+interface Role {
+  username?: string;
+  email?: string;
+  _id?: string;
+  role?: string;
+}
 @Component({
   selector: 'app-sidebar',
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss'
 })
-export class Sidebar {
- collapsed = input<boolean>(false);
+export class Sidebar implements OnInit {
+  collapsed = input<boolean>(false);
   toggleSidebar = output();
   isBrowser = signal(false);
- public loginService = inject(Auth)
+  adminRoles = signal<Role[]>([]);
+  public storageHandler = inject(StorageHandler);
+  public loginService = inject(Auth);
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     // Check if the platform is browser
     this.isBrowser.set(typeof window !== 'undefined');
+    const userCookie = this.storageHandler.getSessionStorage(StorageKeys.currentUser) as Role;
+    console.log(userCookie);
+    if (userCookie && userCookie.role) {
+      this.adminRoles.set([userCookie]);
+    }
   }
+  ngOnInit(): void {
+  }
+
 
   menuItems = signal<NavItem[]>([
     {

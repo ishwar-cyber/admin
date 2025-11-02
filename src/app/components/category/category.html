@@ -18,7 +18,7 @@
         <span class="input-group-text"><i class="bi bi-search"></i></span>
         <input 
           type="text" 
-          class="form-control" 
+          class="form-control"
           placeholder="Search categories..." 
           [formControl]="searchControl"
           aria-label="Search categories">
@@ -90,7 +90,7 @@
                   @if (searchControl.value) {
                     <i class="bi bi-search-x fs-4 d-block mb-2"></i>
                     No categories match "{{ searchControl.value }}"
-                    <button class="btn btn-sm btn-link mt-2" (click)="searchControl.setValue('')">
+                    <button class="btn btn-sm btn-link mt-2" (click)="loadCategories()">
                       Clear search
                     </button>
                   } @else {
@@ -116,7 +116,7 @@
                       </div>
                     </div>
                   </td>
-                  <td>{{ category.products || 0 }}</td>
+                  <td>{{ category.productCount || 0 }}</td>
                   <td>
                     <span class="badge rounded-pill py-1" 
                           [class.bg-success]="category.isActive=== true"

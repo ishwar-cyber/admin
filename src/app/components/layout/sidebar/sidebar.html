@@ -49,26 +49,29 @@
     </ul>  
   </div>
   <div class="sidebar-footer">
-      <div class="user-info" *ngIf="!collapsed()">
+    @if(!collapsed()) {
+      <div class="user-info">
         <div class="avatar">
           <i class="bi bi-person-circle user-icon"></i>
         </div>
         <div class="details">
-            <span class="username">John Doe</span>
-            <p class="role">Administator</p>
+            <span class="username">{{ adminRoles()[0].username || null}}</span>
+            <p class="role">{{ adminRoles()[0].role || null}}</p>
         </div>
         <div class="logout-button" (click)="loginService.logout()">
           <i class="bi bi-box-arrow-right"></i> 
         </div>
       </div>
-      <div class="user-info-collapsed" *ngIf="collapsed()">
-      <div class="avatar">
-          <i class="bi bi-person-circle user-icon"></i>
+    }
+      @if(collapsed()) {
+        <div class="user-info-collapsed">
+          <div class="avatar">
+            <i class="bi bi-person-circle user-icon"></i>
+          </div>
+          <div class="logout-button" (click)="loginService.logout()">
+            <i class="bi bi-box-arrow-right"></i> 
+          </div>
         </div>
-        <div class="logout-button" (click)="loginService.logout()">
-          <i class="bi bi-box-arrow-right"></i> 
-        </div>
-      </div>
-
+      }
   </div>
 </div>

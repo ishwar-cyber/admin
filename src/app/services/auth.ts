@@ -21,15 +21,26 @@ export class Auth {
   }
 
   private loadUser() {
-    const storedUser:any = this.storageHandler.getCookie(StorageKeys.currentUser);
+    // Try to read current user from session sto      rage (set at login)
+    const storedUser: any = this.storageHandler.getSessionStorage(StorageKeys.currentUser);
+    // storedUser may already be an object or a JSON string depending on StorageHandler implementation
     if (storedUser) {
-      this.currentUser.set(storedUser);
+      this.currentUser.set(storedUser as User);
     }
   }
 
   isAuthenticated(): boolean {
     this.loadUser();
     return !!this.currentUser();
+  }
+
+  /**
+   * Return the current user object (or null)
+   */
+  public getCurrentUser(): User | null {
+    // ensure we have latest from session
+    this.loadUser();
+    return this.currentUser() || null;
   }
 
   public login(payload: Login) {

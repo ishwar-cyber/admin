@@ -16,10 +16,10 @@ export class UploadImage implements AfterViewInit {
   uploadComplete = output<string[]>();
 
   // ✅ Model holds list of image URLs (flat array)
-  previewUrls = model<string[]>([]);
+  previewUrls = model<any[]>([]);
 
   // ✅ Input can be single or multiple image URLs
-  @Input() imageUrl: string[] | null = null;
+  @Input() imageUrl: any[] | null = null;
 
   isDragging = signal(false);
   errorMessage = signal<string | null>(null);
@@ -32,9 +32,13 @@ export class UploadImage implements AfterViewInit {
   constructor() {}
 
   ngAfterViewInit(): void {
+    console.log('qwertyuio234567',);
+    this.imageUrl?.map(img => img.url)
     if (this.imageUrl && this.imageUrl.length > 0) {
       // ✅ Flatten array properly
-      this.previewUrls.set([...this.imageUrl]);
+      this.previewUrls.set([...this.imageUrl.map(img => img.url)]);
+      // this.previewUrls.set([...this.imageUrl]);
+
     }
   }
 

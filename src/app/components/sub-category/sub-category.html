@@ -79,6 +79,10 @@
                 Products
                 <i class="bi bi-arrow-down-up ms-1 small"></i>
               </th>
+              <th scope="col" (click)="sortBy('serviceCharge')">
+                Service Charge
+                 <i class="bi bi-arrow-down-up ms-1 small"></i>
+              </th>
               <th scope="col">Status</th>
               <th scope="col" (click)="sortBy('createdAt')">
                 Created
@@ -122,6 +126,7 @@
                   </td>
                   <td>{{ subCategory.category?.name }}</td>
                   <td>{{ subCategory.productCount || 0 }}</td>
+                  <td>{{ subCategory.serviceCharges | currency:'INR':'symbol': '1.2-2' }}</td>
                   <td>
                     <span class="badge rounded-pill py-1" 
                           [class.bg-success]="subCategory.isActive === true"

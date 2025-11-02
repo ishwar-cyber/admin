@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 import { TruncatePipe } from '../../common/truncate-pipe';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CategoryForm } from './category-form/category-form';
@@ -38,16 +38,40 @@ export class Category implements OnInit{
     // Set up debounce for search input
     this.searchControl.valueChanges
       .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
+        debounceTime(400),
+        distinctUntilChanged(),
+        switchMap(() => this.categoryService.searchCategories(this.searchControl.value || ''))
       )
-      .subscribe(() => {
-        // The computed signal will automatically update
+      .subscribe({
+        next: (response: any) => {
+          this.categories.set(response.data);
+        }
       });
   }
 
   ngOnInit(): void {
       this.loadCategories();
+       this.searchControl.valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        switchMap((value) => {
+          const query = value?.trim() || '';
+          if (!query) {
+            this.categories.set([]);
+            return of({ data: [] });
+          }
+          return this.categoryService.searchCategories(query).pipe(
+            catchError(err => {
+              console.error('Search failed:', err);
+              return of({ data: [] });
+            })
+          );
+        })
+      )
+      .subscribe((response: any) => {
+        this.categories.set(response.data || []);
+      });
   } 
   openModal(item?: CategoryM): void {
     const modalRef = this.modalService.open(CategoryForm, { size: 'lg', backdrop: false });
