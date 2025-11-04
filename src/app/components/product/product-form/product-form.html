@@ -88,7 +88,7 @@
                     <label for="subCategory" class="form-label">Sub Category</label>
                      <app-single-select
                         formControlName="subCategory"
-                        [options]="subCategories()" (selectionChange)="selectedSubCategory($event)"
+                        [options]="subCategory()" (selectionChange)="selectedSubCategory($event)"
                         placeholder="Select Sub Category"
                     />
                     @if(submitted && f['subCategory'].errors) {
@@ -331,8 +331,13 @@
                             
                             <div class="col-md-6">
                                 <label class="form-label">Stock</label>
-                                <input type="number" class="form-control" formControlName="stock">
-                                
+                               <div>
+                                    <select class="form-select" id="stock" formControlName="stock" required>
+                                        @for(stock of productStock(); track stock){
+                                            <option [value]="stock.value" [defaultSelected]="stock.value === productForm.get('stock')?.value">{{ stock.label }}</option>
+                                        }
+                                    </select>
+                                </div>
                             </div>
                             
                             <div class="col-md-12">
@@ -425,7 +430,7 @@
             <div formGroupName="warranty">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">Warranty Period (months)</label>
+                        <label class="form-label">Warranty Period</label>
                         <input type="number" class="form-control" formControlName="period">
                         @if(submitted && f['warranty'].get('period')?.errors) {
                             <div class="text-danger">

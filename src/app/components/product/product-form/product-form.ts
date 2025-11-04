@@ -44,6 +44,7 @@ export class ProductForm implements OnInit {
   categories = signal<CategoryM[]>([]);
   brands = signal<any[]>([]);
   subCategories = signal<any[]>([]);
+  subCategory = signal<any[]>([]);
   pincodes = signal<any[]>([]);
   editProduct = signal(false);
   previewUrl = signal<[]>([]);
@@ -163,12 +164,20 @@ export class ProductForm implements OnInit {
   selectedSubCategory(event: any){
     console.log('subCategory', event);
   }
+
   selectedCategory(event: any){
-    console.log('categoryId', event);
+    this.subCategory.set([]);
+    this.subCategories().filter(subCategory => {
+      if(subCategory.category.name.toLowerCase() === event[0].name.toLowerCase()){
+        this.subCategory.update((value) => [...value, subCategory]);
+      }
+    });
   }
+
   selectedBrand(event: any){
     console.log('brandId', event);
   }
+
   onFilesSelected(files: File[]): void {
     this.imageUploaded.set(true);
     this.selectedFiles.set(files);
@@ -181,8 +190,8 @@ export class ProductForm implements OnInit {
         this.uploadedImages.set([]);
         if(productImages){
           for(const image of res.data){
-          this.uploadedImages.update(value => [...value, image]);
-        }
+            this.uploadedImages.update(value => [...value, image]);
+          }
         } else {
           this.variantImages.update(value => [...value, res.data[0]]);
         }
@@ -310,6 +319,8 @@ export class ProductForm implements OnInit {
   public setCategoryById(categoryId: string): void {
     this.loadCategories();
     const c = this.categories().find((x: any) => x?.id === categoryId || x?._id === categoryId);
+    console.log('category option product', c);
+    
     if (c) this.productForm.patchValue({ category: c });
   }
 

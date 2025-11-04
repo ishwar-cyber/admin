@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, forwardRef, HostListener, input, OnChanges, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, forwardRef, HostListener, input, OnChanges, OnInit, Output, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CategoryM } from '../../models/category';
 
@@ -17,9 +17,8 @@ import { CategoryM } from '../../models/category';
   ],
 })
 export class SingleSelect implements OnInit, OnChanges, ControlValueAccessor {
-     // ✅ Input from parent
+  // ✅ Input from parent
   options = input.required<CategoryM[]>();
-
   // ✅ Signals
   filteredOptions = signal<CategoryM[]>([]);
   selectedOption = signal<CategoryM | null>(null);
@@ -28,7 +27,7 @@ export class SingleSelect implements OnInit, OnChanges, ControlValueAccessor {
   // ✅ CVA callbacks
   private onChange: any = () => {};
   private onTouched: any = {};
-
+  @Output() selectionChange = new EventEmitter<any[]>();
   constructor(private eref: ElementRef) {
   }
 
@@ -55,6 +54,7 @@ export class SingleSelect implements OnInit, OnChanges, ControlValueAccessor {
 
   selectOption(option: CategoryM) {
     // ✅ Update internal state
+    this.selectionChange.emit([option]);
     this.selectedOption.set(option);
     this.isOpen.set(false);
     // ✅ Notify parent form (ControlValueAccessor)
