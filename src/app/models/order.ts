@@ -31,7 +31,7 @@ export interface Order {
   shipping: number;
   discount: number;
   totalAmount: number;
-  orderStatus: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  orderStatus: 'created' | 'packed' | 'shipped' | 'delivered' | 'cancelled';
   deliveryStatus: 'pending' | 'in_transit' | 'out_for_delivery' | 'delivered' | 'failed';
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethod: 'cod' | 'online' | 'card' | 'upi';

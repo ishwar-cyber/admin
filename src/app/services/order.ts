@@ -90,7 +90,6 @@ export class OrderService {
   */
 updateOrderStatus(id: string, status: string): Observable<ApiResponse> {
   const params = new HttpParams().set('status', status);
-
   return this.httpClient.put<ApiResponse>(
     `${this.baseUrl}/${id}`,
     {}, // empty body

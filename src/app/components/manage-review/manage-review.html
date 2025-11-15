@@ -1,0 +1,48 @@
+<div class="review-container">
+
+  <!-- Search Bar -->
+  <div class="search-section">
+    <input type="text"class="form-control" placeholder="Enter User ID or Email" [formControl]="userSearch" />
+    <button class="btn btn-primary" (click)="onSearch()"> Search</button>
+  </div>
+
+  <!-- Loading -->
+   @if(loading()) {
+        <div class="loading" *ngIf="loading()">Loading...</div>
+   }
+  <!-- No Results -->
+   @if(!loading() && reviews().length === 0) {
+    <p class="no-data">
+        No reviews found for this user.
+    </p>
+    }
+
+  <!-- Review List -->
+   @if (reviews().length > 0) {
+        <div class="review-list">
+            <h4>Reviews Found: {{ reviews().length }}</h4>
+            @for (item of reviews(); track $index) {
+                <div class="review-card" >
+                
+                    <div class="row">
+                        <div class="col-8">
+                            <h5>{{ item.productId?.name }}</h5>
+                            <p class="review-comment">{{ item.comment }}</p>
+
+                            <p class="rating">Rating: {{ item.rating }} ★</p>
+
+                            <p class="date"> {{ item.createdAt | date: 'medium' }}</p>
+                        </div>
+
+                        <div class="col-4 text-end">
+                            <button class="btn btn-danger btn-sm" (click)="deleteReview(item._id)">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
+</div>

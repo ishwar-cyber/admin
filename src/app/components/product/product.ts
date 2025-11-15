@@ -6,6 +6,7 @@ import { BrandService } from '../../services/brand';
 import { CategoryS } from '../../services/category';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProductForm } from './product-form/product-form';
+import { AntiVirus } from './anti-virus/anti-virus';
 @Component({
   selector: 'app-product',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
@@ -94,6 +95,9 @@ export class Product implements OnInit {
         }).catch(() => {});
       }
     }
+  }
+  openAddAntivirusModal(){
+    const modalRef = this.modalService.open(AntiVirus, { size: 'lg', backdrop: false, keyboard: true });
   }
   resetFilters() {
     this.selectedCategory.set('');

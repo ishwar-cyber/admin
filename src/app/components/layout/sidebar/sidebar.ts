@@ -134,6 +134,16 @@ export class Sidebar implements OnInit {
     //     }
     //   ]
     // }
+    {
+      title: 'Customers',
+      route: '/admin/customer',
+      icon: 'bi bi-people'
+    },
+    {
+      title: 'Manage Reviews',
+      route: '/admin/reviews',
+      icon: 'bi bi-people'
+    }
   ]);
 
 

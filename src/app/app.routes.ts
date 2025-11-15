@@ -69,6 +69,10 @@ export const routes: Routes = [
       {
         path:'pincode',
         loadComponent:()=>import('./components/pincode/pincode').then(m => m.Pincode)
+      },
+      {
+        path:'reviews',
+        loadComponent:()=>import('./components/manage-review/manage-review').then(m => m.ManageReview)
       }
     ]
   },
