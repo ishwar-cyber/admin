@@ -6,10 +6,8 @@
   <!-- 🔎 SEARCH PRODUCT -->
   <section class="section-box">
     <h4 class="section-title">Search Product</h4>
-
     <input type="text" class="form-control" placeholder="Search product..." [value]="searchText()"
       (input)="searchText.set($any($event.target).value || '')"/>
-
     @if (filteredProducts().length > 0) {
     <div class="product-list">
         @for (item of filteredProducts(); track $index) {

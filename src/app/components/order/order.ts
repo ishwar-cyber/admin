@@ -5,8 +5,8 @@ import { NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { OrderService } from '../../services/order';
 import { Order, OrderQueryParams } from '../../models/order';
 import { CommonConstants } from '../../common/common-constant';
-import { routes } from '../../app.routes';
 import { Router } from '@angular/router';
+import { OrderView } from './order-view/order-view';
 
 @Component({
   selector: 'app-order',
@@ -117,14 +117,14 @@ export class OrderComponent implements OnInit {
         this.statistics.set(response.data?.statistics?.orderStatusStats);
         this.orders.set(response.data.orders);
         this.totalItems.set(response.data.statistics?.totalOrders || 0);
-
-      const stats =  response.data.statistics.orderStatusStats || [];
-      this.confirmed = stats.find((s: any) => s._id === 'Confirmed')?.count || 0;
-      this.delivered = stats.find((s: any) => s._id === 'Delivered')?.count || 0;
-      this.pending = stats.find((s: any) => s._id === 'pending')?.count || 0;
-      this.cancelled = stats.find((s: any) => s._id === 'Cancelled')?.count || 0;
-      this.processing = stats.find((s: any) => s._id === 'Processing')?.count || 0;
-      this.shipped = stats.find((s: any) => s._id === 'Shipped')?.count || 0;
+        
+        const stats =  response.data.statistics.orderStatusStats || [];
+        this.confirmed = stats.find((s: any) => s._id === 'Order Placed')?.count || 0;
+        this.delivered = stats.find((s: any) => s._id === 'Delivered')?.count || 0;
+        this.pending = stats.find((s: any) => s._id === 'Packed')?.count || 0;
+        this.cancelled = stats.find((s: any) => s._id === 'Cancelled')?.count || 0;
+        this.processing = stats.find((s: any) => s._id === 'Processing')?.count || 0;
+        this.shipped = stats.find((s: any) => s._id === 'Shipped')?.count || 0;
         this.loading.set(false);
       },
       error: (err) => {
@@ -255,6 +255,17 @@ export class OrderComponent implements OnInit {
   viewOrderDetails(order: Order) {
     // TODO: Implement order details modal
     alert(`Viewing order: ${order.orderNumber}`);
+     const modalRef = this.modalService.open(OrderView, { size: 'lg', backdrop: false, keyboard: true });
+        // if (modalRef && modalRef.componentInstance) {
+        //   modalRef.componentInstance.item = item ? { ...item } : null;
+        //   if (modalRef.result) {
+        //     modalRef.result.then((result: any) => {
+        //       if (result) {
+        //         this.loadProduct();
+        //       }
+        //     }).catch(() => {});
+        //   }
+        // }
   }
 
   applyFilters() {

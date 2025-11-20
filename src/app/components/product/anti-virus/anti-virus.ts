@@ -14,7 +14,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class AntiVirus implements OnInit {
  
   public readonly activeModal = inject(NgbActiveModal);
-  private svc = inject(AntivirusService);
+  private antiVirusService = inject(AntivirusService);
   private readonly productService = inject(ProductS)
   private fb = inject(FormBuilder);
  // 🔎 Search Text (Signal)
@@ -41,6 +41,7 @@ export class AntiVirus implements OnInit {
   ngOnInit(): void {
     this.productService.getProducts({ limit: 1000 }).subscribe({
       next: (res: any) => {
+
         this.products.set(res.data);
       }
     });
@@ -82,9 +83,16 @@ export class AntiVirus implements OnInit {
     };
 
     console.log('Final Payload:', payload);
-
-    // TODO: Call your API
-    // this.api.saveAntivirusKeys(payload).subscribe(...)
-    alert('Saved successfully!');
+    this.antiVirusService.addKeys(payload.productId, payload.keys.map((k: any) => k.key)).subscribe({
+      next: (res) => {
+        console.log('ressss', res);
+        
+        alert('Saved successfully!');
+        this.activeModal.close();
+      },
+      error: (err) => {
+        alert('Error saving keys!');
+      }
+    });
   }
 }

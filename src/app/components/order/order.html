@@ -110,10 +110,8 @@
             <label class="form-label">Order Status</label>
             <select class="form-select" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
               <option value="">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="processing">Processing</option>
-              <option value="shipped">Shipped</option>
+              <option value="packed">Packed</option>
+              <option value="shipped">shipped</option>
               <option value="delivered">Delivered</option>
               <option value="cancelled">Cancelled</option>
             </select>
@@ -122,10 +120,10 @@
             <label class="form-label">Delivery Status</label>
             <select class="form-select" [ngModel]="deliveryStatusFilter()" (ngModelChange)="deliveryStatusFilter.set($event)">
               <option value="">All Delivery</option>
-              <option value="pending">Pending</option>
-              <option value="in_transit">In Transit</option>
-              <option value="out_for_delivery">Out for Delivery</option>
+               <option value="packed">Packed</option>
+              <option value="shipped">shipped</option>
               <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
               <option value="failed">Failed</option>
             </select>
           </div>
@@ -263,7 +261,7 @@
                           [value]="order?.orderStatus "
                           (change)="onOrderStatusChange(order.id, $event)">
                           @for (item of orderStatuses; track item.value) {
-                            <option [value]="item.value">{{ item.label }}</option>
+                            <option [value]="item.label">{{ item.value }}</option>
                           }
                       </select>
                     </div>

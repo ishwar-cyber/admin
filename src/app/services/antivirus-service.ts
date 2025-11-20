@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
@@ -7,13 +8,14 @@ import { inject, Injectable } from '@angular/core';
 export class AntivirusService {
 
  private http = inject(HttpClient);
+ apiUrl = `${environment.BASE_URL}/antivirus`;
 
   addKeys(productId: string, keys: string[]) {
-    return this.http.post(`/api/products/${productId}/keys/add`, { keys });
+    return this.http.post(`${this.apiUrl}/add/${productId}`, { keys });
   }
 
   deleteKey(keyId: string) {
-    return this.http.delete(`/api/keys/${keyId}`);
+    return this.http.delete(`${this.apiUrl}/keys/${keyId}`);
   }
 
   getKeys(productId: string, page: number, limit: number, status?: string) {
