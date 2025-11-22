@@ -14,8 +14,8 @@ export class Coupon {
   private apiUrl = `${environment.BASE_URL}/coupons`;
   public applyToOptions = signal([
     { id: 'all', name: 'All Products' },
-    { id: 'specific', name: 'Specific Product' },
-    { id: 'cartegory', name: 'Specific Category'}
+    { id: 'products', name: 'Specific Product' },
+    { id: 'cartegories', name: 'Specific Category'}
   ]);
 
   public dicountTypeOptions = signal([

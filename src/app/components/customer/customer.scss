@@ -1,1 +1,101 @@
-// Migrated from customer.scss
+.customer-card {
+  border-radius: 14px;
+  overflow: hidden;
+
+  .card-header {
+    background: #fff;
+    padding: 16px;
+
+    .search-input {
+      max-width: 260px;
+      border-radius: 30px;
+      padding-left: 14px;
+    }
+  }
+}
+
+.table {
+  th {
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+  }
+
+  td {
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  tr:hover {
+    background: #f8f9fa;
+  }
+}
+
+.customer-table-wrapper {
+  overflow-x: auto;
+}
+
+/* Pagination */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+
+  button {
+    border-radius: 20px;
+    padding: 6px 16px;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .search-input {
+    width: 100%;
+  }
+
+  /* Make table more readable on mobile */
+  table {
+    font-size: 13px;
+
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 40px;
+    }
+
+    th,
+    td {
+      white-space: nowrap;
+    }
+  }
+
+  /* Extra details shown only in mobile view */
+  .mobile-extra {
+    font-size: 12px;
+    color: #444;
+
+    div {
+      margin-bottom: 2px;
+    }
+  }
+
+  /* Improve spacing */
+  .btn {
+    padding: 4px 6px;
+  }
+}
+
+/* Ultra Small Screens */
+@media (max-width: 480px) {
+  table {
+    font-size: 12px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+
+  .btn {
+    padding: 2px 4px;
+  }
+}

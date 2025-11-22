@@ -31,6 +31,7 @@ export class CouponseForm implements OnInit{
     const today = new Date();
     this.currentDate = today.toISOString().split('T')[0];
     this.minDate = this.currentDate;
+
   }
 
   createCoupon(){
@@ -109,9 +110,27 @@ export class CouponseForm implements OnInit{
     return null;
   }
 
+  selecteApplyTo(){
+    let value = this.couponForm.controls['applyTo'].value;
+    switch(value){
+      case 'all':
+      break;
+
+      case 'products':
+        this.loadProduct();
+      break;
+
+      case 'categories':
+        this.loadCategories();
+      break;
+    }
+  }
+
   loadProduct(){
     this.productService.getProducts().subscribe({
         next: (response: any) => {
+          console.log('products', response);
+          
             this.products.set(response.data);
         },
         error: (err) => {
@@ -134,7 +153,9 @@ export class CouponseForm implements OnInit{
     });
   }
 
-  
+  loadCategories(){
+    
+  }
   private formatDateForInput(date: Date | string): string {
       const d = new Date(date);
       return d.toISOString().split('T')[0]; // Format as yyyy-MM-dd

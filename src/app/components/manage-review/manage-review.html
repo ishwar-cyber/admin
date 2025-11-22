@@ -1,48 +1,97 @@
-<div class="review-container">
+<div class="card shadow-sm">
 
-  <!-- Search Bar -->
-  <div class="search-section">
-    <input type="text"class="form-control" placeholder="Enter User ID or Email" [formControl]="userSearch" />
-    <button class="btn btn-primary" (click)="onSearch()"> Search</button>
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="m-0">Product Reviews</h5>
+
+    <input type="text"
+           class="form-control search"
+           placeholder="Search by name or product..."
+           (input)="searchText.set($any($event.target).value)" />
   </div>
 
-  <!-- Loading -->
-   @if(loading()) {
-        <div class="loading" *ngIf="loading()">Loading...</div>
-   }
-  <!-- No Results -->
-   @if(!loading() && reviews().length === 0) {
-    <p class="no-data">
-        No reviews found for this user.
-    </p>
-    }
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Product</th>
+          <th>Rating</th>
+          <th class="d-none d-md-table-cell">Comment</th>
+          <th>Status</th>
+          <th class="d-none d-md-table-cell">Created</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
 
-  <!-- Review List -->
-   @if (reviews().length > 0) {
-        <div class="review-list">
-            <h4>Reviews Found: {{ reviews().length }}</h4>
-            @for (item of reviews(); track $index) {
-                <div class="review-card" >
-                
-                    <div class="row">
-                        <div class="col-8">
-                            <h5>{{ item.productId?.name }}</h5>
-                            <p class="review-comment">{{ item.comment }}</p>
+      <tbody>
+        <tr *ngFor="let r of paginatedReviews(); let i = index">
 
-                            <p class="rating">Rating: {{ item.rating }} ★</p>
+          <td>
+            <div>{{ r.name }}</div>
+            <small class="text-muted">{{ r.email }}</small>
 
-                            <p class="date"> {{ item.createdAt | date: 'medium' }}</p>
-                        </div>
+            <!-- Mobile extra details -->
+            <div class="d-md-none mt-1 mobile-extra">
+              <div><strong>Product:</strong> {{ r.productName }}</div>
+              <div><strong>Rating:</strong> ⭐ {{ r.rating }}/5</div>
+              <div><strong>Comment:</strong> {{ r.comment }}</div>
+              <div><strong>Date:</strong> {{ r.createdAt | date:'mediumDate' }}</div>
+            </div>
+          </td>
 
-                        <div class="col-4 text-end">
-                            <button class="btn btn-danger btn-sm" (click)="deleteReview(item._id)">
-                                Delete
-                            </button>
-                        </div>
-                    </div>
+          <td>{{ r.productName }}</td>
 
-                </div>
-            }
-        </div>
-    }
+          <td>⭐ {{ r.rating }}/5</td>
+
+          <td class="comment d-none d-md-table-cell">{{ r.comment }}</td>
+
+          <td>
+            <span class="badge"
+                  [ngClass]="{
+                    'bg-warning': r.status === 'pending',
+                    'bg-success': r.status === 'approved',
+                    'bg-danger': r.status === 'rejected'
+                  }">
+              {{ r.status }}
+            </span>
+          </td>
+
+          <td class="d-none d-md-table-cell">
+            {{ r.createdAt | date:'medium' }}
+          </td>
+
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-danger"
+                    (click)="deleteReview(r._id)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-wrapper mt-3">
+
+    <button class="btn btn-light"
+            [disabled]="currentPage() === 1"
+            (click)="changePage(currentPage() - 1)">
+      Prev
+    </button>
+
+    <span class="mx-2 fw-semibold">
+      {{ currentPage() }} / {{ totalPages() }}
+    </span>
+
+    <button class="btn btn-light"
+            [disabled]="currentPage() === totalPages()"
+            (click)="changePage(currentPage() + 1)">
+      Next
+    </button>
+
+  </div>
+
 </div>

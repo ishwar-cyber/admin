@@ -1,1 +1,68 @@
-<p>customer works!</p>
+<div class="card shadow-sm customer-card">
+  <!-- Header -->
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <h5 class="m-0 fw-semibold">Customers</h5>
+    <input type="text"
+           placeholder="Search customer..."
+           class="form-control search-input"
+           (input)="searchText.set($any($event.target).value)" />
+  </div>
+  <!-- Table -->
+  <div class="table-responsive customer-table-wrapper">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Customer</th>
+          <th class="d-none d-md-table-cell">Phone</th>
+          <th class="d-none d-md-table-cell">Orders</th>
+          <th class="d-none d-md-table-cell">Joined</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of filteredCustomers(); let i = index">
+          <td>{{ i + 1 }}</td>
+
+          <td>
+            <div class="fw-semibold">{{ c.username }}</div>
+            <small class="text-muted">{{ c.email }}</small>
+
+            <!-- Mobile Only Details -->
+            <div class="d-md-none mobile-extra mt-1">
+              <div><strong>Phone:</strong> {{ c?.phone }}</div>
+              <div><strong>Orders:</strong> {{ c?.totalOrders }}</div>
+              <div><strong>Joined:</strong> {{ c?.createdAt | date:'mediumDate' }}</div>
+            </div>
+          </td>
+
+          <td class="d-none d-md-table-cell">{{ c?.phone }}</td>
+          <td class="d-none d-md-table-cell">{{ c?.totalOrders }}</td>
+          <td class="d-none d-md-table-cell">{{ c?.createdAt | date:'mediumDate' }}</td>
+
+          <td>
+            <span class="badge"
+                  [class.bg-success]="c.status === 'active'"
+                  [class.bg-danger]="c.status === 'blocked'"
+                  [class.bg-secondary]="c.status === 'pending'">
+              {{ c.status | uppercase }}
+            </span>
+          </td>
+
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-primary me-1" (click)="viewCustomer(c.id)">
+              <i class="bi bi-eye"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Pagination -->
+  <div class="pagination-wrapper mt-3">
+    <button class="btn btn-light" [disabled]="currentPage() === 1" (click)="changePage(currentPage() - 1)">Prev</button>
+    <span class="mx-2 fw-semibold"> {{ currentPage() }} / {{ totalPages() }}</span>
+    <button class="btn btn-light" [disabled]="currentPage() === totalPages()"(click)="changePage(currentPage() + 1)"> Next</button>
+  </div>
+</div>

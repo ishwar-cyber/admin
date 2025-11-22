@@ -41,8 +41,11 @@ export class AntiVirus implements OnInit {
   ngOnInit(): void {
     this.productService.getProducts({ limit: 1000 }).subscribe({
       next: (res: any) => {
-
-        this.products.set(res.data);
+        const filtered = res.data.filter((item: any) =>
+          item.name?.toLowerCase().includes('anti')
+        );
+        this.products.set(filtered);
+       
       }
     });
   }

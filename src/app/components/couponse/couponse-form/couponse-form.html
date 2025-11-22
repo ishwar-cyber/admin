@@ -16,16 +16,16 @@
         </div>
         <div class="col-6">
             <label for="applyTo" class="form-label">Apply To</label>
-            <select id="applyTo" class="form-select" formControlName="applyTo" >
-                <option value="">Select</option>
+            <select id="applyTo" class="form-select" formControlName="applyTo" (change)="selecteApplyTo()">
+                <option>Select</option>
                 @for (item of couponseService.applyToOptions(); track $index) {
-                <option [value]="item.id">{{ item.name }}</option>
+                    <option [value]="item.id" >{{ item.name }}</option>
                 } @empty {
-                <option value="">No options available</option>
+                    <option>No options available</option>
                 }
             </select>
         </div>
-        @if (couponForm.value.applyTo === 'specific') {
+        @if (couponForm.value.applyTo === 'products') {
             <div class="col-6">
             <label for="product" class="form-label">Search Product</label>
             <app-multiple-select
