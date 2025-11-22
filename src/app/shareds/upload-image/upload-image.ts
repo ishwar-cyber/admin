@@ -33,13 +33,13 @@ export class UploadImage implements AfterViewInit {
 
   ngAfterViewInit(): void {
     console.log('qwertyuio234567',);
-    this.imageUrl?.map(img => img.url)
-    if (this.imageUrl && this.imageUrl.length > 0) {
-      // ✅ Flatten array properly
-      this.previewUrls.set([...this.imageUrl.map(img => img.url)]);
-      // this.previewUrls.set([...this.imageUrl]);
-
+    if(this.imageUrl){
+       this.imageUrl?.map(img => img?.url)
+        if (this.imageUrl && this.imageUrl?.length > 0) {
+          this.previewUrls.set([...this.imageUrl?.map(img => img?.url)]);
+        }
     }
+   
   }
 
   onFileSelected(event: Event): void {
