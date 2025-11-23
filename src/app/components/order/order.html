@@ -1,347 +1,291 @@
-<div class="container-fluid mt-4">
-  <!-- Header with Statistics -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header bg-primary text-white">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h3 class="mb-0">Order Management</h3>
-              <div class="text-light small mt-1">Track, manage, and update customer orders with real-time delivery status</div>
-            </div>
-            <button class="btn btn-success" (click)="loadOrders()">
-              <i class="bi bi-arrow-clockwise"></i> Refresh
-            </button>
-          </div>
-        </div>
+<div class="order-page container-fluid py-3">
+
+  <!-- Header -->
+  <div class="page-header card shadow-sm mb-4">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <div>
+        <h3 class="title">Order Management</h3>
+        <p class="subtitle">Track, manage and update orders with real-time status</p>
       </div>
+
+      <button class="btn refresh-btn" (click)="loadOrders()">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
     </div>
   </div>
 
-  <!-- Statistics Cards -->
-  <div class="row mb-4">
-    <div class="col-md-3 col-sm-6 mb-3">
-      <div class="card bg-primary text-white">
-        <div class="card-body text-center">
-          <i class="bi bi-cart-check fs-1"></i>
-          <h4 class="mt-2">{{ totalItems() }}</h4>
-          <p class="mb-0">Total Orders</p>
-        </div>
+  <!-- Stats -->
+  <div class="row g-3 stats-row">
+
+    <div class="col-lg-2 col-md-3 col-6">
+      <div class="stat-box bg-orders">
+        <i class="bi bi-cart-check icon"></i>
+        <div class="value">{{ totalItems() }}</div>
+        <div class="label">Orders</div>
       </div>
     </div>
-    <div class="col-md-3 col-sm-6 mb-3">
-      <div class="card bg-warning text-white">
-        <div class="card-body text-center">
-          <i class="bi bi-clock fs-1"></i>
-          <h4 class="mt-2">{{ pending}}</h4>
-          <p class="mb-0">Pending</p>
-        </div>
+
+    <div class="col-lg-2 col-md-3 col-6">
+      <div class="stat-box bg-pending">
+        <i class="bi bi-clock icon"></i>
+        <div class="value">{{ pending }}</div>
+        <div class="label">Pending</div>
       </div>
     </div>
-    <div class="col-md-3 col-sm-6 mb-3">
-      <div class="card bg-info text-white">
-        <div class="card-body text-center">
-          <i class="bi bi-gear fs-1"></i>
-          <h4 class="mt-2">{{ confirmed }}</h4>
-          <p class="mb-0">Confirmed</p>
-        </div>
+
+    <div class="col-lg-2 col-md-3 col-6">
+      <div class="stat-box bg-confirmed">
+        <i class="bi bi-gear icon"></i>
+        <div class="value">{{ confirmed }}</div>
+        <div class="label">Confirmed</div>
       </div>
     </div>
-    <div class="col-md-3 col-sm-6 mb-3">
-      <div class="card bg-success text-white">
-        <div class="card-body text-center">
-          <i class="bi bi-check-circle fs-1"></i>
-          <h4 class="mt-2">{{ delivered }}</h4>
-          <p class="mb-0">Delivered</p>
-        </div>
+
+    <div class="col-lg-2 col-md-3 col-6">
+      <div class="stat-box bg-delivered">
+        <i class="bi bi-check-circle icon"></i>
+        <div class="value">{{ delivered }}</div>
+        <div class="label">Delivered</div>
       </div>
     </div>
-    <div class="col-md-3 col-sm-6 mb-3">
-      <div class="card bg-danger text-white">
-        <div class="card-body text-center">
-          <i class="bi bi-x-circle fs-1"></i>
-          <h4 class="mt-2">{{ cancelled }}</h4>
-          <p class="mb-0">Cancelled</p>
-        </div>
+
+    <div class="col-lg-2 col-md-3 col-6">
+      <div class="stat-box bg-cancelled">
+        <i class="bi bi-x-circle icon"></i>
+        <div class="value">{{ cancelled }}</div>
+        <div class="label">Cancelled</div>
       </div>
     </div>
-    <!-- <div class="col-md-3 col-sm-6 mb-3">
-      <div class="card bg-secondary text-white">
-        <div class="card-body text-center">
-          <i class="bi bi-currency-dollar fs-1"></i>
-          <h4 class="mt-2">{{ orderStats().totalRevenue | currency }}</h4>
-          <p class="mb-0">Revenue</p>
-        </div>
-      </div>
-    </div> -->
+
   </div>
 
-  <!-- Main Content -->
-  <div class="card">
+  <!-- Main Card -->
+  <div class="card modern-card mt-4">
+
     <div class="card-body">
-      <!-- Loading State -->
-       @if(loading()) { 
-        <div class="text-center py-5">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+
+      <!-- Loading -->
+      @if (loading()) {
+        <div class="loading-container">
+          <div class="spinner-border text-primary"></div>
         </div>
       }
 
-      <!-- Error State -->
-       @if(error()) {
+      <!-- Error -->
+      @if (error()) {
         <div class="alert alert-danger text-center">{{ error() }}</div>
       }
 
-      <!-- Content -->
-      @if(!loading() && !error()) {
-      <div>
-        <!-- Filters -->
-        <div class="row mb-4">
-          <div class="col-md-3 mb-3">
-            <label class="form-label">Search Orders</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control" placeholder="Order #, Customer, Email..." 
-                     [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)">
-            </div>
+      @if (!loading() && !error()) {
+      <!-- Modern Filters Panel -->
+      <div class="filters-wrapper">
+
+        <div class="filters-grid">
+          <!-- Search -->
+          <div class="filter-item">
+            <label>Search</label>
+          <div class="search-box">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              type="text"
+              class="filter-input"
+              placeholder="Search Order #, Name, Email..."
+              [ngModel]="searchTerm()"
+              (ngModelChange)="searchTerm.set($event)"
+            />
           </div>
-          <div class="col-md-2 mb-3">
-            <label class="form-label">Order Status</label>
-            <select class="form-select" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
-              <option value="">All Status</option>
+           </div>
+          
+
+          <!-- Order Status -->
+          <div class="filter-item">
+            <label>Order Status</label>
+            <select
+              class="filter-select"
+              [ngModel]="statusFilter()"
+              (ngModelChange)="statusFilter.set($event)"
+            >
+              <option value="">All</option>
+              <option value="pending">Pending</option>
               <option value="packed">Packed</option>
-              <option value="shipped">shipped</option>
+              <option value="shipped">Shipped</option>
               <option value="delivered">Delivered</option>
               <option value="cancelled">Cancelled</option>
             </select>
           </div>
-          <div class="col-md-2 mb-3">
-            <label class="form-label">Delivery Status</label>
-            <select class="form-select" [ngModel]="deliveryStatusFilter()" (ngModelChange)="deliveryStatusFilter.set($event)">
-              <option value="">All Delivery</option>
-               <option value="packed">Packed</option>
-              <option value="shipped">shipped</option>
+
+          <!-- Delivery Status -->
+          <div class="filter-item">
+            <label>Delivery Status</label>
+            <select
+              class="filter-select"
+              [ngModel]="deliveryStatusFilter()"
+              (ngModelChange)="deliveryStatusFilter.set($event)"
+            >
+              <option value="">All</option>
+              <option value="packed">Packed</option>
+              <option value="shipped">Shipped</option>
               <option value="delivered">Delivered</option>
               <option value="cancelled">Cancelled</option>
               <option value="failed">Failed</option>
             </select>
           </div>
-          <div class="col-md-2 mb-3">
-            <label class="form-label">Payment Status</label>
-            <select class="form-select" [ngModel]="paymentStatusFilter()" (ngModelChange)="paymentStatusFilter.set($event)">
-              <option value="">All Payment</option>
+
+          <!-- Payment Status -->
+          <div class="filter-item">
+            <label>Payment</label>
+            <select
+              class="filter-select"
+              [ngModel]="paymentStatusFilter()"
+              (ngModelChange)="paymentStatusFilter.set($event)"
+            >
+              <option value="">All</option>
               <option value="pending">Pending</option>
               <option value="paid">Paid</option>
               <option value="failed">Failed</option>
               <option value="refunded">Refunded</option>
             </select>
           </div>
-          <div class="col-md-3 mb-3">
-            <div class="row">
-              <div class="col-6">
-                <label class="form-label">From Date</label>
-                <input type="date" class="form-control" [ngModel]="dateFromFilter()" (ngModelChange)="dateFromFilter.set($event)">
-              </div>
-              <div class="col-6">
-                <label class="form-label">To Date</label>
-                <input type="date" class="form-control" [ngModel]="dateToFilter()" (ngModelChange)="dateToFilter.set($event)">
-              </div>
-            </div>
+
+          <!-- From Date -->
+          <div class="filter-item">
+            <label>From</label>
+            <input
+              type="date"
+              class="filter-select"
+              [ngModel]="dateFromFilter()"
+              (ngModelChange)="dateFromFilter.set($event)"
+            />
           </div>
+
+          <!-- To Date -->
+          <div class="filter-item">
+            <label>To</label>
+            <input
+              type="date"
+              class="filter-select"
+              [ngModel]="dateToFilter()"
+              (ngModelChange)="dateToFilter.set($event)"
+            />
+          </div>
+
         </div>
 
-        <!-- Filter Actions -->
-        <div class="row mb-3">
-          <div class="col-12">
-            <button class="btn btn-primary me-2" (click)="applyFilters()">
-              <i class="bi bi-funnel"></i> Apply Filters
-            </button>
-            <button class="btn btn-outline-secondary" (click)="clearFilters()">
-              <i class="bi bi-x-circle"></i> Clear Filters
-            </button>
-          </div>
+        <!-- Actions -->
+        <div class="filter-actions">
+          <button class="filter-btn apply" (click)="applyFilters()">
+            <i class="bi bi-funnel"></i> Apply
+          </button>
+          <button class="filter-btn clear" (click)="clearFilters()">
+            <i class="bi bi-x-circle"></i> Clear
+          </button>
         </div>
 
-        <!-- Orders Table -->
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead class="table-dark">
-              <tr>
-                <th (click)="updateSort('orderNumber')" style="cursor: pointer;">
-                  Order #
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'orderNumber' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'orderNumber' && sortDirection() === 'desc'}"></i>
-                </th>
-                <th (click)="updateSort('customer')" style="cursor: pointer;">
-                  Customer
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'customer' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'customer' && sortDirection() === 'desc'}"></i>
-                </th>
-                <th>Items</th>
-                <th (click)="updateSort('total')" style="cursor: pointer;" class="text-end">
-                  Total
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'total' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'total' && sortDirection() === 'desc'}"></i>
-                </th>
-                <!-- <th (click)="updateSort('status')" style="cursor: pointer;">
-                  Order Status
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'status' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'status' && sortDirection() === 'desc'}"></i>
-                </th> -->
-                <th (click)="updateSort('deliveryStatus')" style="cursor: pointer;">
-                  Delivery Status
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'deliveryStatus' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'deliveryStatus' && sortDirection() === 'desc'}"></i>
-                </th>
-                <th>Payment</th>
-                <th (click)="updateSort('createdAt')" style="cursor: pointer;">
-                  Date
-                  <i class="bi" [ngClass]="{'bi-arrow-up': sortField() === 'createdAt' && sortDirection() === 'asc',
-                                           'bi-arrow-down': sortField() === 'createdAt' && sortDirection() === 'desc'}"></i>
-                </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (order of filteredOrders(); track order.id) {
-                <tr>
-                  <td>
-                    <strong>{{ order.orderNumber }}</strong>
-                    <div class="text-muted small">{{ order.paymentMethod | uppercase }}</div>
-                  </td>
-                  <td>
-                    <div class="fw-bold">{{ order?.user?.username }}</div>
-                    <div class="text-muted small">{{ order?.user?.email }}</div>
-                    <div class="text-muted small">{{ order?.user?.phone }}</div>
-                  </td>
-                  <td>
-                    <span class="badge bg-secondary">{{ order.items.length }} items</span>
-                    <div class="text-muted small mt-1">
-                      @for (item of order.items.slice(0, 2); track item.name) {
-                        {{ item.name }} ({{ item.quantity }})
-                      }
-                      @if (order.items.length > 2) {
-                        <span class="text-muted">+{{ order.items.length - 2 }} more</span>
-                      }
-                    </div>
-                  </td>
-                  <td class="text-end">
-                    <div class="fw-bold">{{ order?.totalAmount | currency:'INR' }}</div>
-                    <div class="text-muted small">
-                      @if (order.discount > 0) {
-                        <span class="text-success">-{{ order.discount | currency:'INR' }}</span>
-                      }
-                    </div>
-                  </td>
-                  <!-- <td>
-                    <span class="badge" [ngClass]="'bg-' + getStatusColor(order.orderStatus)">
-                      {{ order.orderStatus | titlecase }}
-                    </span>
-                    <div class="mt-1">
-                      <select class="form-select form-select-sm" 
-                              [value]="order.orderStatus"
-                              (change)="onOrderStatusChange(order.id, $event)">
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="processing">Processing</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </div>
-                  </td> -->
-                  <td>
-                    <!-- [class]="'bg-' + getDeliveryStatusColor(order?.deliveryStatus)" -->
-                    <span class="badge text-bg-dark">
-                      {{ selectedOrderId() === order.id ? selectedOrderStatus() : order?.orderStatus?.replace('_', ' ') || '' | titlecase }}
-                    </span>
-                    <div class="mt-1">
-                      <select class="form-select form-select-sm" 
-                          [value]="order?.orderStatus "
-                          (change)="onOrderStatusChange(order.id, $event)">
-                          @for (item of orderStatuses; track item.value) {
-                            <option [value]="item.label">{{ item.value }}</option>
-                          }
-                      </select>
-                    </div>
-                    @if(order.trackingNumber){
-                      <div class="text-muted small mt-1">
-                        Track: {{ order.trackingNumber }}
-                      </div>
-                    }
-                  </td>
-                  <td>
-                    <span class="badge" [ngClass]="'bg-' + getPaymentStatusColor(order.paymentStatus)">
-                      {{ order.paymentStatus | titlecase }}
-                    </span>
-                    <div class="text-muted small mt-1">{{ order.paymentMethod | uppercase }}</div>
-                  </td>
-                  <td>
-                    <div>{{ order.createdAt | date:'short' }}</div>
-                    @if(order.estimatedDelivery) {
-                      <div class="text-muted small mt-1">
-                        Placed: {{ order.createdAt | date:'short' }}
-                      </div>
-                    }
-                  </td>
-                  <td>
-                    <div class="btn-group btn-group-sm">
-                      <button class="btn btn-outline-primary" (click)="viewOrderDetails(order)" title="View Details">
-                        <i class="bi bi-eye"></i>
-                      </button>
-                      <!-- <button class="btn btn-outline-danger" (click)="deleteOrder(order.id)" title="Delete Order">
-                        <i class="bi bi-trash"></i>
-                      </button> -->
-                    </div>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="9" class="text-center py-5">
-                    <div class="d-flex flex-column align-items-center">
-                      <i class="bi bi-cart-x display-4 text-secondary mb-2"></i>
-                      <div class="fw-bold mb-1">No orders found</div>
-                      <div class="text-muted mb-2">Try adjusting your filters or search criteria.</div>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="row mt-3">
-          <div class="col-md-6">
-            <p class="text-muted">Showing {{ filteredOrders().length }} of {{ totalItems() }} orders</p>
-          </div>
-          <div class="col-md-6">
-            @if(totalItems() > pageSize()) {
-            <nav aria-label="Page navigation">
-              <ul class="pagination justify-content-end">
-                <li class="page-item" [class.disabled]="currentPage() === 1">
-                  <a class="page-link" (click)="onPageChange(currentPage() - 1)">Previous</a>
-                </li>
-                <li class="page-item" [class.active]="currentPage() === 1">
-                  <a class="page-link" (click)="onPageChange(1)">1</a>
-                </li>
-                <li class="page-item" [class.active]="currentPage() === 2">
-                  <a class="page-link" (click)="onPageChange(2)">2</a>
-                </li>
-                <li class="page-item" [class.active]="currentPage() === 3">
-                  <a class="page-link" (click)="onPageChange(3)">3</a>
-                </li>
-                <li class="page-item" [class.disabled]="currentPage() === Math.ceil(totalItems() / pageSize())">
-                  <a class="page-link" (click)="onPageChange(currentPage() + 1)">Next</a>
-                </li>
-              </ul>
-            </nav>
-          }
-          </div>
-        </div>
       </div>
-    }
-    </div>
-  </div>
+
+
+      <!-- Table -->
+      <div class="table-container">
+        <table class="table modern-table">
+          <thead>
+            <tr>
+              <th (click)="updateSort('orderNumber')">Order #</th>
+              <th>Customer</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (order of filteredOrders(); track order.id) {
+              <tr>
+                <td>
+                  <strong>{{ order.orderNumber }}</strong>
+                  <div class="sub">{{ order.paymentMethod | uppercase }}</div>
+                </td>
+
+                <td>
+                  <div class="fw-bold">{{ order?.user?.username }}</div>
+                  <div class="sub">{{ order?.user?.email }}</div>
+                  <div class="sub">{{ order?.user?.phone }}</div>
+                </td>
+
+                <td>
+                  <span class="badge bg-secondary">{{ order?.items?.length }} items</span>
+                  <div class="sub small">
+                    @for (item of order?.items?.slice(0, 2); track item.name) {
+                      {{ item?.name }} ({{ item?.quantity }})
+                    }
+                    @if(order.items.length > 2) {
+                      <span class="text-muted">+{{ order.items.length - 2 }} more</span>
+                    }
+                  </div>
+                </td>
+
+                <td class="text-end">
+                  <strong>₹{{ order?.totalAmount }}</strong>
+                </td>
+
+                <td class="status-col">
+
+                  <!-- Status Badge -->
+                  <span class="badge status-badge" [ngClass]="order.orderStatus">
+                    {{ order.orderStatus | uppercase }}
+                  </span>
+
+                  <!-- Status Dropdown -->
+                  <select 
+                    class="status-select"
+                    [ngModel]="order?.orderStatus"
+                    #status (change)="updateOrderStatus(order.id, status.value)"
+                  >
+                    @for (item of orderStatuses; track $index) {
+                      <option [value]="item.key" [selected]="item.key === order.orderStatus">{{ item.value }}</option>
+                    }
+                  </select>
+                </td>
+
+                <td>
+                  <span class="badge status-badge" [ngClass]="order.paymentStatus">
+                    {{ order.paymentStatus | titlecase }}
+                  </span>
+                </td>
+
+                <td>{{ order.createdAt | date:'short' }}</td>
+
+                <td>
+                  <button class="btn btn-outline-primary btn-sm"
+                    (click)="viewOrderDetails(order)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </td>
+
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="8" class="empty-state">
+                  <i class="bi bi-cart-x"></i>
+                  <p>No orders found</p>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container">
+        <button class="page-btn" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 1">Prev</button>
+        <span>{{ currentPage() }} / {{ totalPages() }}</span>
+        <button class="page-btn" (click)="onPageChange(currentPage() + 1)" [disabled]="currentPage() === totalPages()">Next</button>
+      </div>
+
+      }
+
+    </div> <!-- card-body -->
+  </div> <!-- card -->
 </div>

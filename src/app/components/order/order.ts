@@ -51,8 +51,8 @@ export class OrderComponent implements OnInit {
 
   // Pagination
   currentPage = signal(1);
-  pageSize = signal(10);
-
+  limit = signal(10);
+  totalPages = computed(() => Math.ceil(this.totalItems() / this.limit()));
   // Computed values
   filteredOrders = computed(() => {
     let orders = this.orders();
@@ -101,7 +101,7 @@ export class OrderComponent implements OnInit {
     this.loading.set(true);
     const params: OrderQueryParams = {
       page: this.currentPage(),
-      limit: this.pageSize(),
+      limit: this.limit(),
       sortBy: this.sortField(),
       sortOrder: this.sortDirection(),
       search: this.searchTerm() || undefined,
@@ -236,7 +236,6 @@ export class OrderComponent implements OnInit {
       error: () => alert('Failed to update order status')
     });
   }
-
   deleteOrder(orderId: string) {
     if (confirm('Are you sure you want to delete this order?')) {
       this.orderService.deleteOrder(orderId).subscribe({
@@ -255,17 +254,18 @@ export class OrderComponent implements OnInit {
   viewOrderDetails(order: Order) {
     // TODO: Implement order details modal
     alert(`Viewing order: ${order.orderNumber}`);
+    this.orderService.setOrderId.set(order.id);
      const modalRef = this.modalService.open(OrderView, { size: 'lg', backdrop: false, keyboard: true });
-        // if (modalRef && modalRef.componentInstance) {
-        //   modalRef.componentInstance.item = item ? { ...item } : null;
-        //   if (modalRef.result) {
-        //     modalRef.result.then((result: any) => {
-        //       if (result) {
-        //         this.loadProduct();
-        //       }
-        //     }).catch(() => {});
-        //   }
-        // }
+        if (modalRef && modalRef.componentInstance) {
+          modalRef.componentInstance.item = order ? { ...order } : null;
+          if (modalRef.result) {
+            modalRef.result.then((result: any) => {
+              if (result) {
+                
+              }
+            }).catch(() => {});
+          }
+        }
   }
 
   applyFilters() {

@@ -23,7 +23,7 @@ export class OrderService {
   loading = this._loading.asReadonly();
   error = this._error.asReadonly();
   totalItems = this._totalItems.asReadonly();
-
+  public setOrderId = signal<string>('')
   // Delivery status options
   deliveryStatusOptions = signal([
     { value: 'pending', label: 'Pending', icon: 'clock', color: 'warning' },
@@ -143,7 +143,7 @@ createOrder(orderData: any): Observable<OrderApiResponse> {
    * Get order by ID
    */
   getOrderById(id: string): Observable<ApiResponse> {
-    return this.httpClient.get<ApiResponse>(`${environment.BASE_URL}/order/${id}`);
+    return this.httpClient.get<ApiResponse>(`${environment.BASE_URL}/order/admin/${id}`);
   }
 
 
@@ -178,6 +178,7 @@ createOrder(orderData: any): Observable<OrderApiResponse> {
   getOrderStats(): Observable<ApiResponse> {
     return this.httpClient.get<ApiResponse>(`${this.baseUrl}/stats`);
   }
+
 
   /**
    * Reset state

@@ -1,0 +1,181 @@
+@if(order(); as o){
+<div class="order-page">
+    <!-- <i class="bi bi-x-circle close" (click)="activeModal.close(true)"></i> -->
+    <div class="order-close-btn mb-2" (click)="activeModal.close(true)">
+        <i class="bi bi-x-lg"></i>
+    </div>
+  <!-- Top Summary Header -->
+  <div class="order-header card shadow-sm mb-3">
+    <div class="card-body d-flex flex-wrap justify-content-between gap-3 align-items-center">
+      <div>
+        <h5 class="mb-1">Order #{{ o.orderNumber }}</h5>
+        <small class="text-muted">
+          Placed on {{ o.createdAt | date: 'medium' }}
+        </small>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <span class="badge rounded-pill order-status"
+              [ngClass]="{
+                'status-pending': o.orderStatus.toLowerCase() === 'pending',
+                'status-processing': o.orderStatus.toLowerCase() === 'processing',
+                'status-shipped': o.orderStatus.toLowerCase() === 'shipped',
+                'status-delivered': o.orderStatus.toLowerCase() === 'delivered',
+                'status-cancelled': o.orderStatus.toLowerCase() === 'cancelled',
+                'status-returned': o.orderStatus.toLowerCase() === 'returned'
+              }">
+              <pre>{{ o.orderStatus }}</pre>
+          {{ o.orderStatus | titlecase }}
+        </span>
+
+        <span class="badge rounded-pill payment-status"
+              [ngClass]="{
+                'payment-pending': o.paymentStatus.toLowerCase() === 'pending',
+                'payment-paid': o.paymentStatus.toLowerCase() === 'paid',
+                'payment-failed': o.paymentStatus.toLowerCase() === 'failed'
+              }">
+          Payment: {{ o.paymentStatus | titlecase }}
+        </span>
+
+        <div class="amount-pill">
+          Total: ₹{{ o.totalAmount || 0 }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main 2-Column Layout -->
+  <div class="order-layout">
+    <!-- Left Column: Customer + Shipping + Tracking -->
+    <div class="order-left">
+      <!-- Customer Info (for admin) -->
+      <div class="card shadow-sm mb-3" *ngIf="o.user">
+        <div class="card-header border-0 bg-white">
+          <h6 class="m-0">Customer</h6>
+        </div>
+        <div class="card-body">
+          <div class="customer-name">{{ o.user.name }}</div>
+          <div class="text-muted small mb-1">{{ o.user.email }}</div>
+          <div class="text-muted small">📞 {{ o.user.phone }}</div>
+        </div>
+      </div>
+
+      <!-- Shipping Address -->
+      <div class="card shadow-sm mb-3">
+       <div class="card-header d-flex justify-content-between align-items-center border-0 bg-white">
+            <h6 class="m-0">Shipping Address</h6>
+
+            <button class="btn btn-sm btn-outline-primary"
+                    (click)="copyAddress(order().shippingAddress)">
+                <i class="bi bi-clipboard"></i> Copy
+            </button>
+        </div>
+        <div class="card-body">
+          <div class="fw-semibold mb-1">{{ o.shippingAddress.fullName }}</div>
+          <div class="text-muted small">
+            {{ o.shippingAddress.line1 }}<br *ngIf="o.shippingAddress.line1">
+            <span *ngIf="o.shippingAddress.line2">{{ o.shippingAddress.line2 }}<br></span>
+            <span *ngIf="o.shippingAddress.landMark">Landmark: {{ o.shippingAddress.landMark }}<br></span>
+            {{ o.shippingAddress.city }}, {{ o.shippingAddress.state }} - {{ o.shippingAddress.pincode }}<br>
+            {{ o.shippingAddress.country }}
+          </div>
+          <div class="mt-2 small">
+            📞 {{ o.shippingAddress.phone }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking Timeline -->
+      <div class="card shadow-sm mb-3" *ngIf="o.tracking?.length">
+        <div class="card-header border-0 bg-white">
+          <h6 class="m-0">Order Tracking</h6>
+        </div>
+        <div class="card-body">
+          <div class="tracking-timeline">
+            <div class="tracking-step"
+                 *ngFor="let step of o.tracking; let last = last"
+                 [class.completed]="step.completed">
+
+              <div class="circle"></div>
+              <div class="line" *ngIf="!last"></div>
+
+              <div class="content">
+                <div class="label">{{ step.label }}</div>
+                <div class="time" *ngIf="step.completedAt">
+                  {{ step.completedAt | date: 'medium' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Items + Payment -->
+    <div class="order-right">
+
+      <!-- Items -->
+      <div class="card shadow-sm mb-3">
+        <div class="card-header border-0 bg-white d-flex justify-content-between align-items-center">
+          <h6 class="m-0">Items ({{ o.items.length }})</h6>
+          <small class="text-muted">Payment: {{ o.paymentMethod | uppercase }}</small>
+        </div>
+        <div class="card-body p-0">
+          <div class="order-item" *ngFor="let item of o.items; let i = index">
+            <div class="thumb-wrapper">
+              <img [src]="item.image || item.product?.images?.[0]"
+                   alt="{{ item.name }}"
+                   class="thumb" />
+            </div>
+
+            <div class="item-info">
+              <div class="name text-truncate">{{ item.name || item.product?.name }}</div>
+              <div class="small text-muted">
+                Qty: {{ item.quantity }} · Price: ₹{{ item.price }}
+              </div>
+              <div class="small text-muted" *ngIf="item.product?.sku">
+                SKU: {{ item.product.sku }}
+              </div>
+            </div>
+
+            <div class="item-total">
+              ₹{{ (item.price || 0) * (item.quantity || 0) }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Totals -->
+      <div class="card shadow-sm mb-3">
+        <div class="card-header border-0 bg-white">
+          <h6 class="m-0">Order Summary</h6>
+        </div>
+        <div class="card-body">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>₹{{ o.totalAmount || 0 }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>₹0</span>
+          </div>
+          <hr>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>₹{{ o.totalAmount || 0 }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+} @else {
+<div class="order-page">
+  <div class="no-data">
+    No order data available.
+  </div>
+</div>  
+}

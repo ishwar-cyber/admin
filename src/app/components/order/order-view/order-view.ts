@@ -1,46 +1,77 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
 import { OrderService } from '../../../services/order';
-export interface OrderProductItem {
-  productId: string;
-  name: string;
-  image: string;
-  price: number;
-  quantity: number;
-  sku?: string;
-  category?: string;
-  subtotal?: number;
-}
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'app-order-view',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './order-view.html',
-  styleUrl: './order-view.scss'
+  styleUrls: ['./order-view.scss']
 })
-export class OrderView implements OnInit{
+export class OrderView implements OnInit {
 
-  @Input() items: OrderProductItem[] = [];
+  private route = inject(ActivatedRoute);
+  private scroller = inject(ViewportScroller);
+  private orderService = inject(OrderService);
+  public activeModal = inject(NgbActiveModal);
 
-  private readonly orderService = inject(OrderService);
-  showImage = signal(true);
-  ngOnInit(): void {
-    this.orderService.getOrderById('orderId').subscribe({
+  order = signal<any>(null);
+  loading = signal(true);
+  error = signal('');
+
+  @Input() isAdmin: boolean = false; // works for user + admin both
+
+  ngOnInit() {
+    this.scroller.scrollToPosition([0, 0]);
+
+    // const orderId = this.route.snapshot.paramMap.get('id');
+    // if (orderId) this.getOrder(orderId);
+    this.getOrder(this.orderService.setOrderId());
+  }
+
+  getOrder(orderId: string) {
+    this.loading.set(true);
+
+    this.orderService.getOrderById(orderId).subscribe({
       next: (res: any) => {
-        console.log(res);
+        this.order.set(res.data);
+        this.loading.set(false);
+      },
+      error: err => {
+        this.error.set(err.error?.message || 'Failed to load order');
+        this.loading.set(false);
       }
-    }); 
+    });
   }
 
+  copyAddress(address: any) {
+    const text = `
+    ${address.fullName}
+    ${address.addressLine1}
+    ${address.addressLine2 ? address.addressLine2 : ""}
+    ${address.landMark ? "Landmark: " + address.landMark : ""}
+    ${address.city}, ${address.state} - ${address.pincode}
+    ${address.country}
+    Phone: ${address.phone}
+    `.trim();
 
-  getTotal() {
-    return this.items.reduce((t, i) => t + i.price * i.quantity, 0);
+    // Angular 20 SSR-safe clipboard
+    navigator.clipboard.writeText(text).then(() => {
+      this.showCopiedToast();
+    }).catch(() => {
+      console.error("Copy failed");
+    });
   }
 
+  // Optional toast signal
+  toastMessage = signal<string>("");
 
-  formatCurrency(v: number) {
-    return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    }).format(v);
+  showCopiedToast() {
+    this.toastMessage.set("Address copied!");
+    setTimeout(() => this.toastMessage.set(""), 2000);
   }
 }

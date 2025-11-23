@@ -8,11 +8,12 @@ export class CommonConstants {
  ];
 
  public static OrderStatus = [
-  { label: 'created', value: 'Order Placed' },
-  { label: 'packed', value: 'Packed' },
-  { label: 'shipped', value: 'Shipped' },
-  { label: 'delivered', value: 'Delivered' },
-  { label: 'cancelled', value: 'Cancelled' },
+  { key: 'created', value: 'Order Placed' },
+  { key: 'confirmed', value: 'Order Confirmed' },
+  { key: 'packed', value: 'Packed' },
+  { key: 'shipped', value: 'Shipped' },
+  { key: 'delivered', value: 'Delivered' },
+  { key: 'cancelled', value: 'Cancelled' },
 ];
 }
 
