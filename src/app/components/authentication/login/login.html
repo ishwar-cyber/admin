@@ -1,68 +1,121 @@
 <div class="login-wrapper">
-  <div class="login-container">
+  <div class="login-card">
+
+    <!-- HEADER -->
     <div class="login-header">
-      <h1>Welcome Back!</h1>
-      <p>Please sign in to continue</p>
+      <h2>Admin Panel</h2>
+      @if (!showForgot()) {
+        <p>Sign in to continue</p>
+      } @else {
+        <p>Reset your password</p>
+      }
     </div>
 
-    <form [formGroup]="loginForm" class="login-form">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <div class="input-container">
-          <!-- <i class="fas fa-envelope input-icon"></i> -->
-          <input 
-            type="username" 
-            id="username" 
-            formControlName="username" 
-            placeholder="Enter your username"
-            [class.is-invalid]="username?.invalid && (username?.dirty || username?.touched)"
-            class="form-control">
+    <!-- ================= LOGIN FORM ================= -->
+    @if (!showForgot()) {
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+        <!-- USERNAME -->
+        <div class="form-group">
+          <label>Username</label>
+          <input
+            type="text"
+            formControlName="username"
+            placeholder="Enter username"
+            [class.invalid]="username?.invalid && username?.touched"
+          />
         </div>
-        <div class="error-message" *ngIf="username?.invalid && (username?.dirty || username?.touched)">
-          <span *ngIf="username?.errors?.['required']">username is required</span>
-          <span *ngIf="username?.errors?.['username']">Please enter a valid username address</span>
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+          <label>Password</label>
+          <div class="password-box">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Enter password"
+              [class.invalid]="password?.invalid && password?.touched"
+            />
+            <button
+              type="button"
+              class="toggle-btn"
+              (click)="togglePassword()"
+              aria-label="Toggle password visibility">
+              {{ showPassword() ? '🙈' : '👁️' }}
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="input-container">
-          <!-- <i class="fas fa-lock input-icon"></i> -->
-          <input 
-            [type]="showPassword ? 'text' : 'password'"
-            id="password" 
-            formControlName="password" 
-            placeholder="Enter your password"
-            [class.is-invalid]="password?.invalid && (password?.dirty || password?.touched)"
-            class="form-control">
-          <i 
-            [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
-            class="toggle-password"
-            (click)="togglePasswordVisibility()">
-          </i>
+        <!-- FORGOT -->
+        <div class="forgot-link">
+          <button type="button" (click)="goForgot()">
+            Forgot password?
+          </button>
         </div>
-        <div class="error-message" *ngIf="password?.invalid && (password?.dirty || password?.touched)">
-          <span *ngIf="password?.errors?.['required']">Password is required</span>
-          <span *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</span>
+
+        <!-- SUBMIT -->
+        <button
+          class="login-btn"
+          type="submit"
+          [disabled]="!canLogin()">
+          @if (!loading()) {
+            Sign In
+          } @else {
+            <span class="loader"></span>
+          }
+        </button>
+
+        <!-- ERROR -->
+        @if (error()) {
+          <p class="error-text">{{ error() }}</p>
+        }
+
+        <!-- LOCK WARNING -->
+        @if (locked()) {
+          <p class="error-text">
+            🔒 Account locked after too many attempts
+          </p>
+        }
+      </form>
+    }
+
+    <!-- ================= FORGOT PASSWORD ================= -->
+    @if (showForgot()) {
+      <form [formGroup]="forgotForm" (ngSubmit)="sendResetLink()">
+
+        <div class="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Enter registered email"
+          />
         </div>
-      </div>
 
- 
+        <button
+          class="login-btn"
+          type="submit"
+          [disabled]="!canReset()">
+          @if (!loading()) {
+            Send Reset Link
+          } @else {
+            <span class="loader"></span>
+          }
+        </button>
 
-      <button 
-        type="submit" 
-        class="login-button" (click)="login()"
-        [disabled]="!loginForm.valid || isLoading">
-        <span *ngIf="!isLoading">Sign In</span>
-        <div class="spinner" *ngIf="isLoading"></div>
-      </button>
+        <!-- SUCCESS -->
+        @if (success()) {
+          <p class="success-text">{{ success() }}</p>
+        }
 
-      <div class="error-message text-center" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
-    </form>
+        <!-- BACK -->
+        <div class="back-login">
+          <button type="button" (click)="goLogin()">
+            ← Back to Login
+          </button>
+        </div>
+      </form>
+    }
 
-    
   </div>
 </div>
-

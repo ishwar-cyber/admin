@@ -8,12 +8,42 @@ export class CommonConstants {
  ];
 
  public static OrderStatus = [
-  { key: 'created', value: 'Order Placed' },
-  { key: 'confirmed', value: 'Order Confirmed' },
-  { key: 'packed', value: 'Packed' },
+  { key: 'placed', value: 'Order Placed' },
+  { key: 'confirmed', value: 'Confirmed' },
   { key: 'shipped', value: 'Shipped' },
   { key: 'delivered', value: 'Delivered' },
   { key: 'cancelled', value: 'Cancelled' },
 ];
-}
 
+/* -------------------- CONFIG DRIVEN FILTERS -------------------- */
+ public static FilterConfig = [
+    {
+      key: 'statusFilter',
+      label: 'Order Status',
+      type: 'select',
+      placeholder: '',
+      options: [
+        { value: '', label: 'All' },
+        { value: 'pending', label: 'Pending' },
+        { value: 'packed', label: 'Packed' },
+        { value: 'shipped', label: 'Shipped' },
+        { value: 'delivered', label: 'Delivered' },
+        { value: 'cancelled', label: 'Cancelled' }
+      ]
+    },
+    {
+      key: 'paymentStatusFilter',
+      label: 'Payment',
+      type: 'select',
+      options: [
+        { value: '', label: 'All' },
+        { value: 'pending', label: 'Pending' },
+        { value: 'paid', label: 'Paid' },
+        { value: 'failed', label: 'Failed' },
+        { value: 'refunded', label: 'Refunded' }
+      ]
+    },
+    { key: 'dateFromFilter', label: 'From', type: 'date' },
+    { key: 'dateToFilter', label: 'To', type: 'date' }
+  ];
+}

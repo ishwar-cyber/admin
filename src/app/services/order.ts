@@ -188,4 +188,17 @@ createOrder(orderData: any): Observable<OrderApiResponse> {
     this._error.set(null);
     this._totalItems.set(0);
   }
+
+  /**
+ * Refund customer for a cancelled order
+ */
+refundOrder(id: string, amount: number, reason?: string): Observable<ApiResponse> {
+  const payload = { amount, reason: reason || 'Order cancelled' };
+
+  return this.httpClient.post<ApiResponse>(
+    `${this.baseUrl}/${id}/refund`,
+    payload
+  );
+}
+
 }

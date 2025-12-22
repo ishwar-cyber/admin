@@ -17,20 +17,19 @@
       <div class="d-flex flex-wrap gap-2 align-items-center">
         <span class="badge rounded-pill order-status"
               [ngClass]="{
-                'status-pending': o.orderStatus.toLowerCase() === 'pending',
-                'status-processing': o.orderStatus.toLowerCase() === 'processing',
+                'status-placed': o.orderStatus.toLowerCase() === 'placed',
+                'status-confirmed': o.orderStatus.toLowerCase() === 'confirmed',
                 'status-shipped': o.orderStatus.toLowerCase() === 'shipped',
                 'status-delivered': o.orderStatus.toLowerCase() === 'delivered',
                 'status-cancelled': o.orderStatus.toLowerCase() === 'cancelled',
                 'status-returned': o.orderStatus.toLowerCase() === 'returned'
               }">
-              <pre>{{ o.orderStatus }}</pre>
           {{ o.orderStatus | titlecase }}
         </span>
 
         <span class="badge rounded-pill payment-status"
               [ngClass]="{
-                'payment-pending': o.paymentStatus.toLowerCase() === 'pending',
+                'payment-active': o.paymentStatus.toLowerCase() === 'pending',
                 'payment-paid': o.paymentStatus.toLowerCase() === 'paid',
                 'payment-failed': o.paymentStatus.toLowerCase() === 'failed'
               }">
@@ -86,29 +85,35 @@
       </div>
 
       <!-- Tracking Timeline -->
-      <div class="card shadow-sm mb-3" *ngIf="o.tracking?.length">
+      @if(o.tracking?.length){
+           <div class="card shadow-sm mb-3">
         <div class="card-header border-0 bg-white">
           <h6 class="m-0">Order Tracking</h6>
         </div>
         <div class="card-body">
           <div class="tracking-timeline">
-            <div class="tracking-step"
-                 *ngFor="let step of o.tracking; let last = last"
-                 [class.completed]="step.completed">
-
-              <div class="circle"></div>
-              <div class="line" *ngIf="!last"></div>
-
-              <div class="content">
-                <div class="label">{{ step.label }}</div>
-                <div class="time" *ngIf="step.completedAt">
-                  {{ step.completedAt | date: 'medium' }}
+            @for(step of o.tracking; track $index){
+              <div class="tracking-step"
+                  [class.completed]="step.completed">
+                <div class="circle"></div>
+                <!-- @if($index){ -->
+                  <div class="line"></div>
+                <!-- } -->
+                <div class="content">
+                  <div class="label">{{ step.label }}</div>
+                  @if(step.completedAt){
+                    <div class="time">
+                      {{ step.completedAt | date: 'medium' }}
+                    </div>
+                  }
                 </div>
               </div>
-            </div>
+            }
           </div>
         </div>
       </div>
+      }
+   
 
     </div>
 
@@ -122,7 +127,8 @@
           <small class="text-muted">Payment: {{ o.paymentMethod | uppercase }}</small>
         </div>
         <div class="card-body p-0">
-          <div class="order-item" *ngFor="let item of o.items; let i = index">
+          @for (item of o.items; track $index) {
+             <div class="order-item">
             <div class="thumb-wrapper">
               <img [src]="item.image || item.product?.images?.[0]"
                    alt="{{ item.name }}"
@@ -134,15 +140,20 @@
               <div class="small text-muted">
                 Qty: {{ item.quantity }} · Price: ₹{{ item.price }}
               </div>
-              <div class="small text-muted" *ngIf="item.product?.sku">
-                SKU: {{ item.product.sku }}
-              </div>
+              @if(item.product?.sku){
+                <div class="small text-muted">
+                  SKU: {{ item.product.sku }}
+                </div>
+              }
+            
             </div>
 
             <div class="item-total">
               ₹{{ (item.price || 0) * (item.quantity || 0) }}
             </div>
           </div>
+          }
+         
         </div>
       </div>
 

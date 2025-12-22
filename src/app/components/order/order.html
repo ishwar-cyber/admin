@@ -15,174 +15,87 @@
   </div>
 
   <!-- Stats -->
-  <div class="row g-3 stats-row">
-
+<div class="row g-3 stats-row">
+  @for (item of stats(); track item.label) {
     <div class="col-lg-2 col-md-3 col-6">
-      <div class="stat-box bg-orders">
-        <i class="bi bi-cart-check icon"></i>
-        <div class="value">{{ totalItems() }}</div>
-        <div class="label">Orders</div>
+      <div class="stat-box {{ item.class }}">
+        <div class="value">
+          <i class="bi {{ item.icon }} icon"></i>
+          {{ item.value() }}
+        </div>
+        <div class="label">{{ item.label }}</div>
       </div>
     </div>
-
-    <div class="col-lg-2 col-md-3 col-6">
-      <div class="stat-box bg-pending">
-        <i class="bi bi-clock icon"></i>
-        <div class="value">{{ pending }}</div>
-        <div class="label">Pending</div>
-      </div>
-    </div>
-
-    <div class="col-lg-2 col-md-3 col-6">
-      <div class="stat-box bg-confirmed">
-        <i class="bi bi-gear icon"></i>
-        <div class="value">{{ confirmed }}</div>
-        <div class="label">Confirmed</div>
-      </div>
-    </div>
-
-    <div class="col-lg-2 col-md-3 col-6">
-      <div class="stat-box bg-delivered">
-        <i class="bi bi-check-circle icon"></i>
-        <div class="value">{{ delivered }}</div>
-        <div class="label">Delivered</div>
-      </div>
-    </div>
-
-    <div class="col-lg-2 col-md-3 col-6">
-      <div class="stat-box bg-cancelled">
-        <i class="bi bi-x-circle icon"></i>
-        <div class="value">{{ cancelled }}</div>
-        <div class="label">Cancelled</div>
-      </div>
-    </div>
-
-  </div>
-
+  }
+</div>
   <!-- Main Card -->
   <div class="card modern-card mt-4">
-
     <div class="card-body">
-
       <!-- Loading -->
       @if (loading()) {
         <div class="loading-container">
           <div class="spinner-border text-primary"></div>
         </div>
-      }
-
-      <!-- Error -->
-      @if (error()) {
-        <div class="alert alert-danger text-center">{{ error() }}</div>
-      }
-
-      @if (!loading() && !error()) {
+      } @else {
       <!-- Modern Filters Panel -->
-      <div class="filters-wrapper">
-
-        <div class="filters-grid">
-          <!-- Search -->
-          <div class="filter-item">
-            <label>Search</label>
-          <div class="search-box">
-            <i class="bi bi-search search-icon"></i>
-            <input
-              type="text"
-              class="filter-input"
-              placeholder="Search Order #, Name, Email..."
-              [ngModel]="searchTerm()"
-              (ngModelChange)="searchTerm.set($event)"
-            />
-          </div>
-           </div>
-          
-
-          <!-- Order Status -->
-          <div class="filter-item">
-            <label>Order Status</label>
-            <select
-              class="filter-select"
-              [ngModel]="statusFilter()"
-              (ngModelChange)="statusFilter.set($event)"
-            >
-              <option value="">All</option>
-              <option value="pending">Pending</option>
-              <option value="packed">Packed</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-
-          <!-- Delivery Status -->
-          <div class="filter-item">
-            <label>Delivery Status</label>
-            <select
-              class="filter-select"
-              [ngModel]="deliveryStatusFilter()"
-              (ngModelChange)="deliveryStatusFilter.set($event)"
-            >
-              <option value="">All</option>
-              <option value="packed">Packed</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="failed">Failed</option>
-            </select>
-          </div>
-
-          <!-- Payment Status -->
-          <div class="filter-item">
-            <label>Payment</label>
-            <select
-              class="filter-select"
-              [ngModel]="paymentStatusFilter()"
-              (ngModelChange)="paymentStatusFilter.set($event)"
-            >
-              <option value="">All</option>
-              <option value="pending">Pending</option>
-              <option value="paid">Paid</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
-            </select>
-          </div>
-
-          <!-- From Date -->
-          <div class="filter-item">
-            <label>From</label>
-            <input
-              type="date"
-              class="filter-select"
-              [ngModel]="dateFromFilter()"
-              (ngModelChange)="dateFromFilter.set($event)"
-            />
-          </div>
-
-          <!-- To Date -->
-          <div class="filter-item">
-            <label>To</label>
-            <input
-              type="date"
-              class="filter-select"
-              [ngModel]="dateToFilter()"
-              (ngModelChange)="dateToFilter.set($event)"
-            />
-          </div>
-
-        </div>
-
-        <!-- Actions -->
-        <div class="filter-actions">
-          <button class="filter-btn apply" (click)="applyFilters()">
-            <i class="bi bi-funnel"></i> Apply
-          </button>
-          <button class="filter-btn clear" (click)="clearFilters()">
-            <i class="bi bi-x-circle"></i> Clear
-          </button>
-        </div>
-
+      <div class="filter-toggle">
+        <button (click)="showFilters.set(!showFilters())" class="btn btn-primary">
+          <i class="bi"  [class.bi-chevron-up]="showFilters()" [class.bi-chevron-down]="!showFilters()"></i>
+          Filters
+        </button>
       </div>
 
+      @if(showFilters()){
+        <div class="filters-panel">
+
+          <!-- Search box -->
+          <div class="filters-grid">
+            <div class="filter-item">
+              <label>Search</label>
+              <div class="input-icon">
+                <i class="bi bi-search"></i>
+                <input 
+                  type="text"
+                  placeholder="Search Order #, Customer..."
+                  [ngModel]="searchTerm()"
+                  (ngModelChange)="searchTerm.set($event)"
+                />
+              </div>
+            </div>
+
+            <!-- Auto generated filters -->
+            @for (f of filterConfig(); track f.key) {
+              <div class="filter-item">
+                <label>{{ f.label }}</label>
+
+              @if (f.type === 'select') {
+                <select 
+                  [ngModel]="filterSignals[f.key]()" 
+                  (ngModelChange)="filterSignals[f.key].set($event)"
+                >
+                  @for (o of f.options; track o.value) {
+                    <option [value]="o.value">{{ o.label }}</option>
+                  }
+                </select>
+              }
+              @if (f.type === 'date') {
+                <input 
+                  type="date"
+                  [ngModel]="filterSignals[f.key]()"
+                  (ngModelChange)="filterSignals[f.key].set($event)"
+                />
+              }
+              </div>
+            }
+          </div>
+
+          <div class="filter-actions">
+            <button class="apply" (click)="applyFilters()"><i class="bi bi-funnel"></i> Apply</button>
+            <button class="clear" (click)="clearFilters()"><i class="bi bi-x-circle"></i> Clear</button>
+          </div>
+
+        </div>
+      }
 
       <!-- Table -->
       <div class="table-container">
@@ -190,12 +103,12 @@
           <thead>
             <tr>
               <th (click)="updateSort('orderNumber')">Order #</th>
-              <th>Customer</th>
+              <!-- <th>Customer</th> -->
               <th>Items</th>
               <th>Total</th>
               <th>Status</th>
               <th>Payment</th>
-              <th>Date</th>
+              <!-- <th>Date</th> -->
               <th></th>
             </tr>
           </thead>
@@ -208,17 +121,17 @@
                   <div class="sub">{{ order.paymentMethod | uppercase }}</div>
                 </td>
 
-                <td>
-                  <div class="fw-bold">{{ order?.user?.username }}</div>
+                <!-- <td>
+                  <div class="fw-bold ">{{ order?.user?.username }}</div>
                   <div class="sub">{{ order?.user?.email }}</div>
                   <div class="sub">{{ order?.user?.phone }}</div>
-                </td>
+                </td> -->
 
-                <td>
+                <td class="width: 200px">
                   <span class="badge bg-secondary">{{ order?.items?.length }} items</span>
-                  <div class="sub small">
+                  <div class="sub small ">
                     @for (item of order?.items?.slice(0, 2); track item.name) {
-                      {{ item?.name }} ({{ item?.quantity }})
+                     <div class="product-name"> {{ item?.name }} ({{ item?.quantity }}), </div>
                     }
                     @if(order.items.length > 2) {
                       <span class="text-muted">+{{ order.items.length - 2 }} more</span>
@@ -231,31 +144,33 @@
                 </td>
 
                 <td class="status-col">
-
                   <!-- Status Badge -->
-                  <span class="badge status-badge" [ngClass]="order.orderStatus">
-                    {{ order.orderStatus | uppercase }}
+                  <span class="badge status-badge"[ngClass]="selectedStatusMap()[order.id] || order.orderStatus">
+                    {{ (selectedStatusMap()[order.id] || order.orderStatus) | uppercase }}
                   </span>
 
-                  <!-- Status Dropdown -->
-                  <select 
+                  <select
                     class="status-select"
-                    [ngModel]="order?.orderStatus"
-                    #status (change)="updateOrderStatus(order.id, status.value)"
+                    [ngModel]="selectedStatusMap()[order.id] || order.orderStatus"
+                    (ngModelChange)="updateOrderStatus(order.id, $event, order)"
                   >
-                    @for (item of orderStatuses; track $index) {
-                      <option [value]="item.key" [selected]="item.key === order.orderStatus">{{ item.value }}</option>
+                    @for (item of orderStatuses; track item.key) {
+                      <option [value]="item.key">{{ item.value }}</option>
+                    }
+                      <!-- EXTRA OPTION ONLY WHEN ORDER IS CANCELLED -->
+                    @if(order.orderStatus === 'cancelled') {
+                      <option value="refund" >Refund</option>
                     }
                   </select>
                 </td>
 
                 <td>
-                  <span class="badge status-badge" [ngClass]="order.paymentStatus">
+                  <span class="badge status-badge" [ngClass]="order.paymentStatus.toLowerCase()">
                     {{ order.paymentStatus | titlecase }}
                   </span>
                 </td>
 
-                <td>{{ order.createdAt | date:'short' }}</td>
+                <!-- <td>{{ order.createdAt | date:'short' }}</td> -->
 
                 <td>
                   <button class="btn btn-outline-primary btn-sm"

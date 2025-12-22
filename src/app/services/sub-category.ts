@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 
@@ -11,8 +11,16 @@ export class SubCategoryS {
   url  = `${environment.BASE_URL}/subcategory`;
   constructor() { }
 
-  getSubCategories() {
-    return this.httpClient.get(this.url);
+  getSubCategories(options?: { page?: number; pageSize?: number; search?: string; sortField?: string; sortDir?: string }) {
+    let params = new HttpParams();
+    if (options) {
+      if (options.page != null) params = params.set('page', String(options.page));
+      if (options.pageSize != null) params = params.set('pageSize', String(options.pageSize));
+      if (options.search) params = params.set('search', options.search);
+      if (options.sortField) params = params.set('sortField', options.sortField);
+      if (options.sortDir) params = params.set('sortDir', options.sortDir);
+    }
+    return this.httpClient.get(this.url, { params });
   }
   getSubCategoryById(id: number) {
     return this.httpClient.get(`${this.url}/${id}`);

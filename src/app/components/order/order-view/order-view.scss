@@ -25,11 +25,11 @@
   padding: 4px 10px;
 }
 
-.status-pending {
+.status-placed {
   background: #fff3cd;
   color: #856404;
 }
-.status-processing {
+.status-confirmed {
   background: #cce5ff;
   color: #004085;
 }
@@ -42,7 +42,7 @@
   color: #155724;
 }
 
-.payment-pending {
+.payment-active {
   background: #ffe8d9;
   color: #b25c1a;
 }
@@ -54,7 +54,10 @@
   background: #f8d7da;
   color: #721c24;
 }
-
+.status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
 /* Layout */
 .order-layout {
   display: grid;

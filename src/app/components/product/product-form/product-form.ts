@@ -369,7 +369,7 @@ addVariant(data?: any): void {
     variantName: [data?.name || '', Validators.required],
     sku: [data?.sku || '', Validators.required],
     price: [data?.price ?? 0, [Validators.required, Validators.min(0), this.numberOnlyValidator()]],
-    stock: [data?.stock ?? 0, [Validators.required, Validators.min(0), this.numberOnlyValidator()]]
+    stock: [data?.stock ?? '', [Validators.required]]
   }));
 }
   removeVariant(index: number): void {

@@ -21,7 +21,7 @@
         @for (item of menuItems(); track $index) {
               <li class="nav-item">
                 <a [routerLink]="item.children ? null : item.route" 
-                    (click)="item.children && toggleExpanded(item)"  routerLinkActive="'active'" 
+                    (click)="item.children && toggleExpanded(item)" [routerLinkActiveOptions]="{exact: true}"  routerLinkActive="'active'" 
                     [ngClass]="{'active': isActive(item?.route), 'has-children': item.children}">
                       <i class="bi {{item.icon}}"></i>
                       @if(!collapsed()){

@@ -39,10 +39,21 @@ export class OrderComponent implements OnInit {
   selectedOrderStatus = signal<string>('');
   selectedOrderId = signal<string>('');
 
-  confirmed = 0;
-  delivered = 0;
-  pending = 0;
-  cancelled = 0;
+  confirmed = signal(0);
+  delivered = signal(0);
+  pending = signal(0);
+  cancelled = signal(0);
+  filterConfig = signal<any>(CommonConstants.FilterConfig);
+  showFilters = signal(false);
+  filterSignals: Record<string, any> = {
+    statusFilter: this.statusFilter,
+    paymentStatusFilter: this.paymentStatusFilter,
+    dateFromFilter: this.dateFromFilter,
+    dateToFilter: this.dateToFilter
+  };
+
+  selectedStatusMap = signal<Record<string, string>>({});
+
   processing = 0;
   shipped = 0;
   // Sort signals
@@ -91,6 +102,14 @@ export class OrderComponent implements OnInit {
     return this.sortOrders(orders);
   });
 
+  stats = signal<any> ([
+    { label: "Orders", value: () => this.totalItems(), icon: "bi-cart-check", class: "bg-orders" },
+    { label: "Pending", value: () => this.pending(), icon: "bi-clock", class: "bg-pending" },
+    { label: "Confirmed", value: () => this.confirmed(), icon: "bi-gear", class: "bg-confirmed" },
+    { label: "Delivered", value: () => this.delivered(), icon: "bi-check-circle", class: "bg-delivered" },
+    { label: "Cancelled", value: () => this.cancelled(), icon: "bi-x-circle", class: "bg-cancelled" },
+  ]);
+
 
 
   ngOnInit(): void {
@@ -119,12 +138,32 @@ export class OrderComponent implements OnInit {
         this.totalItems.set(response.data.statistics?.totalOrders || 0);
         
         const stats =  response.data.statistics.orderStatusStats || [];
-        this.confirmed = stats.find((s: any) => s._id === 'Order Placed')?.count || 0;
-        this.delivered = stats.find((s: any) => s._id === 'Delivered')?.count || 0;
-        this.pending = stats.find((s: any) => s._id === 'Packed')?.count || 0;
-        this.cancelled = stats.find((s: any) => s._id === 'Cancelled')?.count || 0;
-        this.processing = stats.find((s: any) => s._id === 'Processing')?.count || 0;
-        this.shipped = stats.find((s: any) => s._id === 'Shipped')?.count || 0;
+        for (const s of stats) {
+          switch (s._id) {
+            case 'Confirmed':
+              this.confirmed.set(s.count);
+              break;
+            case 'Delivered':
+              this.delivered.set(s.count);
+              break;
+
+            case 'Packed':
+              this.pending.set(s.count);
+              break;
+
+            case 'Cancelled':
+              this.cancelled.set(s.count);
+              break;
+
+            // case 'Processing':
+            //   this.processing.set(s.count);
+            //   break;
+
+            // case 'Shipped':
+            //   this.shipped.set(s.count);
+              break;
+          }
+        }
         this.loading.set(false);
       },
       error: (err) => {
@@ -218,24 +257,67 @@ export class OrderComponent implements OnInit {
     });
   }
 
-  updateOrderStatus(orderId: string, status: string) {
-    this.orderService.updateOrderStatus(orderId, status).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.orders.update(orders => 
-            orders.map(order => 
-              order.id === orderId 
-                ? { ...order, status: status as any }
-                : order
-            )
-          );
-        } else {
-          alert('Failed to update order status');
-        }
-      },
-      error: () => alert('Failed to update order status')
-    });
+updateOrderStatus(orderId: string, status: string, order?: any) {
+  
+  // If admin chooses refund option
+  if (status === 'refund') {
+    const amount = prompt("Enter refund amount:");
+
+    if (!amount || isNaN(Number(amount))) {
+      alert("Invalid amount!");
+      return;
+    }
+
+    this.processRefund(order.orderNumber, Number(amount));
+    return;
   }
+
+  // 🔽 Update UI immediately
+  this.selectedStatusMap.update(map => ({
+    ...map,
+    [orderId]: status
+  }));
+
+  // 🔽 Proceed with normal API update
+  this.orderService.updateOrderStatus(orderId, status).subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.orders.update(orders =>
+          orders.map(o =>
+            o.id === orderId ? { ...o, orderStatus: status } : o
+          )
+        );
+      } else {
+        alert("Failed to update status");
+      }
+    },
+    error: () => alert("Failed to update status")
+  });
+}
+
+
+processRefund(orderId: string, amount: number) {
+  if (!confirm(`Refund ₹${amount} to customer?`)) return;
+
+  this.orderService.refundOrder(orderId, amount).subscribe({
+    next: (response) => {
+      if (response.success) {
+        alert("Refund processed successfully");
+
+        this.orders.update(orders =>
+          orders.map(o =>
+            o.id === orderId ? { ...o, paymentStatus: "refunded" } : o
+          )
+        );
+      } else {
+        alert("Refund failed");
+      }
+    },
+    error: () => alert("Refund failed")
+  });
+}
+
+
   deleteOrder(orderId: string) {
     if (confirm('Are you sure you want to delete this order?')) {
       this.orderService.deleteOrder(orderId).subscribe({
@@ -253,7 +335,7 @@ export class OrderComponent implements OnInit {
 
   viewOrderDetails(order: Order) {
     // TODO: Implement order details modal
-    alert(`Viewing order: ${order.orderNumber}`);
+    // alert(`Viewing order: ${order.orderNumber}`);
     this.orderService.setOrderId.set(order.id);
      const modalRef = this.modalService.open(OrderView, { size: 'lg', backdrop: false, keyboard: true });
         if (modalRef && modalRef.componentInstance) {

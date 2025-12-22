@@ -33,7 +33,7 @@ export interface Order {
   totalAmount: number;
   orderStatus: 'created' | 'packed' | 'shipped' | 'delivered' | 'cancelled';
   deliveryStatus: 'pending' | 'in_transit' | 'out_for_delivery' | 'delivered' | 'failed';
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  paymentStatus: 'active' | 'paid' | 'failed' | 'refunded';
   paymentMethod: 'cod' | 'online' | 'card' | 'upi';
   deliveryMethod: 'standard' | 'express' | 'same_day';
   trackingNumber?: string;

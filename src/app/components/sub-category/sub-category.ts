@@ -23,16 +23,21 @@ export class SubCategory {
   public category = signal<any[]>([]);
   // Search control with debounce
   searchControl = new FormControl('');
-  
-  // Filtered categories based on search
-  filteredCategories = computed(() => {
-    const searchTerm = this.searchControl.value?.toLowerCase() || '';
-    return this.subCategories().filter(category => 
-      category.name.toLowerCase().includes(searchTerm) ||
-      category.status.toLowerCase().includes(searchTerm) ||
-      category._id.includes(searchTerm)
-    );
+  pagination = signal<any>(null);
+  pageSize = signal(10);
+  currentPage = signal(1);
+
+  // total pages computed from server pagination when available
+  totalPages = computed(() => {
+    const total = this.pagination()?.total ?? this.subCategories().length;
+    return Math.max(1, Math.ceil(total / this.pageSize()));
   });
+
+  // server returns paginated items, so use subCategories directly
+  paginatedCategories = computed(() => this.subCategories());
+
+  // when server-side search is used we just display subCategories
+  filteredCategories = computed(() => this.subCategories());
 
   constructor() {
     // Set up debounce for search input
@@ -42,7 +47,8 @@ export class SubCategory {
         distinctUntilChanged()
       )
       .subscribe(() => {
-        // The computed signal will automatically update
+        this.resetPage();
+        this.loadSubCategories();
       });
   }
 
@@ -65,10 +71,25 @@ export class SubCategory {
   }
 
   public loadSubCategories(){
-    this.subCategoryService.getSubCategories().subscribe({
+    const params = {
+      page: this.currentPage(),
+      pageSize: this.pageSize(),
+      search: this.searchControl.value || undefined,
+      sortField: this.sortField(),
+      sortDir: this.sortDirection()
+    };
+    this.subCategoryService.getSubCategories(params).subscribe({
       next: (response: any) =>{
-        this.subCategories.set(response.data);
+        // expected backend shape: { data: [], pagination: { total, pages, page } }
+        this.pagination.set(response.pagination ?? null);
+        const items = response.data ?? response.items ?? response;
+        this.subCategories.set(Array.isArray(items) ? items : []);
       },
+      error: (err: any) => {
+        console.error('Failed loading sub-categories', err);
+        this.subCategories.set([]);
+        this.pagination.set(null);
+      }
     })
   }
   deleteCategory(id: string): void {
@@ -85,7 +106,7 @@ export class SubCategory {
 
   // Additional helper methods
   get totalSubCategories(): number {
-    return this.subCategories().length;
+    return this.pagination()?.total ?? this.subCategories().length;
   }
 
   get activeSubCategories(): number {
@@ -93,40 +114,37 @@ export class SubCategory {
   }
 
   // Add to the CategoriesComponent class
-sortField = signal<string>('name');
-sortDirection = signal<'asc' | 'desc'>('asc');
+  sortField = signal<string>('name');
+  sortDirection = signal<'asc' | 'desc'>('asc');
 
-sortBy(field: string): void {
-  if (this.sortField() === field) {
-    this.sortDirection.update(dir => dir === 'asc' ? 'desc' : 'asc');
-  } else {
-    this.sortField.set(field);
-    this.sortDirection.set('asc');
+  sortBy(field: string): void {
+    if (this.sortField() === field) {
+      this.sortDirection.update(dir => dir === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortField.set(field);
+      this.sortDirection.set('asc');
+    }
+    
+    // request sorted page from server
+    this.resetPage();
+    this.loadSubCategories();
   }
-  
-  this.subCategories.update(subCat => {
-    return [...subCat].sort((a, b) => {
-      let valueA = a[field];
-      let valueB = b[field];
-      
-      // Handle dates
-      if (field === 'createdAt') {
-        valueA = new Date(valueA).getTime();
-        valueB = new Date(valueB).getTime();
-      }
-      
-      // Handle string comparison
-      if (typeof valueA === 'string') {
-        return this.sortDirection() === 'asc' 
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA);
-      }
-      
-      // Handle numeric comparison
-      return this.sortDirection() === 'asc' 
-        ? (valueA || 0) - (valueB || 0)
-        : (valueB || 0) - (valueA || 0);
-    });
-  });
-}
+
+  // change page
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages()) return;
+    this.currentPage.set(page);
+    this.loadSubCategories();
+  }
+
+  // reset page when search/sort changes
+  resetPage() {
+    this.currentPage.set(1);
+  }   
+
+  onPageSizeChange(value: any) {
+    this.pageSize.set(+value);
+    this.resetPage();
+    this.loadSubCategories();
+  }
 }
