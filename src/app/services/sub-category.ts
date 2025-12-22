@@ -51,4 +51,8 @@ export class SubCategoryS {
     }
     return formData;
   }
+
+  getSubcategoryByCategory(id:string){
+     return this.httpClient.get(`${this.url}/by-category/${id}`);
+  }
 }

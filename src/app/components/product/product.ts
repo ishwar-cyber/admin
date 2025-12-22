@@ -68,7 +68,7 @@ export class Product implements OnInit {
         this.productList.set(res?.data);
         this.currentPage.set(pegination?.page);
         this.totalItems.set(pegination?.total);
-        this.totalPages.set(pegination?.pages);
+        this.totalPages.set(res?.count);
       }
     })
   }

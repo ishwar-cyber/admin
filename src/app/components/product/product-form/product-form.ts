@@ -4,7 +4,7 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, Reacti
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrandService } from '../../../services/brand';
-import { forkJoin } from 'rxjs';
+import { filter, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { MultipleSelect } from '../../../shareds/multiple-select/multiple-select';
 import { UploadImage } from '../../../shareds/upload-image/upload-image';
 import { CategoryS } from '../../../services/category';
@@ -83,12 +83,10 @@ export class ProductForm implements OnInit {
       brands: this.brandsService.getBrands(),
       categories: this.categoryService.getCategories(),
       pincodes: this.pincodeService.getPincode(),
-      subCategories: this.subCategoryService.getSubCategories()
     }).subscribe({
-      next: ({ brands, categories, pincodes, subCategories }: any) => {
+      next: ({ brands, categories, pincodes }: any) => {
         this.brands.set(brands.data);
-        this.categories.set(categories.data);
-        this.subCategories.set(subCategories.data);   
+        this.categories.set(categories.data); 
         this.pincodes.update(() => {
           return pincodes.data.map((pincode: any) => ({
             name: pincode.pincode || '',
@@ -166,11 +164,19 @@ export class ProductForm implements OnInit {
   }
 
   selectedCategory(event: any){
-    this.subCategory.set([]);
-    this.subCategories().filter(subCategory => {
-      if(subCategory.category.name.toLowerCase() === event[0].name.toLowerCase()){
-        this.subCategory.update((value) => [...value, subCategory]);
-      }
+    const categoryId = event?.[0]?.id;
+    if (!categoryId) return;
+    of(categoryId)
+      .pipe(
+        tap(() => this.subCategory.set([])),
+        switchMap(id =>
+          this.subCategoryService.getSubcategoryByCategory(id)
+        ),
+        map((res: any) => res.data ?? []),
+        filter(list => list.length > 0)
+      )
+      .subscribe(list => {
+        this.subCategory.set(list);
     });
   }
 
