@@ -32,7 +32,6 @@
               type="radio"
               name="categorySelect"
               [id]="'option-' + option.id"
-              [checked]="selectedOption()?.id === option.id"
               (change)="selectOption(option)"
             >
             <label class="form-check-label" [for]="'option-' + option.id">

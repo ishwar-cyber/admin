@@ -100,14 +100,29 @@ export class ProductForm implements OnInit {
         this.activeModal.close(true);
       }
     });
-      if(this.item !== null) {
+    if(this.item !== null) {
         this.editProduct.set(true);
       // this.editMode.set(true);
       this.productId.set(this.item._id);
       if (this.item.pincode && this.item.pincode.length > 0) {
         this.serviceChargeFlag.set(true);
         this.productForm.controls['serviceCharge'].setValue(this.item.serviceCharges || 0);
-       }
+      }
+      this.prefillForm(); 
+      this.item.images?.forEach((image: any) => {
+        this.uploadedImages.update(value => [...value, image]);
+      });
+      console.log('this.uploadedImages()', this.uploadedImages());
+      if(this.item.variants?.length) {
+        this.item.variants.forEach((variant: any) => {
+          this.addVariant(variant);
+        });
+      }
+      // this.uploadedImages.set(this.item?.image);
+    }
+  }
+
+  prefillForm(){
       this.productForm.patchValue({
         name: this.item.name,
         brand: this.item.brand.name ? this.item.brand : '',
@@ -136,19 +151,7 @@ export class ProductForm implements OnInit {
           thumbnail: variant.images?.length ? variant.images[0].url : '',
         })) : [],
       });
-      this.item.images?.forEach((image: any) => {
-        this.uploadedImages.update(value => [...value, image]);
-      });
-      console.log('this.uploadedImages()', this.uploadedImages());
-      if(this.item.variants?.length) {
-        this.item.variants.forEach((variant: any) => {
-          this.addVariant(variant);
-        });
-      }
-      // this.uploadedImages.set(this.item?.image);
-    }
   }
-
   selectedCategoryId(event: any){
     console.log('pincode', event);
     if(event && event.length > 0){
