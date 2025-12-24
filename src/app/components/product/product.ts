@@ -58,7 +58,8 @@ export class Product implements OnInit {
     const queryParams = {
       page: this.currentPage(),
       limit: this.itemsPerPage(),
-      
+      search: this.searchTerm(),
+      category: this.selectedCategory(),
       sortBy: 'createdAt',
       sortOrder: 'desc'
     };
@@ -81,6 +82,7 @@ export class Product implements OnInit {
   }
 
   applyFilter(){
+
     this.loadProduct();
   }
   openAddProductModal(item?: any){

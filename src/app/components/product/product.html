@@ -37,11 +37,12 @@
                      [(ngModel)]="searchTerm" placeholder="Product name, SKU...">
             </div>
           </div>
+          @if(false){
           <div class="col-md-2">
             <label for="category" class="form-label">Category</label>
             <select class="form-select" id="category" [(ngModel)]="selectedCategory" name="category">
               <option value="">All Categories</option>
-              <option *ngFor="let cat of categories()" [value]="cat.id">{{cat.name}}</option>
+              <option *ngFor="let cat of categories()" [value]="cat.slug">{{cat.name}}</option>
             </select>
           </div>
           <div class="col-md-2">
@@ -60,7 +61,7 @@
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
-          </div>
+          </div>}
           <div class="col-md-3 d-flex align-items-end gap-2">
             <button type="submit" class="btn btn-primary px-4" (click)="applyFilter()">
               <i class="bi bi-funnel me-1"></i> Apply
