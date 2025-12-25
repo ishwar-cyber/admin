@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductS } from '../../services/product';
 import { BrandService } from '../../services/brand';
@@ -38,11 +38,17 @@ export class Product implements OnInit {
   queryParams: any;
 
   constructor() {
-    this.loadProduct();
-
     this.categoryService.getCategories().subscribe({
       next: (category: any)=>{
         this.categories.set(category.data);
+      }
+    })
+    effect(()=>{
+      if(this.searchTerm().length >= 3){
+        this.loadProduct()
+      } 
+      if(this.searchTerm().length === 0){
+        this.loadProduct()
       }
     })
   }
