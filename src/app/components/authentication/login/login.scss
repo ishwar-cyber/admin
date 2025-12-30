@@ -6,14 +6,45 @@
 }
 
 .login-card {
-  width: 380px;
-  padding: 2rem;
+  width: 100%;
+  max-width: 375px;
+  padding: 1.5rem;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(14px);
-  box-shadow: 0 20px 40px rgba(0,0,0,.4);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   color: #fff;
+  margin: auto;
+
+  transition: all 0.3s ease-in-out;
+
+  /* 📱 Mobile (default) */
+  @media (max-width: 480px) {
+    max-width: 92%;
+    padding: 1.25rem;
+    border-radius: 14px;
+  }
+
+  /* 📱 Tablet */
+  @media (min-width: 481px) and (max-width: 768px) {
+    max-width: 420px;
+    padding: 1.75rem;
+  }
+
+  /* 💻 Laptop */
+  @media (min-width: 769px) and (max-width: 1200px) {
+    max-width: 420px;
+    padding: 2rem;
+  }
+
+  /* 🖥️ Large Desktop */
+  @media (min-width: 1201px) {
+    max-width: 450px;
+    padding: 2.2rem;
+  }
 }
+
 
 .login-header {
   text-align: center;
