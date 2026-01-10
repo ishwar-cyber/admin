@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, computed, effect, Input, input, model, output, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, Input, input, model, output, signal } from '@angular/core';
 import { Loader } from "../loader/loader";
+import { ProductS } from '../../services/product';
 
 @Component({
   selector: 'upload-image',
@@ -25,21 +26,26 @@ export class UploadImage implements AfterViewInit {
   errorMessage = signal<string | null>(null);
   uploadProgress = signal<number | null>(null);
   isUploading = computed(() => this.uploadProgress() !== null);
+  @Input() context: 'product' | 'variant' = 'product';
+  @Input() variantIndex: number | null = null;
 
+  imageUploaded = output<{
+    context: 'product' | 'variant';
+    variantIndex: number | null;
+    images: any[];
+  }>();
   allowedTypesText = computed(() => this.allowedTypes().join(', '));
   hasFiles = computed(() => this.previewUrls().length > 0);
-
+  private readonly productService = inject(ProductS);
   constructor() {}
 
   ngAfterViewInit(): void {
-    console.log('qwertyuio234567',);
     if(this.imageUrl){
-       this.imageUrl?.map(img => img?.url)
-        if (this.imageUrl && this.imageUrl?.length > 0) {
-          this.previewUrls.set([...this.imageUrl?.map(img => img?.url)]);
-        }
+      this.imageUrl?.map(img => img?.url)
+      if (this.imageUrl && this.imageUrl?.length > 0) {
+        this.previewUrls.set([...this.imageUrl?.map(img => img?.url)]);
+      }
     }
-   
   }
 
   onFileSelected(event: Event): void {
@@ -87,7 +93,7 @@ export class UploadImage implements AfterViewInit {
     });
 
     if (validFiles.length > 0) {
-      this.filesSelected.emit(validFiles);
+      this.onUploadComplete(validFiles);
     }
   }
 
@@ -129,4 +135,20 @@ export class UploadImage implements AfterViewInit {
       this.uploadProgress.set(null);
     }, 500);
   }
+
+  onUploadComplete(files: File[]): void {
+    this.productService.uploadImage(files).subscribe({
+      next: (res: any) => {
+        this.imageUploaded.emit({
+          context: this.context,
+          variantIndex: this.variantIndex,
+          images: Array.isArray(res.data) ? res.data : [res.data]
+        });
+      },
+      error: () => {
+        this.errorMessage.set("Upload failed");
+      }
+    });
+  }
+
 }

@@ -145,6 +145,7 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
 
   private createFormData(payload: any): FormData {
   const formData = new FormData();
+  console.log('product payload', payload);
 
   formData.append('name', payload.name);
   formData.append('sku', payload.model);
@@ -233,7 +234,7 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
       } else {
           formData.append('image', files[0]);
       }
-    const url = `${environment.BASE_URL}/products/images`;
+    const url = `${environment.BASE_URL}/upload/images`;
     return this.httpClient.post(url, formData);
   }
 

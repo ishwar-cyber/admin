@@ -8,9 +8,10 @@
           <upload-image 
             [maxFileSizeMB]="maxFileSize()"
             [allowedTypes]="allowedFileTypes()"
+            [imageUrl]=" uploadedImages()"
             (filesSelected)="onFilesSelected($event)"
-          >
-          </upload-image>
+            (filesSelected)="onUploadComplete($event)"
+          />
         </div>
       <!-- Name Field -->
       <div class="mb-3 col-12 col-sm-12 col-md-6">
@@ -25,7 +26,7 @@
           @if (brandFrom.get('name')?.errors?.['required']) {
             Brand name is required
           } @else if (brandFrom.get('name')?.errors?.['minlength']) {
-              Brand name must be at least 3 characters
+            Brand name must be at least 3 characters
           }
         </div>
       </div>

@@ -2,20 +2,18 @@
     <span class="fs-4 fw-bold">Add Product</span>
     <i class="bi bi-x-circle close" (click)="activeModal.close(true)"></i>
 </div>
-<div class="container my-4">
+<div class="container mb-2">
     <form [formGroup]="productForm">
         <!-- Basic Product Info -->
-        <div class="mb-4 p-3 border rounded">
-            <h4 class="mb-3">Basic Information</h4>
-            <div class="row g-3">
-                <upload-image 
-                    [maxFileSizeMB]="maxFileSize()"
-                    [allowedTypes]="allowedFileTypes()"
-                    [imageUrl]=" uploadedImages()"
-                    (filesSelected)="onFilesSelected($event)"
-                    (filesSelected)="onUploadComplete($event)"
+        <div class="mb-2 p-3 rounded">
+            <!-- <h4 class="mb-3">Basic Information</h4> -->
+            <div class="row">
+                <upload-image
+                    [imageUrl]="productImages"
+                    context="product"
+                    (imageUploaded)="handleImageUpload($event)"
                 />
-                <div class="col-md-6">
+                <div class="col-md-6 ">
                     <label for="name" class="form-label">Product Name</label>
                     <input type="text" class="form-control" id="name" formControlName="name" required>
                     @if(submitted && f['name'].errors) {
@@ -123,11 +121,8 @@
                 </div>
             </div>
         </div>
-        
-     
-        
         <!-- Pricing & Stock -->
-        <div class="mb-4 p-3 border rounded">
+        <div class="mb-2 p-3 border rounded">
             <h4 class="mb-3">Pricing & Inventory</h4>
             
             <div class="row g-3">
@@ -292,7 +287,7 @@
         </div>
         
         <!-- Variants -->
-        <div class="mb-4 p-3 border rounded">
+        <div class="mb-2 p-3 border rounded">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0">Product Variants</h4>
                 <button type="button" class="btn btn-primary" (click)="addVariant()">
@@ -341,12 +336,11 @@
                             </div>
                             
                             <div class="col-md-12">
-                                <upload-image 
-                                    [maxFileSizeMB]="maxFileSize()"
-                                    [allowedTypes]="allowedFileTypes()"
-                                    [imageUrl]=" variantImages()"
-                                    (filesSelected)="onFilesSelected($event)"
-                                    (filesSelected)="onUploadComplete($event, false)"
+                                <upload-image
+                                    [imageUrl]="variantImagesList[i]?.images"
+                                    context="variant"
+                                    [variantIndex]="i"
+                                    (imageUploaded)="handleImageUpload($event)"
                                 />
                             </div>
                         </div>
@@ -356,7 +350,7 @@
         </div>
 
         <!-- Description & Key Features -->
-        <div class="mb-4 p-3 border rounded">
+        <div class="mb-2 p-3 border rounded">
             <h4 class="mb-3">Description</h4>
             <!-- <textarea class="form-control" rows="4" formControlName="description" required></textarea> -->
             <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
@@ -425,7 +419,7 @@
             </div>
 
         <!-- Warranty -->
-        <div class="mb-4 p-3 border rounded">
+        <div class="mb-2 p-1 rounded">
             <h4 class="mb-3">Warranty Information</h4>
             <div formGroupName="warranty">
                 <div class="row g-3">

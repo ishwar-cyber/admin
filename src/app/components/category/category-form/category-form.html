@@ -36,9 +36,10 @@
     <!-- Image Upload -->
     <upload-image 
         [maxFileSizeMB]="maxFileSize()"
-        [imageUrl]=" uploadedImages()"
         [allowedTypes]="allowedFileTypes()"
+        [imageUrl]=" uploadedImages()"
         (filesSelected)="onFilesSelected($event)"
+        (filesSelected)="onUploadComplete($event)"
     />
 
     </div>

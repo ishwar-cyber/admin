@@ -38,11 +38,11 @@ export class Product implements OnInit {
   queryParams: any;
 
   constructor() {
-    this.categoryService.getCategories().subscribe({
-      next: (category: any)=>{
-        this.categories.set(category.data);
-      }
-    })
+    // this.categoryService.getCategories().subscribe({
+    //   next: (category: any)=>{
+    //     this.categories.set(category.data);
+    //   }
+    // })
     effect(()=>{
       if(this.searchTerm().length >= 3){
         this.loadProduct()
@@ -88,10 +88,10 @@ export class Product implements OnInit {
   }
 
   applyFilter(){
-
     this.loadProduct();
   }
   openAddProductModal(item?: any){
+    console.log('itesm', item);
     const modalRef = this.modalService.open(ProductForm, { size: 'lg', backdrop: false, keyboard: true });
     if (modalRef && modalRef.componentInstance) {
       modalRef.componentInstance.item = item ? { ...item } : null;

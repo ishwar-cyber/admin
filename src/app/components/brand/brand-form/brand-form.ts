@@ -6,6 +6,7 @@ import { BrandService } from '../../../services/brand';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { UploadImage } from '../../../shareds/upload-image/upload-image';
 import { ToastrService } from 'ngx-toastr';
+import { ProductS } from '../../../services/product';
 
 @Component({
   selector: 'app-brand-form',
@@ -23,7 +24,7 @@ export class BrandForm implements OnInit {
   selectedFile: File | null = null;
   imagePreview = signal<string | null>(null);
     // Configuration signals
-  maxFileSize = signal(3);
+  maxFileSize = signal(1);
   allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
   
   // State signals
@@ -39,6 +40,7 @@ export class BrandForm implements OnInit {
   private BrandService = inject(BrandService);
   public activeModal = inject(NgbActiveModal);
   private toastr = inject(ToastrService);
+  private productService = inject(ProductS);
   ngOnInit(): void {
     this.initForm()
   }
@@ -49,39 +51,14 @@ export class BrandForm implements OnInit {
       isActive: [true, Validators.required]
     });
   }
-
-  public procced(){
-    this.isLoading.set(false);
-    if(this.brandFrom.valid){
-      this.isLoading.set(true);
-      const payload ={
-        name: this.brandFrom.value.name,
-        description: this.brandFrom.value.description,
-        isActive: this.brandFrom.value.isActive
-      }
-      this.selectedFile && this.BrandService.createBrand(payload, this.selectedFile).subscribe({
-        next: (res: any) => {
-          this.imagePreview.set(null);
-          this.selectedFile = null;
-         
-        },
-        error(err) {
-          console.log(err);
-        }
-      })
-      this.isLoading.set(false);
-    }
-
-  }
-
-   saveItem(): void {
-    // if (this.item) {
+  saveItem(): void {
     const payload ={
       name: this.brandFrom.value.name,
       description: this.brandFrom.value.description,
-      isActive: this.brandFrom.value.isActive
+      isActive: this.brandFrom.value.isActive,
+      file: this.selectedFiles()
     }
-    this.BrandService.createBrand(payload, this.selectedFiles()).subscribe({
+    this.BrandService.createBrand(payload).subscribe({
       next: (res) => {
         this.activeModal.close(true);
          this.toastr.success('Brand created successfully', 'Success');
@@ -90,18 +67,16 @@ export class BrandForm implements OnInit {
         this.activeModal.close(true);
       }
     });
-      // }
-    // }
   }
-
-
 
   onFilesSelected(files: File[]): void {
     this.selectedFiles.set(files);
   }
 
-  onUploadComplete(imageUrls: string[]): void {
-      this.uploadedImages.update(current => [...current, ...imageUrls]);
+  onUploadComplete(event: any): void {
+    console.log('event file', event);
+    
+    this.selectedFiles.set(event);
   }
   
 }

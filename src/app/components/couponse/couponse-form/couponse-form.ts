@@ -56,7 +56,7 @@ export class CouponseForm implements OnInit{
         code: this.couponForm.value.couponCode,
         discount: this.couponForm.value.discount || 0,
         applyTo: this.couponForm.value.applyTo,
-        product: product || null,
+        products: product || null,
         discountType: this.couponForm.value.discountType,
         noExpiry: this.couponForm.value.noExpiry || false,
         startDate: new Date(this.couponForm.value.validFrom),

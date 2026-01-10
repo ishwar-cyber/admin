@@ -25,12 +25,12 @@ export class SubCategoryS {
   getSubCategoryById(id: number) {
     return this.httpClient.get(`${this.url}/${id}`);
   }
-  addSubCategory(payload: any, file: any) {
-    const formData = this.createPayload(payload, file);
+  addSubCategory(payload: any) {
+    const formData = this.createPayload(payload);
     return this.httpClient.post(this.url, formData);
   }
-  updateSubCategory(id: number, payload: any, file: File[]) {
-    const formData = this.createPayload(payload, file);
+  updateSubCategory(id: number, payload: any) {
+    const formData = this.createPayload(payload);
     return this.httpClient.put(`${this.url}/${id}`, formData);
   }
   deleteSubCategory(id: string) {
@@ -40,15 +40,12 @@ export class SubCategoryS {
     return this.httpClient.get(`${this.url}/category/${id}`);
   }
 
-  createPayload(payload: any, selectedFile: File[]): FormData {
+  createPayload(payload: any): FormData {
     const formData = new FormData();
     formData.append('name', payload.name);
     formData.append('category', payload.category);
     formData.append('serviceCharges', payload.serviceCharges);
     formData.append('isActive', payload.isActive);
-    if (selectedFile) {
-      formData.append('image', selectedFile[0]);
-    }
     return formData;
   }
 

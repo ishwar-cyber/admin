@@ -3,13 +3,12 @@ import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CategoryS } from '../../../services/category';
-import { UploadImage } from "../../../shareds/upload-image/upload-image";
 import { SubCategoryS } from '../../../services/sub-category';
 import { CommonConstants } from '../../../common/common-constant';
 
 @Component({
   selector: 'app-sub-category-form',
-  imports: [ReactiveFormsModule, CommonModule, UploadImage],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './sub-category-form.html',
   styleUrl: './sub-category-form.scss'
 })
@@ -19,10 +18,6 @@ export class SubCategoryForm implements OnInit {
   editMode = signal(false);
   subCategoryForm!: FormGroup;
   categories = signal<any[]>([]);
-  maxFileSize = signal(3);
-  allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
-  uploadedImages = signal<string[]>([]);
-  selectedFiles = signal<File[]>([]);
   statusMenu = signal<any[]>(CommonConstants.statusMenu);
   @Input() item: any; // from modal
   set category(value: any) {
@@ -51,7 +46,6 @@ export class SubCategoryForm implements OnInit {
         serviceCharges: this.item.serviceCharges,
         isActive: this.item.isActive
       });
-      this.uploadedImages.set(this.item?.image?.url || '');
     }
   }
 
@@ -82,8 +76,8 @@ export class SubCategoryForm implements OnInit {
       isActive: this.subCategoryForm.value.isActive,
     }
     const subCategoryRequest = this.editMode() ?
-      this.subCategoryService.updateSubCategory(this.item.id, payload, this.selectedFiles()) :
-      this.subCategoryService.addSubCategory(payload, this.selectedFiles());
+      this.subCategoryService.updateSubCategory(this.item.id, payload) :
+      this.subCategoryService.addSubCategory(payload);
     subCategoryRequest.subscribe({
       next: (response)=>{
         this.activeModal.close(true);
@@ -93,12 +87,4 @@ export class SubCategoryForm implements OnInit {
     })
   }
 
-  onFilesSelected(files: File[]): void {
-    // this.imageUploaded.set(true);
-    this.selectedFiles.set(files);
-  }
-
-  onUploadComplete(imageUrls: string[]): void {
-    this.uploadedImages.update(current => [...current, ...imageUrls]);
-  }
 }

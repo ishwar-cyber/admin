@@ -62,6 +62,9 @@ export class ProductForm implements OnInit {
   selectedFiles = signal<File[]>([]);
   imageUploaded = signal<boolean>(false);
   serviceChargeFlag = signal<boolean>(false);
+
+  productImages: any[] = [];
+  variantImagesList: any[] = [];
     // 🔹 Reactive editor state
   editor = new Editor();
   // 🔹 Toolbar configuration
@@ -82,18 +85,18 @@ export class ProductForm implements OnInit {
     forkJoin({
       brands: this.brandsService.getBrands(),
       categories: this.categoryService.getCategories(),
-      pincodes: this.pincodeService.getPincode(),
+      // pincodes: this.pincodeService.getPincode(),
     }).subscribe({
       next: ({ brands, categories, pincodes }: any) => {
         this.brands.set(brands.data);
         this.categories.set(categories.data); 
-        this.pincodes.update(() => {
-          return pincodes.data.map((pincode: any) => ({
-            name: pincode.pincode || '',
-            id: pincode.id || '',
-            status: pincode.status || false
-          }));
-        });
+        // this.pincodes.update(() => {
+        //   return pincodes.data.map((pincode: any) => ({
+        //     name: pincode.pincode || '',
+        //     id: pincode.id || '',
+        //     status: pincode.status || false
+        //   }));
+        // });
       },
       error: (error) => {
         console.error('Error loading initial data:', error);
@@ -103,7 +106,7 @@ export class ProductForm implements OnInit {
     if(this.item !== null) {
         this.editProduct.set(true);
       // this.editMode.set(true);
-      this.productId.set(this.item._id);
+      this.productId.set(this.item.id);
       if (this.item.pincode && this.item.pincode.length > 0) {
         this.serviceChargeFlag.set(true);
         this.productForm.controls['serviceCharge'].setValue(this.item.serviceCharges || 0);
@@ -123,6 +126,7 @@ export class ProductForm implements OnInit {
   }
 
   prefillForm(){
+      this.productImages = this.item.images || [];
       this.productForm.patchValue({
         name: this.item.name,
         brand: this.item.brand.name ? this.item.brand : '',
@@ -136,6 +140,14 @@ export class ProductForm implements OnInit {
         length: this.item.length,
         height: this.item.height,
         width: this.item.width,
+        offerPrice: this.item.offerPrice?.length ? this.item.offerPrice.map((offer: any) => this.formBuilder.group({
+          quantity: offer.quantity || 0,
+          price: offer.price || 0,
+        })) : [],
+        specifications: this.item.specifications?.length ? this.item.specifications.map((spec: any) => this.formBuilder.group({
+          name: spec.name || '',
+          value: spec.value || '',
+        })) : [],
         warranty: {
           period: this.item.warranty?.[0]?.period || 0,
           type: this.item.warranty?.[0]?.type || '',  
@@ -148,7 +160,9 @@ export class ProductForm implements OnInit {
         variants: this.item.variants?.length ? this.item.variants.map((variant: any) => this.formBuilder.group({
           variantName: variant.name || '',
           sku: variant.sku || '',
-          thumbnail: variant.images?.length ? variant.images[0].url : '',
+          price: variant.price || 0,
+          stock: variant.stock === 1 ? 'in' : 'out',
+          image: null, // Initialize with null, will be set on file change
         })) : [],
       });
   }
@@ -187,28 +201,29 @@ export class ProductForm implements OnInit {
     console.log('brandId', event);
   }
 
-  onFilesSelected(files: File[]): void {
-    this.imageUploaded.set(true);
-    this.selectedFiles.set(files);
+ 
+
+handleImageUpload(event: {
+  context: 'product' | 'variant';
+  variantIndex: number | null;
+  images: any[];
+}) {
+  if (event.context === 'product') {
+    this.productImages = [...this.productImages, ...event.images];
   }
 
-  onUploadComplete(files: File[], productImages = true): void {
-    this.productService.uploadImage(files).subscribe({
-      next: (res:any) => {
-        console.log('res', res);
-        this.uploadedImages.set([]);
-        if(productImages){
-          for(const image of res.data){
-            this.uploadedImages.update(value => [...value, image]);
-          }
-        } else {
-          this.variantImages.update(value => [...value, res.data[0]]);
-        }
-        console.log('this.uploadedImages()', this.uploadedImages());
-        
-      },error : (err)=>{}
-    })
+  if (
+    event.context === 'variant' &&
+    event.variantIndex !== null &&
+    this.variantImagesList[event.variantIndex]
+  ) {
+    this.variantImagesList[event.variantIndex].images = [
+      ...(this.variantImagesList[event.variantIndex].images || []),
+      ...event.images
+    ];
   }
+}
+
 
   public loadProductData(){
     this.activatedRoute.params.subscribe(params => {
@@ -218,7 +233,7 @@ export class ProductForm implements OnInit {
         this.productService.getProductById(params['id']).subscribe((response: any) => {
           const product = response.data;
           this.productForm.patchValue(product);
-          if(product.stock === 'in' || product.stock === 'out'){
+          if(product.stock === 1 || product.stock === 0){
             this.productForm.controls['stock'].setValue(product.stock);
           }
           this.mainImagePreview = product.thumbnail;
@@ -349,11 +364,12 @@ export class ProductForm implements OnInit {
       model: ['', Validators.required],
       status: [true],
       price: [0, [Validators.required, Validators.min(0)]],
-      stock: ['in stock', [Validators.required]],
+      stock: ['in', [Validators.required]],
       weight: [0.5, [Validators.required, Validators.min(0)]],
       length: [5, [Validators.required, Validators.min(0)]],
       height: [5, [Validators.required, Validators.min(0)]],
       width: [5, [Validators.required, Validators.min(0)]],
+
       description: ['', Validators.required],
       offerPrice: this.formBuilder.array([]),
       serviceCharge: [0, [Validators.min(0)]],
@@ -378,12 +394,18 @@ addVariant(data?: any): void {
     variantName: [data?.name || '', Validators.required],
     sku: [data?.sku || '', Validators.required],
     price: [data?.price ?? 0, [Validators.required, Validators.min(0), this.numberOnlyValidator()]],
-    stock: [data?.stock ?? '', [Validators.required]]
+    stock: [data?.stock ?? 'in', [Validators.required]]
   }));
+
+  // ✅ IMPORTANT: create image holder per variant
+  this.variantImagesList.push({
+    images: data?.images || []
+  });
 }
-  removeVariant(index: number): void {
-    this.variants.removeAt(index);
-  }
+removeVariant(index: number): void {
+  this.variants.removeAt(index);
+  this.variantImagesList.splice(index, 1);
+}
   removeOfferPrice(index: number){
     if(this.offerPrice.length > 1) this.offerPrice.removeAt(index)
   }
@@ -406,22 +428,6 @@ addVariant(data?: any): void {
       price:[null, this.numberOnlyValidator()],
     }));
   }
-  
-  VariantImageChange(event: any, index: number): void {
-    const file = event.target.files[0];
-    if (file) {
-      const variantGroup = this.variants.at(index);
-      variantGroup.patchValue({ image: file });
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        variantGroup.patchValue({ imagePreview: reader.result as string });
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
   proccedNext(): void {
     this.submitted = true;
     if (this.productForm.valid) {
@@ -450,53 +456,67 @@ addVariant(data?: any): void {
   }
 
   public createPayload() {
-    const specificationsArray = this.specifications.controls.map(control => ({
-      name: control.get('name')?.value || '',
-      value: control.get('value')?.value || ''
-    }));
 
-    const offerPriceArray = this.offerPrice.controls.map(control => ({
-      quantity: control.get('quantity')?.value || '',
-      price: control.get('price')?.value || 0
-    }));
-    let pincode: any = [];
-    this.productForm.value.pincode.forEach((pincodeId: any) => pincode.push(pincodeId.id));
-    const variantsArray = this.variants.controls.map(control => ({
-      name: control.get('variantName')?.value || '',
-      sku: control.get('sku')?.value || '',
-      price: control.get('price')?.value || 0,
-      stock: control.get('stock')?.value || 0,
-      image: this.variantImages() || null
-    }));
-  
-    const warranty = {
-      period: this.productForm.get('warranty.period')?.value || 0,
-      type: this.productForm.get('warranty.type')?.value || ''
-    };
-    const payload: ProductModal = {
-      name: this.productForm.value.name,
-      brand: this.productForm.value.brand.id || this.productForm.value.brand._id,
-      category: this.productForm.value.category._id || this.productForm.value.category.id,
-      pincode: pincode,
-      productImages: this.uploadedImages(),
-      subCategory: this.productForm.value.subCategory._id || this.productForm.value.subCategory.id,
-      stock: this.productForm.value.stock,
-      price: this.productForm.value.price,
-      model: this.productForm.value.model,
-      width: this.productForm.value.width,
-      height: this.productForm.value.height,
-      length: this.productForm.value.length,
-      serviceCharge: this.productForm.value.serviceCharge || 0,
-      variants: variantsArray,
-      description: this.productForm.value.description,
-      weight: this.productForm.value.weight,
-      warranty: warranty || {},
-      specifications: specificationsArray,
-      offerPrice: offerPriceArray || [],
-      status: this.productForm.value.status,
-    }
-    return payload;
-  }
+  const specificationsArray = this.specifications.controls.map(control => ({
+    name: control.get('name')?.value || '',
+    value: control.get('value')?.value || ''
+  }));
+
+  const offerPriceArray = this.offerPrice.controls.map(control => ({
+    quantity: Number(control.get('quantity')?.value || 0),
+    price: Number(control.get('price')?.value || 0)
+  }));
+
+  const variantsArray = this.variants.controls.map((control, index) => ({
+    name: control.get('variantName')?.value || '',
+    sku: control.get('sku')?.value || '',
+    price: Number(control.get('price')?.value || 0),
+    stock: control.get('stock')?.value === 'in' ? 1 : 0,
+
+    // ✅ each variant has its OWN images
+    images: this.variantImagesList[index]?.images || []
+  }));
+
+  const warranty = {
+    period: Number(this.productForm.get('warranty.period')?.value || 0),
+    type: this.productForm.get('warranty.type')?.value || ''
+  };
+
+  return {
+    name: this.productForm.value.name,
+
+    brand: this.productForm.value.brand?.id || this.productForm.value.brand?._id,
+    category: this.productForm.value.category?.id || this.productForm.value.category?._id,
+    subCategory: this.productForm.value.subCategory?.id || this.productForm.value.subCategory?._id,
+
+    price: Number(this.productForm.value.price),
+    stock: this.productForm.value.stock === 'in' ? 1 : 0,
+
+    model: this.productForm.value.model,
+
+    weight: Number(this.productForm.value.weight),
+    width: Number(this.productForm.value.width),
+    height: Number(this.productForm.value.height),
+    length: Number(this.productForm.value.length),
+
+    serviceCharge: Number(this.productForm.value.serviceCharge || 0),
+    status: this.productForm.value.status,
+
+    // ✅ product-level images
+    productImages: this.productImages,
+
+    // ✅ variant-level images (FIXED)
+    variants: variantsArray,
+
+    warranty,
+    specifications: specificationsArray,
+    offerPrice: offerPriceArray,
+
+    pincode: [], // keep same as existing
+    description: this.productForm.value.description
+  };
+}
+
 
 
   // File handling methods

@@ -98,5 +98,9 @@ export class CategoryForm implements OnInit{
         isActive: this.categoryForm.value.isActive,
       }
       return payload;
+  }
+  onUploadComplete(event: File[]): void {
+    console.log('event file', event);
+    this.selectedFiles.set(event);
   }  
 }

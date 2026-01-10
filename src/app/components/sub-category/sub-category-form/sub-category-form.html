@@ -53,17 +53,6 @@
                 }
             </div>
         </div>
-
-        <!-- Image Upload -->
-        <div class="col-md-12">
-            <label class="form-label">Sub Category Image</label>
-            <upload-image
-                [maxFileSizeMB]="maxFileSize()"
-                [imageUrl]=" uploadedImages()"
-                [allowedTypes]="allowedFileTypes()"
-                (filesSelected)="onFilesSelected($event)"
-            />
-        </div>
     </div>
     </div>
 

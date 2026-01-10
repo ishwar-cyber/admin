@@ -3,7 +3,7 @@ export interface CouponseM {
     code: string;
     discount?: number;
     getBy?: any;
-    product?: string; // Optional, can be used for specific product discount
+    products?: string; // Optional, can be used for specific product discount
     discountType?: string; // Type of discount
     applyTo?: string; // Can be 'all' or specific product ID
     startDate: Date | string; // Can accept both Date object or ISO string
