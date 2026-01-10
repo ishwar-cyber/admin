@@ -34,19 +34,17 @@
     </div>
    
     <!-- Image Upload -->
-    <upload-image 
-        [maxFileSizeMB]="maxFileSize()"
-        [allowedTypes]="allowedFileTypes()"
-        [imageUrl]=" uploadedImages()"
-        (filesSelected)="onFilesSelected($event)"
-        (filesSelected)="onUploadComplete($event)"
-    />
+        <upload-image
+            [imageUrl]="categoryImages()"
+            context="product"
+            (imageUploaded)="handleImageUpload($event)"
+        />
 
     </div>
 </div>
 
 <div class="modal-footer">
-    <button type="submit" class="btn btn-primary" (click)=" editMode() ? updateCategory() : procced() " [disabled]="(categoryForm.invalid && imageUploaded())|| isLoading() ">
+    <button type="submit" class="btn btn-primary" (click)=" editMode() ? updateCategory() : procced() " [disabled]="(categoryForm.invalid && categoryImages().length > 0)|| isLoading() ">
     @if (isLoading()) {
         <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
         <span>{{ editMode() ? 'Saving...' : 'Creating...' }}</span>

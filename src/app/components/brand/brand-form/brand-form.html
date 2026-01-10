@@ -5,12 +5,10 @@
 <form [formGroup]="brandFrom">
     <div class="modal-body row">
         <div class="mb-3 col-xl-6 col-lg-6 col-md-12">
-          <upload-image 
-            [maxFileSizeMB]="maxFileSize()"
-            [allowedTypes]="allowedFileTypes()"
-            [imageUrl]=" uploadedImages()"
-            (filesSelected)="onFilesSelected($event)"
-            (filesSelected)="onUploadComplete($event)"
+          <upload-image
+            [imageUrl]="brandImages()"
+            context="product"
+            (imageUploaded)="handleImageUpload($event)"
           />
         </div>
       <!-- Name Field -->

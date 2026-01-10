@@ -20,27 +20,15 @@ export class BrandForm implements OnInit {
   brandFrom!: FormGroup;
   isLoading = signal(false);
   editMode = signal(false);
-  selectedCategory = signal<BrandM | null>(null);
-  selectedFile: File | null = null;
-  imagePreview = signal<string | null>(null);
-    // Configuration signals
-  maxFileSize = signal(1);
-  allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
-  
+  brandImages = signal<string[]>([]);
   // State signals
   uploadedImages = signal<string[]>([]);
   selectedFiles = signal<File[]>([]);
-  
-  // Computed values
-  galleryEmpty = computed(() => this.uploadedImages().length === 0);
-  totalFileSize = computed(() => 
-    this.selectedFiles().reduce((sum, file) => sum + file.size, 0)
-  );
+
   private formBuilder = inject(FormBuilder);
   private BrandService = inject(BrandService);
   public activeModal = inject(NgbActiveModal);
   private toastr = inject(ToastrService);
-  private productService = inject(ProductS);
   ngOnInit(): void {
     this.initForm()
   }
@@ -56,7 +44,7 @@ export class BrandForm implements OnInit {
       name: this.brandFrom.value.name,
       description: this.brandFrom.value.description,
       isActive: this.brandFrom.value.isActive,
-      file: this.selectedFiles()
+      file: this.brandImages()
     }
     this.BrandService.createBrand(payload).subscribe({
       next: (res) => {
@@ -69,14 +57,14 @@ export class BrandForm implements OnInit {
     });
   }
 
-  onFilesSelected(files: File[]): void {
-    this.selectedFiles.set(files);
-  }
-
-  onUploadComplete(event: any): void {
-    console.log('event file', event);
-    
-    this.selectedFiles.set(event);
+  handleImageUpload(event: {
+    context: 'product' | 'variant';
+    variantIndex: number | null;
+    images: any[];
+  }) {
+    if (event.context === 'product') {
+      this.brandImages.set([...this.brandImages(), ...event.images]);
+    }
   }
   
 }

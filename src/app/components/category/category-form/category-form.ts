@@ -17,11 +17,7 @@ export class CategoryForm implements OnInit{
   isLoading = signal(false);
   categoryForm!: FormGroup;
   errorMessage = signal<string>('');
-  maxFileSize = signal(3);
-  allowedFileTypes = signal<string[]>(['image/jpeg', 'image/png']);
-  uploadedImages = signal<string[]>([]);
-  selectedFiles = signal<File[]>([]);
-  imageUploaded = signal<boolean>(false);
+  categoryImages = signal<string[]>([]);
   statusMenu = signal<any[]>(CommonConstants.statusMenu);
  @Input() item: any; // from modal
 
@@ -38,7 +34,7 @@ export class CategoryForm implements OnInit{
         name: this.item.name,
         isActive: this.item.isActive
       });
-      this.uploadedImages.set(this.item?.image?.url || '');
+      this.categoryImages.set(this.item?.image?.url || '');
     } 
   }
   public buildForm(){
@@ -48,18 +44,13 @@ export class CategoryForm implements OnInit{
     })
   }
 
-  onFilesSelected(files: File[]): void {
-    this.imageUploaded.set(true);
-    this.selectedFiles.set(files);
-  }
-
   public updateCategory(){
     if (this.categoryForm.invalid) {
       this.markFormGroupTouched(this.categoryForm);
       return;
     }
     const payload = this.createPayload();
-    this.categoryService.updateCategory(this.item.id, payload, this.selectedFiles()).subscribe({
+    this.categoryService.updateCategory(this.item.id, payload, this.categoryImages()).subscribe({
       next: (response) => {
         this.activeModal.close(true);
       },
@@ -75,7 +66,7 @@ export class CategoryForm implements OnInit{
       }
       this.isLoading.set(true);
       const payload = this.createPayload();
-      this.categoryService.createCategory(payload, this.selectedFiles()).subscribe({
+      this.categoryService.createCategory(payload, this.categoryImages()).subscribe({
       next: (response) => {
         this.activeModal.close(true);
       },
@@ -98,9 +89,15 @@ export class CategoryForm implements OnInit{
         isActive: this.categoryForm.value.isActive,
       }
       return payload;
+  } 
+  
+  handleImageUpload(event: {
+    context: 'product' | 'variant';
+    variantIndex: number | null;
+    images: any[];
+  }) {
+    if (event.context === 'product') {
+      this.categoryImages.set([...this.categoryImages(), ...event.images]);
+    }
   }
-  onUploadComplete(event: File[]): void {
-    console.log('event file', event);
-    this.selectedFiles.set(event);
-  }  
 }
