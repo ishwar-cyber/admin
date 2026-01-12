@@ -125,47 +125,76 @@ export class ProductForm implements OnInit {
     }
   }
 
-  prefillForm(){
-      this.productImages = this.item.images || [];
-      this.productForm.patchValue({
-        name: this.item.name,
-        brand: this.item.brand.name ? this.item.brand : '',
-        category: this.item.category.name ? this.item.category : '',
-        subCategory: this.item.subCategory.name ? this.item.subCategory : '',
-        model: this.item.sku,
-        status: this.item.status,
-        price: this.item.price,
-        stock: this.item.stock,
-        weight: this.item.weight,
-        length: this.item.length,
-        height: this.item.height,
-        width: this.item.width,
-        offerPrice: this.item.offerPrice?.length ? this.item.offerPrice.map((offer: any) => this.formBuilder.group({
-          quantity: offer.quantity || 0,
-          price: offer.price || 0,
-        })) : [],
-        specifications: this.item.specifications?.length ? this.item.specifications.map((spec: any) => this.formBuilder.group({
-          name: spec.name || '',
-          value: spec.value || '',
-        })) : [],
-        warranty: {
-          period: this.item.warranty?.[0]?.period || 0,
-          type: this.item.warranty?.[0]?.type || '',  
-        },
-        description: this.item.description,
-        pincode: this.item.pincode?.map((pincodeId: any) => {
-          return { id: pincodeId, name: pincodeId };
-        }),
+prefillForm() {
+  if (!this.item) return;
+
+  /* ---------- Images ---------- */
+  this.productImages = this.item.images || [];
+
+  /* ---------- FORM ARRAYS ---------- */
+  const offerPriceFA = this.productForm.get('offerPrice') as FormArray;
+  const specificationsFA = this.productForm.get('specifications') as FormArray;
+  // const brandId = this.brands().filter((item)=>{
+  //   console.log('brand id',item.name === this.item.brand.name);
     
-        variants: this.item.variants?.length ? this.item.variants.map((variant: any) => this.formBuilder.group({
-          variantName: variant.name || '',
-          sku: variant.sku || '',
-          price: variant.price || 0,
-          stock: variant.stock === 1 ? 'in' : 'out',
-          image: null, // Initialize with null, will be set on file change
-        })) : [],
-      });
+  // });
+  offerPriceFA.clear();
+  specificationsFA.clear();
+
+  /* ---------- OFFER PRICES ---------- */
+  if (this.item.offerPrices?.length) {
+    this.item.offerPrices.forEach((offer: any) => {
+      offerPriceFA.push(
+        this.formBuilder.group({
+          id: [offer.id],  
+          quantity: [offer.quantity ?? 0],
+          price: [offer.price ?? 0]
+        })
+      );
+    });
   }
+
+  /* ---------- SPECIFICATIONS ---------- */
+  if (this.item.specifications?.length) {
+    this.item.specifications.forEach((spec: any) => {
+      specificationsFA.push(
+        this.formBuilder.group({
+          id: [spec.id],           // 👈 IMPORTANT
+          name: [spec.name],
+          value: [spec.value]
+        })
+      );
+    });
+  }
+  /* ---------- PATCH SIMPLE FIELDS ---------- */
+  this.productForm.patchValue({
+    name: this.item.name,
+    model: this.item.sku,
+    status: this.item.status,
+    price: this.item.price,
+    stock: this.item.stock === 0 ? 'out' : 'in',
+    weight: this.item.weight,
+    length: this.item.length,
+    height: this.item.height,
+    width: this.item.width,
+    description: this.item.description,
+
+    brand: this.item.brand || '',
+    category: this.item.category || '',
+    subCategory: this.item.subCategory || '',
+
+    warranty: {
+      period: this.item.warranties?.[0]?.period ?? 0,
+      type: this.item.warranties?.[0]?.type ?? ''
+    },
+
+    pincode: this.item.pincodes?.map((p: any) => ({
+      id: p,
+      name: p
+    })) || []
+  });
+}
+
   selectedCategoryId(event: any){
     console.log('pincode', event);
     if(event && event.length > 0){
@@ -457,15 +486,33 @@ removeVariant(index: number): void {
 
   public createPayload() {
 
-  const specificationsArray = this.specifications.controls.map(control => ({
-    name: control.get('name')?.value || '',
-    value: control.get('value')?.value || ''
-  }));
+    const specMap = new Map<string, any>();
 
-  const offerPriceArray = this.offerPrice.controls.map(control => ({
-    quantity: Number(control.get('quantity')?.value || 0),
-    price: Number(control.get('price')?.value || 0)
-  }));
+  this.specifications.controls.forEach(control => {
+    const name = (control.get('name')?.value || '').trim();
+    const value = (control.get('value')?.value || '').trim();
+
+    if (!name || !value) return;
+
+    const key = `${name}::${value}`;
+    specMap.set(key, { name, value });
+  });
+
+  const specificationsArray = Array.from(specMap.values());
+  const offerMap = new Map<string, any>();
+
+this.offerPrice.controls.forEach(control => {
+  const quantity = Number(control.get('quantity')?.value || 0);
+  const price = Number(control.get('price')?.value || 0);
+
+  if (!quantity || !price) return;
+
+  const key = `${quantity}::${price}`;
+  offerMap.set(key, { quantity, price });
+});
+
+const offerPriceArray = Array.from(offerMap.values());
+
 
   const variantsArray = this.variants.controls.map((control, index) => ({
     name: control.get('variantName')?.value || '',
@@ -481,13 +528,14 @@ removeVariant(index: number): void {
     period: Number(this.productForm.get('warranty.period')?.value || 0),
     type: this.productForm.get('warranty.type')?.value || ''
   };
-
+  console.log('this.productForm.value.brand?.id', this.productForm.value.brand);
+  
   return {
     name: this.productForm.value.name,
 
-    brand: this.productForm.value.brand?.id || this.productForm.value.brand?._id,
-    category: this.productForm.value.category?.id || this.productForm.value.category?._id,
-    subCategory: this.productForm.value.subCategory?.id || this.productForm.value.subCategory?._id,
+    brand: this.productForm.value.brand?.id || this.productForm.value.brand?.id,
+    category: this.productForm.value.category?.id || this.productForm.value.category?.id,
+    subCategory: this.productForm.value.subCategory?.id || this.productForm.value.subCategory?.id,
 
     price: Number(this.productForm.value.price),
     stock: this.productForm.value.stock === 'in' ? 1 : 0,

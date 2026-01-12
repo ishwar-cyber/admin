@@ -143,87 +143,67 @@ getProducts(params?: ProductQueryParams): Observable<ProductApiResponse> {
     this._totalItems.set(0);
   }
 
-  private createFormData(payload: any): FormData {
+private createFormData(payload: any): FormData {
   const formData = new FormData();
-  console.log('product payload', payload);
 
+  /*---------- BASIC ---------- */
   formData.append('name', payload.name);
   formData.append('sku', payload.model);
-  formData.append('status', payload.status);
-  formData.append('brand', payload.brand);
-  formData.append('subCategory', payload.subCategory);
+  formData.append('status', String(payload.status));
+  formData.append('price', String(payload.price));
+  formData.append('stock', String(payload.stock));
+  formData.append('width', String(payload.width));
+  formData.append('height', String(payload.height));
+  formData.append('length', String(payload.length));
+  formData.append('weight', String(payload.weight || 0));
   formData.append('description', payload.description);
-  formData.append('price', payload.price);
-  formData.append('stock', payload.stock);
-  formData.append('width', payload.width);
-  formData.append('height', payload.height);
-  formData.append('length', payload.length);
-  formData.append('weight', payload.weight || '');
-  formData.append('category', payload.category || '');
-  formData.append('serviceCharges', payload.serviceCharge || '');
+  formData.append('serviceCharges', String(payload.serviceCharge || 0));
 
-  if (payload.discount) {
-    formData.append('discount', payload.discount.toString());
-  }
+  /* ---------- REQUIRED IDS (IMPORTANT) ---------- */
+  formData.append('categoryId', String(payload.category));
+  formData.append('subCategoryId', String(payload.subCategory));
+  formData.append('brandId', String(payload.brand));
 
-  // Pincode
-  if (payload.pincode) {
-    payload.pincode.forEach((pincode: any, index: number) => {
-      formData.append(`pincode[${index}]`, pincode);
-    });
-  }
+  /* ---------- SPECIFICATIONS ---------- */
+  payload.specifications?.forEach((spec: any, i: number) => {
+    formData.append(`specifications[${i}][name]`, spec.name);
+    formData.append(`specifications[${i}][value]`, spec.value);
+  });
 
-  // Specifications
-  if (payload.specifications?.length) {
-    payload.specifications.forEach((spec: any, index: number) => {
-      formData.append(`specifications[${index}][name]`, spec.name);
-      formData.append(`specifications[${index}][value]`, spec.value);
-    });
-  }
+  /* ---------- OFFER PRICES ---------- */
+  payload.offerPrice?.forEach((item: any, i: number) => {
+    formData.append(`offerPrices[${i}][quantity]`, String(item.quantity));
+    formData.append(`offerPrices[${i}][price]`, String(item.price));
+  });
 
-  // Offer Price
-  if (payload.offerPrice?.length) {
-    payload.offerPrice.forEach((item: any, index: number) => {
-      formData.append(`offerPrice[${index}][quantity]`, item.quantity);
-      formData.append(`offerPrice[${index}][price]`, item.price);
-    });
-  }
-
-  // Warranty
+  /* ---------- WARRANTIES (ARRAY, NOT OBJECT) ---------- */
   if (payload.warranty) {
-    formData.append('warranty[period]', payload.warranty.period || '');
-    formData.append('warranty[type]', payload.warranty.type || '');
+    formData.append(`warranties[0][period]`, String(payload.warranty.period));
+    formData.append(`warranties[0][type]`, payload.warranty.type);
   }
 
-  // Product images
-  if (payload.productImages && Array.isArray(payload.productImages)) {
-    payload.productImages.forEach((productImage: any, index: number) => {
-      formData.append(`images[${index}][url]`, productImage.url);
-      formData.append(`images[${index}][public_id]`, productImage.public_id);
-    });
-  } else {
-    formData.append('images[0][url]',  payload.productImages[0]?.url || '');
-    formData.append('images[0][public_id]',  payload.productImages[0]?.public_id || '');
-  }
-  // Variants
-  if (payload.variants?.length) {
-    payload.variants.forEach((variant: any, index: number) => {
-      formData.append(`variants[${index}][name]`, variant.name || '');
-      formData.append(`variants[${index}][sku]`, variant.sku || '');
-      formData.append(`variants[${index}][price]`, variant.price?.toString() || '0');
-      formData.append(`variants[${index}][stock]`, variant.stock?.toString() || '0');
+  /* ---------- PRODUCT IMAGES ---------- */
+  payload.productImages?.forEach((img: any, i: number) => {
+    formData.append(`images[${i}][url]`, img.url);
+    formData.append(`images[${i}][publicId]`, img.public_id);
+  });
 
-      if (variant.image?.length) {
-        variant.image.forEach((img: any, imgIndex: number) => {
-          formData.append(`variants[${index}][image][${imgIndex}][url]`, img.url);
-          formData.append(`variants[${index}][image][${imgIndex}][public_id]`, img.public_id);
-        });
-      }
+  /* ---------- VARIANTS ---------- */
+  payload.variants?.forEach((variant: any, i: number) => {
+    formData.append(`variants[${i}][name]`, variant.name);
+    formData.append(`variants[${i}][sku]`, variant.sku);
+    formData.append(`variants[${i}][price]`, String(variant.price));
+    formData.append(`variants[${i}][stock]`, String(variant.stock));
+
+    variant.image?.forEach((img: any, j: number) => {
+      formData.append(`variants[${i}][images][${j}][url]`, img.url);
+      formData.append(`variants[${i}][images][${j}][publicId]`, img.public_id);
     });
-  }
+  });
 
   return formData;
 }
+
 
   uploadImage(files: File[]) {
     const formData = new FormData();

@@ -18,10 +18,10 @@ import { CategoryM } from '../../models/category';
 })
 export class SingleSelect implements OnInit, OnChanges, ControlValueAccessor {
   // ✅ Input from parent
-  options = input.required<CategoryM[]>();
+  options = input.required<any[]>();
   // ✅ Signals
-  filteredOptions = signal<CategoryM[]>([]);
-  selectedOption = signal<CategoryM | null>(null);
+  filteredOptions = signal<any[]>([]);
+  selectedOption = signal<any | null>(null);
   isOpen = signal(false);
 
   // ✅ CVA callbacks
