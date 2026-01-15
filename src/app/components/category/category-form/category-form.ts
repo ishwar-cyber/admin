@@ -26,8 +26,7 @@ export class CategoryForm implements OnInit{
   public activeModal = inject(NgbActiveModal);
 
   ngOnInit(): void {
-    this.buildForm();
-
+    this.buildForm(); 
     if(this.item !== null) {
       this.editMode.set(true);
       this.categoryForm.patchValue({
@@ -50,7 +49,7 @@ export class CategoryForm implements OnInit{
       return;
     }
     const payload = this.createPayload();
-    this.categoryService.updateCategory(this.item.id, payload, this.categoryImages()).subscribe({
+    this.categoryService.updateCategory(this.item.id, payload).subscribe({
       next: (response) => {
         this.activeModal.close(true);
       },
@@ -66,7 +65,7 @@ export class CategoryForm implements OnInit{
       }
       this.isLoading.set(true);
       const payload = this.createPayload();
-      this.categoryService.createCategory(payload, this.categoryImages()).subscribe({
+      this.categoryService.createCategory(payload).subscribe({
       next: (response) => {
         this.activeModal.close(true);
       },
@@ -84,9 +83,14 @@ export class CategoryForm implements OnInit{
     });
   }
   createPayload(){
+    let oldImage = this.item?.image?.url;
+    if(this.editMode() && (oldImage === this.categoryImages())) {
+      this.categoryImages.set([this.item?.image]);
+    }
      const payload ={
         name: this.categoryForm.value.name,
         isActive: this.categoryForm.value.isActive,
+        image: this.categoryImages()
       }
       return payload;
   } 
@@ -96,7 +100,9 @@ export class CategoryForm implements OnInit{
     variantIndex: number | null;
     images: any[];
   }) {
-    if (event.context === 'product') {
+    console.log('event formimage', event);
+    
+    if (event.context === 'variant') {
       this.categoryImages.set([...this.categoryImages(), ...event.images]);
     }
   }

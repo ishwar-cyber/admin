@@ -26,7 +26,7 @@ export class CategoryS {
      * @returns Observable of Category
      */
     public getCategoryById(id: string, payload: any, selectedFile: any): Observable<Response> {
-      const formData = this.createPayload(payload, selectedFile);
+      const formData = this.createPayload(payload);
       return this.httpClient.put<Response>(`${this.baseUrl}/${id}`, formData);
     }
   
@@ -35,17 +35,20 @@ export class CategoryS {
      * @param payload Category data
      * @returns Observable of created Category
      */
-    public createCategory(payload: any, selectedFile: any): Observable<Response> {   
-      const formData = this.createPayload(payload, selectedFile);
+    public createCategory(payload: any): Observable<Response> {   
+      const formData = this.createPayload(payload);
       return this.httpClient.post<Response>(this.baseUrl, formData);
     }
   
-    public createPayload(payload: any, selectedFile: any): FormData {
+    public createPayload(payload: any): FormData {
       const formData = new FormData();
       formData.append('name', payload.name);
       formData.append('isActive', payload.isActive);
-      if (selectedFile) {
-        formData.append('image', selectedFile[0]);
+      console.log('payload', payload);
+      
+      if (payload.image) {
+        formData.append('images[0][url]',  payload.image[0]?.url ?? payload.image);
+        formData.append('images[0][public_id]',  payload.image[0]?.public_id ?? payload.image[0]?.publicId);
       }
       return formData;
     } 
@@ -55,8 +58,8 @@ export class CategoryS {
      * @param payload Updated category data
      * @returns Observable of updated Category
      */
-    public updateCategory(id: string, payload: any, selectedFile: any): Observable<Response> {
-      const formData = this.createPayload(payload, selectedFile);
+    public updateCategory(id: string, payload: any): Observable<Response> {
+      const formData = this.createPayload(payload);
       return this.httpClient.put<Response>(`${environment.BASE_URL}/category/${id}`, formData);
     }
   

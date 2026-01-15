@@ -62,7 +62,7 @@ export class BrandForm implements OnInit {
     variantIndex: number | null;
     images: any[];
   }) {
-    if (event.context === 'product') {
+    if (event.context === 'variant') {
       this.brandImages.set([...this.brandImages(), ...event.images]);
     }
   }

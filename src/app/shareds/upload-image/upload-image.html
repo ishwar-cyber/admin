@@ -45,6 +45,7 @@
       @if (hasFiles()) {
         <div class="preview-grid">
            <div class="row g-2">
+            @if(context === 'product'){
               @for (imagePreview of previewUrls(); track imagePreview; let i = $index) {
                 <div class="col-6 col-md-4 col-lg-4">
                   <div class="preview-item position-relative">
@@ -56,6 +57,17 @@
                   </div>
                 </div>
               }
+            } @else if(imageUrl){
+                <div class="col-6 col-md-4 col-lg-4">
+                  <div class="preview-item position-relative">
+                    <img [src]="imageUrl[0].url ? imageUrl[0].url : imageUrl " class="img-fluid rounded-2 border" alt="Preview">
+                    <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle" 
+                            (click)="removeImage()">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                </div>
+            }
           </div>
         </div>
       }

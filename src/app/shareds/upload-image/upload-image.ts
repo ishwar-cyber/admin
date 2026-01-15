@@ -18,9 +18,8 @@ export class UploadImage implements AfterViewInit {
 
   // ✅ Model holds list of image URLs (flat array)
   previewUrls = model<any[]>([]);
-
   // ✅ Input can be single or multiple image URLs
-  @Input() imageUrl: any[] | null = null;
+  @Input() imageUrl: any[]  = [];
 
   isDragging = signal(false);
   errorMessage = signal<string | null>(null);
@@ -40,12 +39,12 @@ export class UploadImage implements AfterViewInit {
   constructor() {}
 
   ngAfterViewInit(): void {
-    if(this.imageUrl){
-      this.imageUrl?.map(img => img?.url)
-      if (this.imageUrl && this.imageUrl?.length > 0) {
-        this.previewUrls.set([...this.imageUrl?.map(img => img?.url)]);
-      }
-    }
+    console.log('imahes', this.imageUrl);
+      this.previewUrls.update(value => [
+    ...value,
+    ...(this.imageUrl ?? [])
+  ]);
+  
   }
 
   onFileSelected(event: Event): void {
@@ -116,12 +115,14 @@ export class UploadImage implements AfterViewInit {
     return file.size <= this.maxFileSizeMB() * 1024 * 1024;
   }
 
-  removeImage(index: number): void {
-    this.previewUrls.update(urls => urls.filter((_, i) => i !== index));
+  removeImage(index?: number): void {
+    if(this.context === 'product'){
+      this.previewUrls.update(urls => urls.filter((_, i) => i !== index));
+    }
   }
 
   async uploadFiles(): Promise<void> {
-    if (!this.hasFiles()) return;
+    // if (!this.hasFiles()) return;
 
     this.uploadProgress.set(0);
 
