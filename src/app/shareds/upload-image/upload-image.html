@@ -60,7 +60,7 @@
             } @else if(imageUrl){
                 <div class="col-6 col-md-4 col-lg-4">
                   <div class="preview-item position-relative">
-                    <img [src]="imageUrl[0].url ? imageUrl[0].url : imageUrl " class="img-fluid rounded-2 border" alt="Preview">
+                    <img [src]="imageUrl[0]?.url ? imageUrl[0]?.url : imageUrl " class="img-fluid rounded-2 border" alt="Preview">
                     <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle" 
                             (click)="removeImage()">
                       <i class="bi bi-x"></i>

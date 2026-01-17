@@ -184,8 +184,10 @@ private createFormData(payload: any): FormData {
 
   /* ---------- PRODUCT IMAGES ---------- */
   payload.productImages?.forEach((img: any, i: number) => {
+    console.log('product imahge', img);
+    
     formData.append(`images[${i}][url]`, img.url);
-    formData.append(`images[${i}][publicId]`, img.public_id);
+    formData.append(`images[${i}][publicId]`, img.public_id ? img.public_id : img.publicId);
   });
 
   /* ---------- VARIANTS ---------- */
@@ -195,9 +197,9 @@ private createFormData(payload: any): FormData {
     formData.append(`variants[${i}][price]`, String(variant.price));
     formData.append(`variants[${i}][stock]`, String(variant.stock));
 
-    variant.image?.forEach((img: any, j: number) => {
+    variant.images?.forEach((img: any, j: number) => {
       formData.append(`variants[${i}][images][${j}][url]`, img.url);
-      formData.append(`variants[${i}][images][${j}][publicId]`, img.public_id);
+      formData.append(`variants[${i}][images][${j}][publicId]`, img.public_id ? img.public_id : img.publicId);
     });
   });
 
