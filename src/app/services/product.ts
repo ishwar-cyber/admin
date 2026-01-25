@@ -194,8 +194,8 @@ private createFormData(payload: any): FormData {
   payload.variants?.forEach((variant: any, i: number) => {
     formData.append(`variants[${i}][name]`, variant.name);
     formData.append(`variants[${i}][sku]`, variant.sku);
-    formData.append(`variants[${i}][price]`, String(variant.price));
-    formData.append(`variants[${i}][stock]`, String(variant.stock));
+    formData.append(`variants[${i}][price]`, variant.price);
+    formData.append(`variants[${i}][stock]`, variant.stock);
 
     variant.images?.forEach((img: any, j: number) => {
       formData.append(`variants[${i}][images][${j}][url]`, img.url);

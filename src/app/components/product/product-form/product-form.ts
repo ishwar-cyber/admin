@@ -76,8 +76,8 @@ export class ProductForm implements OnInit {
   constructor() {}
 
  public productStock = signal<any[]>([
-    { value: 'in', label: 'In Stock' },
-    { value: 'out', label: 'Out Stock' }
+    { value: 1, label: 'In Stock' },
+    { value: 0, label: 'Out Stock' }
   ]);
 
   ngOnInit(): void {
@@ -172,7 +172,7 @@ prefillForm() {
     model: this.item.sku,
     status: this.item.status,
     price: this.item.price,
-    stock: this.item.stock === 0 ? 'out' : 'in',
+    stock: this.item.stock,
     weight: this.item.weight,
     length: this.item.length,
     height: this.item.height,
@@ -393,7 +393,7 @@ handleImageUpload(event: {
       model: ['', Validators.required],
       status: [true],
       price: [0, [Validators.required, Validators.min(0)]],
-      stock: ['in', [Validators.required]],
+      stock: [1, [Validators.required]],
       weight: [0.5, [Validators.required, Validators.min(0)]],
       length: [5, [Validators.required, Validators.min(0)]],
       height: [5, [Validators.required, Validators.min(0)]],
@@ -423,7 +423,7 @@ addVariant(data?: any): void {
     variantName: [data?.name || '', Validators.required],
     sku: [data?.sku || '', Validators.required],
     price: [data?.price ?? 0, [Validators.required, Validators.min(0), this.numberOnlyValidator()]],
-    stock: [data?.stock ?? 'in', [Validators.required]]
+    stock: [data?.stock ?? 1, [Validators.required]]
   }));
 
   // ✅ IMPORTANT: create image holder per variant
@@ -517,8 +517,8 @@ const offerPriceArray = Array.from(offerMap.values());
   const variantsArray = this.variants.controls.map((control, index) => ({
     name: control.get('variantName')?.value || '',
     sku: control.get('sku')?.value || '',
-    price: Number(control.get('price')?.value || 0),
-    stock: control.get('stock')?.value === 'in' ? 1 : 0,
+    price: Number(control.get('price')?.value || 1),
+    stock: control.get('stock')?.value || 1,
 
     // ✅ each variant has its OWN images
     images: this.variantImagesList[index]?.images || []
@@ -538,7 +538,7 @@ const offerPriceArray = Array.from(offerMap.values());
     subCategory: this.productForm.value.subCategory?.id || this.productForm.value.subCategory?.id,
 
     price: Number(this.productForm.value.price),
-    stock: this.productForm.value.stock === 'in' ? 1 : 0,
+    stock: this.productForm.value.stock,
 
     model: this.productForm.value.model,
 
