@@ -89,11 +89,9 @@ export class OrderService {
    * Update order status
   */
 updateOrderStatus(id: string, status: string): Observable<ApiResponse> {
-  const params = new HttpParams().set('status', status);
   return this.httpClient.put<ApiResponse>(
-    `${this.baseUrl}/${id}`,
-    {}, // empty body
-    { params }
+    `${this.baseUrl}/${id}/status`,
+    { status } // ✅ body
   );
 }
 /**
@@ -120,7 +118,7 @@ createOrder(orderData: any): Observable<OrderApiResponse> {
 
   // Set default status if not provided
   if (!orderData.status) {
-    orderData.status = 'pending';
+    orderData.status = 'placed';
   }
 
   return this.httpClient.post<OrderApiResponse>(`${this.baseUrl}`, orderData).pipe(

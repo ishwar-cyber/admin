@@ -31,9 +31,9 @@ export interface Order {
   shipping: number;
   discount: number;
   totalAmount: number;
-  orderStatus: 'created' | 'packed' | 'shipped' | 'delivered' | 'cancelled';
+  orderStatus: 'placed' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
   deliveryStatus: 'pending' | 'in_transit' | 'out_for_delivery' | 'delivered' | 'failed';
-  paymentStatus: 'active' | 'paid' | 'failed' | 'refunded';
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethod: 'cod' | 'online' | 'card' | 'upi';
   deliveryMethod: 'standard' | 'express' | 'same_day';
   trackingNumber?: string;

@@ -140,6 +140,7 @@ export class OrderComponent implements OnInit {
         const stats =  response.data.statistics.orderStatusStats || [];
         for (const s of stats) {
           switch (s._id) {
+            
             case 'Confirmed':
               this.confirmed.set(s.count);
               break;

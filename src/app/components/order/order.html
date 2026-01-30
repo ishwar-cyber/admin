@@ -1,4 +1,4 @@
-<div class="order-page container-fluid py-3">
+<div class="order-page container-fluid p-0">
 
   <!-- Header -->
   <div class="page-header card shadow-sm mb-4">
@@ -129,14 +129,14 @@
 
                 <td class="width: 200px">
                   <span class="badge bg-secondary">{{ order?.items?.length }} items</span>
-                  <div class="sub small ">
+                  <!-- <div class="sub small ">
                     @for (item of order?.items?.slice(0, 2); track item.name) {
                      <div class="product-name"> {{ item?.name }} ({{ item?.quantity }}), </div>
                     }
                     @if(order.items.length > 2) {
                       <span class="text-muted">+{{ order.items.length - 2 }} more</span>
                     }
-                  </div>
+                  </div> -->
                 </td>
 
                 <td class="text-end">
@@ -145,13 +145,13 @@
 
                 <td class="status-col">
                   <!-- Status Badge -->
-                  <span class="badge status-badge"[ngClass]="selectedStatusMap()[order.id] || order.orderStatus">
-                    {{ (selectedStatusMap()[order.id] || order.orderStatus) | uppercase }}
+                  <span class="badge status-badge"[ngClass]="selectedStatusMap()[order.id] || order.orderStatus.toLowerCase()">
+                    {{ (selectedStatusMap()[order.id] || order.orderStatus.toLowerCase()) | uppercase }}
                   </span>
 
                   <select
                     class="status-select"
-                    [ngModel]="selectedStatusMap()[order.id] || order.orderStatus"
+                    [ngModel]="selectedStatusMap()[order.id] || order.orderStatus.toLowerCase()"
                     (ngModelChange)="updateOrderStatus(order.id, $event, order)"
                   >
                     @for (item of orderStatuses; track item.key) {
