@@ -406,7 +406,7 @@ handleImageUpload(event: {
       specifications: this.formBuilder.array([]),
       warranty: this.formBuilder.group({
         period: [''],
-        type: ['Years'],
+        type: ['Months'],
       }),
     });    
   }
