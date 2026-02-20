@@ -49,10 +49,12 @@ export class OrderView implements OnInit {
   }
 
   copyAddress(address: any) {
-    const text = `${address.fullName}
-    ${address.line1},${address.line2}
-    ${address.city ? address.city + ', ' : ''}${address.state} - ${address.pincode}
-    Phone: ${address.phone}
+    console.log('address', address);
+    
+    const text = `${address?.fullName}
+    ${address?.line1},${address?.line2}
+    ${address?.city ? address?.city + ', ' : ''}${address?.state} - ${address?.pincode}
+    Phone: ${address?.phone}
     `.trim();
     // Angular 20 SSR-safe clipboard
     navigator.clipboard.writeText(text).then(() => {
@@ -66,7 +68,7 @@ export class OrderView implements OnInit {
 
   showCopiedToast() {
     this.toastMessage.set("Address copied!");
-    setTimeout(() => this.toastMessage.set(""), 2000);
+    setTimeout(() => this.toastMessage.set("address copy"), 2000);
   }
 }
 
