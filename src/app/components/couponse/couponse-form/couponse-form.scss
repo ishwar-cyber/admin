@@ -58,6 +58,10 @@
     background-color: rgba(94, 114, 228, 0.1);
   }
 }
+.active {
+  border-color: #5e72e4;
+  background-color: rgba(94, 114, 228, 0.1);
+}
 
 /* Discount type specific colors */
 .discount-box:nth-child(1) {

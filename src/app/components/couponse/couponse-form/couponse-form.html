@@ -17,22 +17,29 @@
         <div class="col-6">
             <label for="applyTo" class="form-label">Apply To</label>
             <select id="applyTo" class="form-select" formControlName="applyTo" (change)="selecteApplyTo()">
-                <option>Select</option>
                 @for (item of couponseService.applyToOptions(); track $index) {
-                    <option [value]="item.id" >{{ item.name }}</option>
-                } @empty {
-                    <option>No options available</option>
+                 <option [value]="item.id" >{{ item.name }}</option>
                 }
             </select>
         </div>
-        @if (couponForm.value.applyTo === 'products') {
+        @if (couponForm.value.applyTo?.toLowerCase() === 'product') {
             <div class="col-6">
-            <label for="product" class="form-label">Search Product</label>
-            <app-multiple-select
-                formControlName="product"
-                [options]="products()"
-                placeholder="Select product"
-            />
+                <label for="product" class="form-label">Search Product</label>
+                <app-multiple-select
+                    formControlName="product"
+                    [options]="products()"
+                    placeholder="Select product"
+                />
+            </div>
+        }
+          @if (couponForm.value.applyTo?.toLowerCase() === 'category') {
+             <div class="col-6">
+                <label for="product" class="form-label">Search Category</label>
+                <app-multiple-select
+                    formControlName="category"
+                    [options]="categories()"
+                    placeholder="Select category"
+                />
             </div>
         }
         <div class="mb-3">
@@ -40,7 +47,9 @@
             <div class="row g-3">
             @for (item of couponseService.dicountTypeOptions(); track $index) {
                 <div class="col-md-3">  
-                    <div class="discount-box" [class.active]="couponForm.get('discountType')?.value === item.name"
+                    <div class="discount-box" 
+                    [class.active]="couponForm.get('discountType')?.value === item.name"
+                    ngClass="{'active': couponForm.get('discountType')?.value === item.id}" 
                     (click)="selectDiscountType(item.id)">
                     <i class="bi bi-{{ item.icon }} mb-2"></i>
                     <h6> Discount in {{ item.name }}</h6>

@@ -38,7 +38,7 @@ export class OrderView implements OnInit {
 
     this.orderService.getOrderById(orderId).subscribe({
       next: (res: any) => {
-        this.order.set(res.data);
+        this.order.set(res?.data);
         this.loading.set(false);
       },
       error: err => {

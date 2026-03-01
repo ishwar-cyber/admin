@@ -13,9 +13,9 @@ export class Coupon {
   private httpClient = inject(HttpClient);
   private apiUrl = `${environment.BASE_URL}/coupons`;
   public applyToOptions = signal([
-    { id: 'all', name: 'All Products' },
-    { id: 'products', name: 'Specific Product' },
-    { id: 'cartegories', name: 'Specific Category'}
+    { id: 'ALL', name: 'All Products' },
+    { id: 'PRODUCT', name: 'Specific Product' },
+    { id: 'CATEGORY', name: 'Specific Category'}
   ]);
 
   public dicountTypeOptions = signal([

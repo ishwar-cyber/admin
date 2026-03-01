@@ -6,6 +6,7 @@ import { CouponseM } from '../../../models/couponse';
 import { ProductS } from '../../../services/product';
 import { MultipleSelect } from "../../../shareds/multiple-select/multiple-select";
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategoryS } from '../../../services/category';
 
 @Component({
   selector: 'app-couponse-form',
@@ -19,10 +20,12 @@ export class CouponseForm implements OnInit{
   isLoading = signal(false);
   public couponseService = inject(Coupon);
   public productService = inject(ProductS);
+  categoriesService = inject(CategoryS);
   private formBuilder =inject(FormBuilder);
   public activeModal = inject(NgbActiveModal);
   coupons = signal<CouponseM[] | any>([]);
-  products = signal([]);
+  products = signal<any[]>([]);
+  categories = signal<any[]>([]);
   currentDate: string = '';
   minDate: string = '';
 
@@ -48,8 +51,9 @@ export class CouponseForm implements OnInit{
       let productValue = this.couponForm.value.product;
       if(productValue) {
         productValue.forEach((item: any)=>{
-        product.push(item._id);
+        product.push(item.id);
       });
+
       }
     
       const payload: CouponseM = {
@@ -57,6 +61,7 @@ export class CouponseForm implements OnInit{
         discount: this.couponForm.value.discount || 0,
         applyTo: this.couponForm.value.applyTo,
         products: product || null,
+        category: this.couponForm.value.category || null,
         discountType: this.couponForm.value.discountType,
         noExpiry: this.couponForm.value.noExpiry || false,
         startDate: new Date(this.couponForm.value.validFrom),
@@ -70,6 +75,7 @@ export class CouponseForm implements OnInit{
         couponCode: ['', Validators.required],
         applyTo: ['', Validators.required], // 'all' or specific product ID
         product: [],
+        category: [],
         noExpiry: [],
         discount: [''],
         discountType: ['', Validators.required],
@@ -112,15 +118,18 @@ export class CouponseForm implements OnInit{
 
   selecteApplyTo(){
     let value = this.couponForm.controls['applyTo'].value;
-    switch(value){
+
+    console.log('value', value);
+    
+    switch(value.toLowerCase()){
       case 'all':
       break;
 
-      case 'products':
+      case 'product':
         this.loadProduct();
       break;
 
-      case 'categories':
+      case 'category':
         this.loadCategories();
       break;
     }
@@ -154,7 +163,15 @@ export class CouponseForm implements OnInit{
   }
 
   loadCategories(){
-    
+    this.categoriesService.getCategories().subscribe({
+      next: (response: any) => {
+        console.log('categories', response);
+          this.categories.set(response.data);
+      },
+      error: (err) => {
+          console.error('Error fetching categories:', err);
+      } 
+    }); 
   }
   private formatDateForInput(date: Date | string): string {
       const d = new Date(date);
