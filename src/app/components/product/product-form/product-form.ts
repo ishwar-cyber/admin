@@ -392,7 +392,7 @@ handleImageUpload(event: {
       subCategory: ['', Validators.required],
       model: ['', Validators.required],
       status: [true],
-      price: [0, [Validators.required, Validators.min(0)]],
+      price: ['', Validators.required],
       stock: [1, [Validators.required]],
       weight: [0.5, [Validators.required, Validators.min(0)]],
       length: [5, [Validators.required, Validators.min(0)]],
@@ -459,7 +459,7 @@ removeVariant(index: number): void {
   }
   proccedNext(): void {
     this.submitted = true;
-    if (this.productForm.valid) {
+    if (this.productForm.valid && this.productForm.controls['price'].value > 0) {
       const image = this.variants.controls.map((control) => control.get('image')?.value).filter((image: any) => image !== null);
       const payload = this.createPayload();
       let callApi: any;
@@ -480,6 +480,8 @@ removeVariant(index: number): void {
         }
       });
     } else {
+      console.log('invalid form');
+      
       this.productForm.markAllAsDirty();
     }
   }
